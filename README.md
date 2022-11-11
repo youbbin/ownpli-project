@@ -10,7 +10,6 @@
 ## 업데이트 내역
 
  - 2022-11-22
-    - Completion
-      - domain
-        - Entity, PK 정의
-        - FK mapping
+   - domain
+     - Entity, PK 정의
+     - FK mapping
