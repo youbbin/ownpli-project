@@ -1,4 +1,4 @@
-# BackEnd
+# 온플리 백엔드
 
 > 공주대학교 데이터베이스 프로그래밍 프로젝트 백엔드 개발 로그입니다. [상위 레포지토리 가기](https://github.com/youbbin/DB_Project_OwnPli)
 
