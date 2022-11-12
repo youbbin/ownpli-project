@@ -1,6 +1,6 @@
 package dbproject.ownpli.domain.music;
 
-import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.domain.user.UserEntity;
 import lombok.*;
 
 import javax.persistence.*;

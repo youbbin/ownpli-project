@@ -7,7 +7,7 @@
 |End Date| continued |
 
 |stack|info|
-|----|---|
+|---|---|
 |Backend Language|JAVA|
 |Tools|IntelliJ|
 |Framework|Spring, JPA|
@@ -22,7 +22,14 @@
 
 ## 업데이트 내역
 
- - 2022-11-22
+ - 2022-11-13
+   - 스프링 시큐리티 적용
+     - OauthService 생성
+   - 필드 주입에서 생성자 주입으로 변경
+   - Playlist 레포지토리 생성
+
+
+ - 2022-11-12
    - domain
      - Entity, PK 정의
      - FK mapping

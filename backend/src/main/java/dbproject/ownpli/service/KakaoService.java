@@ -1,9 +1,9 @@
 package dbproject.ownpli.service;
 
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.io.*;

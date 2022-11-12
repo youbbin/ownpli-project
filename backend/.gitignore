@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### User ###
+src/main/resources/static/index.html
+src/main/resources/static/images/kakao_login_medium_wide.png
+src/main/resources/templates/kakaoCI
+src/main/resources/templates/index.html

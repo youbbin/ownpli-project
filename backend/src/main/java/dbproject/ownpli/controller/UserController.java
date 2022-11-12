@@ -1,9 +1,11 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.entity.UserEntity;
-import dbproject.ownpli.repository.UserRepository;
+import dbproject.ownpli.domain.user.UserEntity;
+import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -12,7 +14,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     /*
     * 멤버조회
@@ -20,22 +22,7 @@ public class UserController {
 
     @GetMapping("user")
     public List<UserEntity> findAllMember() {
-        return userRepository.findAll();
+        return userService.findUsers();
     }
 
-    /*
-    * 회원가입
-    * */
-
-    @PostMapping("user")
-    public UserEntity signUp() {
-        final UserEntity user = UserEntity.builder()
-            .userID("testuser@naver.com")
-            .name("test user")
-            .passward("1234")
-            .age(14)
-            .sex(1)
-            .build();
-        return userRepository.save(user);
-    }
 }
