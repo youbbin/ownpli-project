@@ -1,6 +1,6 @@
 package dbproject.ownpli.domain.playlist;
 
-import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.domain.user.UserEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Data
 @Builder
 @AllArgsConstructor
-@Entity(name = "playlist")
+@Entity
 @Table(name = "PLAYLIST")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistEntity {
