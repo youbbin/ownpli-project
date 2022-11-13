@@ -11,7 +11,7 @@
 |-------------------|---------------------------------------------------------------------------|
 | Backend Language  | JAVA                                                                      |
 | Idea              | IntelliJ                                                                  |
-| Build             | Gredle                                                                    |
+| Build             | Gradle                                                                    |
 | Framework         | Spring, JPA                                                               |
 | Repositories      | subtree                                                                   |
 | Parent Repository | [youbbin/DB_Project_OwnPli](https://github.com/youbbin/DB_Project_OwnPli) | <!--포함하는-->
