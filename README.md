@@ -2,18 +2,20 @@
 
 > 공주대학교 데이터베이스 프로그래밍 프로젝트 온플리의 백엔드 개발 로그입니다. 
 
-|Start Date|2022-10-01|
-|---|---|
-|End Date| continued |
+| Classification | Date       |
+|----------------|------------|
+| Start Date     | 2022-10-01 |
+| End Date       | -          |
 
-|stack|info|
-|---|---|
-|Backend Language|JAVA|
-|Tools|IntelliJ|
-|Framework|Spring, JPA|
-|Repositories|subtree|
-|Parent Repository|[youbbin/DB_Project_OwnPli](https://github.com/youbbin/DB_Project_OwnPli)| <!--포함하는-->
-|Child Repository|[NadudAn/OwnPli_BackEnd](https://github.com/NadudAn/OwnPli_BackEnd)|  <!--포함되는-->
+| Stack             | Info                                                                      |
+|-------------------|---------------------------------------------------------------------------|
+| Backend Language  | JAVA                                                                      |
+| Idea              | IntelliJ                                                                  |
+| Build             | Gredle                                                                    |
+| Framework         | Spring, JPA                                                               |
+| Repositories      | subtree                                                                   |
+| Parent Repository | [youbbin/DB_Project_OwnPli](https://github.com/youbbin/DB_Project_OwnPli) | <!--포함하는-->
+| Child Repository  | [NadudAn/OwnPli_BackEnd](https://github.com/NadudAn/OwnPli_BackEnd)       |  <!--포함되는-->
 
 ### 간단한 구조도
 
@@ -21,6 +23,10 @@
 
 
 ## 업데이트 내역
+
+ - 2022-11-14
+   - 레포지토리 생성
+
 
  - 2022-11-13
    - 스프링 시큐리티 적용
