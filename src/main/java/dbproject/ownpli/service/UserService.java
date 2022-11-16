@@ -1,6 +1,6 @@
 package dbproject.ownpli.service;
 
-import dbproject.ownpli.domain.user.UserEntity;
+import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,5 +56,17 @@ public class UserService {
     public UserEntity findByUserId(String userId) {
         return userRepository.findById(userId).get();
     }
+
+
+    /**
+     * 회원 닉네임 수정
+     * @param nickname
+     * @param userId
+     * @return
+     */
+    public void updateNicknameByUserId(String nickname, String userId) {
+        int i = userRepository.updateUserNickname(nickname, userId);
+    }
+
 
 }

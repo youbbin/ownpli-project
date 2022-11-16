@@ -1,4 +1,4 @@
-package dbproject.ownpli.domain.user;
+package dbproject.ownpli.domain;
 
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -25,10 +25,7 @@ public class UserEntity {
     private String passward;
 
     @Column(nullable = false, length = 50)
-    private String name;
-
-    @Column(name = "provider", nullable = false)
-    private String provider;
+    private String nickname;
 
     @Column(nullable = false)
     private int age;
@@ -36,9 +33,9 @@ public class UserEntity {
     @Column(nullable = false)
     private int sex;
 
-    public UserEntity update(String userId, String name) {
+    public UserEntity update(String userId, String nickname) {
         this.userId = userId;
-        this.name = name;
+        this.nickname = nickname;
         return this;
     }
 

@@ -1,6 +1,6 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.domain.user.UserEntity;
+import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +16,10 @@ public class UserController {
 
     private final UserService userService;
 
-    /*
-    * 멤버조회
-    * */
+    /**
+     * 멤버조회
+     * @return
+     */
 
     @GetMapping("user")
     public List<UserEntity> findAllMember() {

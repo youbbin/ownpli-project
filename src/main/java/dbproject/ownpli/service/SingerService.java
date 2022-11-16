@@ -26,11 +26,22 @@ public class SingerService {
 
     /**
      * 가수 단일 조회
-     * @param userId
+     * @param singerId
      * @return
      */
     @Transactional(readOnly = true)
-    public SingerEntity findByUserId(String userId) {
-        return singerRepository.findById(userId).get();
+    public SingerEntity findBysingerId(String singerId) {
+        return singerRepository.findById(singerId).get();
     }
+
+    /**
+     * 가수 이름으로 가수 정보 조회
+     * @param singerName
+     * @return
+     */
+    public SingerEntity findBySingerName(String singerName) {
+        return singerRepository.findBySingerName(singerName);
+    }
+
+
 }
