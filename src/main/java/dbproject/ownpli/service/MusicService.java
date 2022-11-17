@@ -1,6 +1,5 @@
 package dbproject.ownpli.service;
 
-import dbproject.ownpli.domain.music.GenreEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ public class MusicService {
     private final MusicMoodRepository musicMoodRepository;
     private final GenreRepository genreRepository;
     private final MoodRepository moodRepository;
-    private final SingerRepository singerRepository;
 
     /**
      * 모든 음악리스트 찾기
@@ -29,32 +27,31 @@ public class MusicService {
     }
 
     /**
-     *  singerId로 음악 리스트 출력
-     * @param singerId
+     * 음악 이름으로 음악 리스트 찾기
+     * @param title
      * @return
      */
-    public List<MusicEntity> findBySingerId(String singerId) {
-        return musicRepository.findBySingerId(singerId);
+    public List<MusicEntity> findByTitle(String title) {
+        return musicRepository.findByTitle(title);
     }
 
     /**
-     * 가수 이름으로 가수의 음악 리스트 조회
-     * @param singerName
+     * 음악 이름으로 검색
+     * @param title
      * @return
      */
-    public List<MusicEntity> findBySingerName(String singerName) {
-        String id = singerRepository.findBySingerName(singerName).getSingerId();
-        return musicRepository.findBySingerId(id);
+    public List<MusicEntity> findByTitleContain(String title) {
+        return musicRepository.findByTitleContainingIgnoreCase(title);
     }
 
+
     /**
-     * 단일 음악 장르 조회
-     * @param id
+     * 가수 이름으로 검색
+     * @param singer
      * @return
      */
-    public GenreEntity findGenreByMusicId(String id) {
-        Long genreId = musicRepository.findGenreByMusicId(id);
-        return genreRepository.findById(genreId).get();
+    public List<MusicEntity> findBySingerContain(String singer) {
+        return musicRepository.findBySingerContainingIgnoreCase(singer);
     }
 
 //    /**

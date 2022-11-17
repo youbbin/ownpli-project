@@ -1,6 +1,5 @@
 package dbproject.ownpli.domain.music;
 
-import dbproject.ownpli.domain.SingerEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,8 +20,8 @@ public class MusicEntity {
     @Column(nullable = false, length = 50)
     private String title;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private SingerEntity singerId;
+    @Column(nullable = false, length = 50)
+    private String singer;
 
     @OneToOne(fetch = FetchType.LAZY)
     private GenreEntity genreId;

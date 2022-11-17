@@ -6,10 +6,7 @@ import dbproject.ownpli.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +21,8 @@ public class PlaylistController {
      * 회원의 모든 Playlist 조회
      * @param userId
      * @return
+     *
+     * /playlist/getlist
      */
     @GetMapping("/getlist")
     public ResponseEntity<List<PlaylistEntity>> findAllPlaylists(String userId) {
@@ -32,12 +31,16 @@ public class PlaylistController {
     }
 
     /**
-     * playlistId로 음악 list 보내기
+     * playlistId로 playlist에 포함된 음악 list 조회
      * @param playlistId
      * @return
+     *
+     * /playlist/getlist/playlistId
+     *
+     *  @PathVariable 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
      */
-    @GetMapping("/getlist")
-    public ResponseEntity<MusicEntity[]> findMusicList(@RequestParam(name = "playlistId") String playlistId) {
+    @GetMapping("/getlist/{playlistId}")
+    public ResponseEntity<MusicEntity[]> findMusicList(@PathVariable(name = "playlistId") String playlistId) {
         MusicEntity[] musicEntities = playlistService.findMusicsByPlaylistId(playlistId).toArray(new MusicEntity[0]);
         return new ResponseEntity<>(musicEntities, HttpStatus.OK);
     }

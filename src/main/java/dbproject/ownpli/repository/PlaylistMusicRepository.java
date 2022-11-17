@@ -1,6 +1,5 @@
 package dbproject.ownpli.repository;
 
-import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.playlist.PlaylistEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import org.apache.ibatis.annotations.Param;
@@ -18,8 +17,8 @@ public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEnti
      * @param playlistId
      * @return
      */
-    @Query(value = "SELECT pm FROM PlaylistMusicEntity pm WHERE pm.playlistId = :id", nativeQuery = true)
-    List<PlaylistEntity> findByPlaylistId(@Param("id") List<String> playlistId);
+    @Query(value = "SELECT pm FROM PlaylistMusicEntity pm WHERE pm.playlistId = :playlistId", nativeQuery = true)
+    List<PlaylistEntity> findByPlaylistId(@Param("playlistId") List<String> playlistId);
 
     /**
      * [select] 플레이리스트 아이디로 음악 id만 출력
@@ -30,12 +29,12 @@ public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEnti
     List<String> findMusicIdsByPlaylistId(String playlistId);
 
     @Query(value = "SELECT pm FROM PlaylistMusicEntity pm join fetch pm.musicId WHERE :playlistId", nativeQuery = true)
-    List<PlaylistMusicEntity> findAllByPlaylistId(String plalistId);
+    List<PlaylistMusicEntity> findAllByPlaylistId(String playlistId);
 
-    /**
-     * [select] fk(musicId)값으로 playlistMusic 조회하기
-     * @param id
-     * @return
-     */
-    List<MusicEntity> findByMusic_MusicId(String id);
+//    /**
+//     * [select] fk(musicId)값으로 playlistMusic 조회하기
+//     * @param id
+//     * @return
+//     */
+//    List<MusicEntity> findByMusic_MusicId(String id);
 }
