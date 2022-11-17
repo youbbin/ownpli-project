@@ -1,6 +1,6 @@
 package dbproject.ownpli.domain.music;
 
-import dbproject.ownpli.domain.user.UserEntity;
+import dbproject.ownpli.domain.UserEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,8 +17,10 @@ public class MusicLikeEntity {
     @Id
     private Long musicLikeId;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
+    /**
+     * 관계의 소유를 가지지 않은 곳에서 @JoinColumn 어노테이션을 사용하면 안됨
+     */
+    @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY)
     private List<UserEntity> userId;
 
     @OneToOne
