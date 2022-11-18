@@ -22,7 +22,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
      * [update] 닉네임 변경
      * @param nickname
      * @param id
-     * @return
+     * @return int
      */
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE UserEntity u SET u.nickname = :nickname where u.userId = :id", nativeQuery = true)

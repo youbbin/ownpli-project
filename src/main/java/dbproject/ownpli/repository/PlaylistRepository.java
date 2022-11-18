@@ -11,7 +11,7 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
     /**
      * [select] userId로 플레이리스트 조회
      * @param id
-     * @return
+     * @return PlaylistEntity
      */
     @Query(value = "SELECT p FROM PlaylistEntity p WHERE p.userId = :id", nativeQuery = true)
     PlaylistEntity findByUserId(String id);

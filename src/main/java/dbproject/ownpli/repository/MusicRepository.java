@@ -16,15 +16,15 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
     /**
      * [select] singerName으로 음악 정보 출력
      * @param singer
-     * @return
+     * @return List[MusicEntity]
      */
     List<MusicEntity> findBySinger(@Param("singer") String singer);
 
     /**
      * [select] 음악 제목으로 음악 리스트 검색
      * @param title
-     * @return
-     *
+     * @return List[MusicEntity]
+     * @container
      * - `findBy`로 시작하면 select 쿼리를 시작한다는 뜻입니다.
      * - `Title, Singer`는 이 컬럼에서 파라미터로 받은 값을 찾겠다는 의미입니다. (엔티티 클래스의 컬럼 참고)
      * - `Containing`이 없다면 해당 키워드와 일치하는 결과만 찾고, 이 키워드가 있는 경우는 포함하는 결과를 찾습니다. 즉, SQL문의 like %xx% 와 비슷합니다.
@@ -35,8 +35,8 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
     /**
      * [select] 가수 이름으로 음악 리스트 검색
      * @param singer
-     * @return
-     *
+     * @return List[MusicEntity]
+     * @container
      * - `findBy`로 시작하면 select 쿼리를 시작한다는 뜻입니다.
      * - `Title, Singer`는 이 컬럼에서 파라미터로 받은 값을 찾겠다는 의미입니다. (엔티티 클래스의 컬럼 참고)
      * - `Containing`이 없다면 해당 키워드와 일치하는 결과만 찾고, 이 키워드가 있는 경우는 포함하는 결과를 찾습니다. 즉, SQL문의 like %xx% 와 비슷합니다.
@@ -47,15 +47,15 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
     /**
      * [select] musicId 리스트로 해당하는 음악 출력
      * @param musicId
-     * @return
+     * @return List[MusicEntity]
      */
     @Query(value = "SELECT m FROM MusicEntity m WHERE m.musicId in :musicId", nativeQuery = true)
-    List<MusicEntity> findByMusicIds(@Param("musicId") List<String> musicId);
+    List<MusicEntity> findByMusicId(@Param("musicId") List<String> musicId);
 
     /**
      * [select] 단일 음악 장르 출력
      * @param musicId
-     * @return
+     * @return Long
      */
     @Query(value = "SELECT m.genre FROM MusicEntity m WHERE m.musicId = :musicId", nativeQuery = true)
     Long findGenreByMusicId(@Param("musicId") String musicId);

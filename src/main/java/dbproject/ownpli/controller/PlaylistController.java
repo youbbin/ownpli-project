@@ -45,11 +45,4 @@ public class PlaylistController {
         return new ResponseEntity<>(musicEntities, HttpStatus.OK);
     }
 
-//    @GetMapping("/response-body-json-v1")
-//    public ResponseEntity<HelloData> responseBodyJsonV1() {
-//        HelloData helloData = new HelloData();
-//        helloData.setUsername("userA");
-//        helloData.setAge(20);
-//
-//        return new ResponseEntity<>(helloData, HttpStatus.OK);
 }

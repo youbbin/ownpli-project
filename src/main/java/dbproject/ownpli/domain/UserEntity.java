@@ -33,8 +33,7 @@ public class UserEntity {
     @Column(nullable = false)
     private int sex;
 
-    public UserEntity update(String userId, String nickname) {
-        this.userId = userId;
+    public UserEntity update(String nickname) {
         this.nickname = nickname;
         return this;
     }

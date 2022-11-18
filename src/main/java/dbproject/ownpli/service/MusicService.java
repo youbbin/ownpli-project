@@ -15,6 +15,7 @@ public class MusicService {
 
     private final MusicRepository musicRepository;
     private final MusicMoodRepository musicMoodRepository;
+    private final MusicLikeRepository musicLikeRepository;
     private final GenreRepository genreRepository;
     private final MoodRepository moodRepository;
 
@@ -36,7 +37,7 @@ public class MusicService {
     }
 
     /**
-     * 음악 이름으로 검색
+     * 음악 이름으로 음악 리스트 검색
      * @param title
      * @return
      */
@@ -44,14 +45,23 @@ public class MusicService {
         return musicRepository.findByTitleContainingIgnoreCase(title);
     }
 
-
     /**
-     * 가수 이름으로 검색
+     * 가수 이름으로 음악 리스트 검색
      * @param singer
      * @return
      */
     public List<MusicEntity> findBySingerContain(String singer) {
         return musicRepository.findBySingerContainingIgnoreCase(singer);
+    }
+
+    /**
+     * 사용자가 좋아요한 음악 리스트 출력
+     * @param userId
+     * @return
+     */
+    public List<MusicEntity> findMusicListByUserId(String userId) {
+        List<String> musicIds = musicLikeRepository.findByUserId(userId);
+        return musicRepository.findByMusicId(musicIds);
     }
 
 //    /**

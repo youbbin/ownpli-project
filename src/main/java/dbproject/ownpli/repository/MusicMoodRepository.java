@@ -14,7 +14,7 @@ public interface MusicMoodRepository extends JpaRepository<MusicMoodEntity, Long
     /**
      * [select] musicId로 mood 리스트 조회
      * @param musicId
-     * @return
+     * @return List[Long]
      */
     @Query(value = "SELECT m FROM MusicMoodEntity m WHERE m.musicId = :musicId", nativeQuery = true)
     List<Long> findByMusicId(@Param("musicId") String musicId);

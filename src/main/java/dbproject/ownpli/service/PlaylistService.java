@@ -36,7 +36,7 @@ public class PlaylistService {
      */
     public List<MusicEntity> findMusicsByPlaylistId(String playlistId) {
         List<String> musicIds = playlistMusicRepository.findMusicIdsByPlaylistId(playlistId);
-        List<MusicEntity> musics = musicRepository.findByMusicIds(musicIds);
+        List<MusicEntity> musics = musicRepository.findByMusicId(musicIds);
 
         return musics;
     }
