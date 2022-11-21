@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class MusicController {
      * @return
      */
     @GetMapping("/getAllList")
-    public ResponseEntity<List<MusicEntity>> getAllPlaylists(String userId) {
+    public ResponseEntity<List<MusicEntity>> getAllPlaylists(@RequestBody String userId) {
         List<MusicEntity> musicEntities = musicService.findAllMusics();
         return new ResponseEntity<>(musicEntities, HttpStatus.OK);
     }
@@ -35,19 +36,45 @@ public class MusicController {
      * 제목과 가수 이름으로 음악을 검색하는 기능
      * @param musicSearch
      * @return
-     *
+     * @Container
      * /musics/{musicSearch}
      */
     @GetMapping("/{musicSearch}")
     public ResponseEntity<Model> searchMusics(@PathVariable("musicSearch") String musicSearch) {
-        List<MusicEntity> searchMusictitle = musicService.findByTitleContain(musicSearch);
+        List<MusicEntity> searchTitle = musicService.findByTitleContain(musicSearch);
         List<MusicEntity> searchSinger = musicService.findBySingerContain(musicSearch);
 
         Model model = null;
-        model.addAttribute(searchMusictitle);
+        model.addAttribute(searchTitle);
         model.addAttribute(searchSinger);
 
         return new ResponseEntity<>(model, HttpStatus.OK);
+    }
+
+
+    /**
+     * 단일 음악 정보 보내기
+     * @param musicId
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/play")
+    public Model getMusics(@RequestBody String musicId) throws IOException {
+        MusicEntity byMusicId = musicService.findByMusicId(musicId);
+        List<String> moodByMusicId = musicService.findMoodByMusicId(musicId);
+
+        Model model = null;
+        model.addAttribute("musicId", byMusicId.getMusicId());
+        model.addAttribute("title", byMusicId.getTitle());
+        model.addAttribute("genre", byMusicId.getGenreId().getGenreName());
+        model.addAttribute("mood", moodByMusicId);
+        model.addAttribute("imageFile", byMusicId.getImageFile());
+        model.addAttribute("album", byMusicId.getAlbum());
+        model.addAttribute("date", byMusicId.getDate());
+        model.addAttribute("country", byMusicId.getCountry());
+        model.addAttribute("lyrics", musicService.readLirics(musicId));
+
+        return model;
     }
 
     /**
@@ -55,13 +82,14 @@ public class MusicController {
      * @param param
      * @return
      * @throws Exception
+     * @container
+     * JSon 포맷으로 전송된 request parameter 데이터를 받을 액션 메서드의 파라미터 변수에는 @RequestBody 어노테이션을 붙여주어야 한다.
      */
-    @ResponseBody
-    @PostMapping("/cusvoice/audio")
-    public LinkedHashMap getAudio(@RequestBody LinkedHashMap param) throws Exception{
+    @PostMapping("/play")
+    public LinkedHashMap getAudio(@RequestBody LinkedHashMap param, String musicId) throws Exception{
         //위에 스트링으로 만들어준 객체를 답변을 위한 해쉬맵 객체에 넣어
         //프론트로 보내기 위해 적재
-        return mp3Service.playAudio(param);
+        return mp3Service.playAudio(param, musicId);
     }
 
 }

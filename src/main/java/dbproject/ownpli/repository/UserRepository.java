@@ -23,6 +23,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
      * @param nickname
      * @param id
      * @return int
+     * @CRUD update
      */
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE UserEntity u SET u.nickname = :nickname where u.userId = :id", nativeQuery = true)

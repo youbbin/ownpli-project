@@ -17,13 +17,24 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      * [select] singerName으로 음악 정보 출력
      * @param singer
      * @return List[MusicEntity]
+     * @CRUD read
      */
     List<MusicEntity> findBySinger(@Param("singer") String singer);
+
+    /**
+     * [select] 음악 아이디로 mp3파일 위치 가져오기
+     * @param musicId
+     * @return String
+     * @CRUD read
+     */
+    @Query(value = "SELECT m.mp3File FROM MusicEntity m WHERE m.musicId = :musicId", nativeQuery = true)
+    String findMp3FileByMusicId(@Param("musicId") String musicId);
 
     /**
      * [select] 음악 제목으로 음악 리스트 검색
      * @param title
      * @return List[MusicEntity]
+     * @CRUD read
      * @container
      * - `findBy`로 시작하면 select 쿼리를 시작한다는 뜻입니다.
      * - `Title, Singer`는 이 컬럼에서 파라미터로 받은 값을 찾겠다는 의미입니다. (엔티티 클래스의 컬럼 참고)
@@ -36,6 +47,7 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      * [select] 가수 이름으로 음악 리스트 검색
      * @param singer
      * @return List[MusicEntity]
+     * @CRUD read
      * @container
      * - `findBy`로 시작하면 select 쿼리를 시작한다는 뜻입니다.
      * - `Title, Singer`는 이 컬럼에서 파라미터로 받은 값을 찾겠다는 의미입니다. (엔티티 클래스의 컬럼 참고)
@@ -48,6 +60,7 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      * [select] musicId 리스트로 해당하는 음악 출력
      * @param musicId
      * @return List[MusicEntity]
+     * @CRUD read
      */
     @Query(value = "SELECT m FROM MusicEntity m WHERE m.musicId in :musicId", nativeQuery = true)
     List<MusicEntity> findByMusicId(@Param("musicId") List<String> musicId);
@@ -56,6 +69,7 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      * [select] 단일 음악 장르 출력
      * @param musicId
      * @return Long
+     * @CRUD read
      */
     @Query(value = "SELECT m.genre FROM MusicEntity m WHERE m.musicId = :musicId", nativeQuery = true)
     Long findGenreByMusicId(@Param("musicId") String musicId);

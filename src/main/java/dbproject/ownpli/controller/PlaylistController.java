@@ -25,7 +25,7 @@ public class PlaylistController {
      * /playlist/getlist
      */
     @GetMapping("/getlist")
-    public ResponseEntity<List<PlaylistEntity>> findAllPlaylists(String userId) {
+    public ResponseEntity<List<PlaylistEntity>> findAllPlaylists(@RequestBody String userId) {
         List<PlaylistEntity> playlistEntities = playlistService.findPlaylistByUserId(userId);
         return new ResponseEntity<>(playlistEntities, HttpStatus.OK);
     }

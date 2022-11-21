@@ -1,5 +1,6 @@
 package dbproject.ownpli.service;
 
+import dbproject.ownpli.repository.MusicRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +16,20 @@ import java.util.LinkedHashMap;
 @Service
 public class Mp3Service {
 
+    private final MusicRepository musicRepository;
+
     /**
      * 읽어들이는 파일을 컨트롤러를 통해 보내기 위해 적재하는 메소드
      * @param param
-     * @return
+     * @param musicId
+     * @return LinkedHashMap
      * @throws Exception
      */
-    public LinkedHashMap playAudio(HashMap param) throws Exception{
+    public LinkedHashMap playAudio(HashMap param, String musicId) throws Exception{
 
+        String mp3FileAddress = musicRepository.findMp3FileByMusicId(musicId);
         //파일을 파일객체에 넣는다/
-        File file = new File("C://sample4.mp3");
+        File file = new File(mp3FileAddress);
 
         //읽은 파일을 아래[fileToString] 메소드를 통해 String으로 변환한다.
         String base64 = fileToString(file);
@@ -40,7 +45,7 @@ public class Mp3Service {
     /**
      * 파일 읽는 메소드
      * @param file
-     * @return
+     * @return String
      * @throws IOException
      */
     @SuppressWarnings("resource")
@@ -74,7 +79,7 @@ public class Mp3Service {
 
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encoderResult = null;
-        //읽어들인 바이트배열을 통신을위한base64로 인코딩해서 바이트배열에 넣는다.
+        //읽어들인 바이트배열을 통신을 위한 base64로 인코딩해서 바이트배열에 넣는다.
         encoderResult = encoder.encode(fileArray);
 
         //해당 바이트 배열을 스트링으로 변환한다.

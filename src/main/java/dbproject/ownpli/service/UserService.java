@@ -26,6 +26,7 @@ public class UserService {
     public String join(UserEntity userEntity) {
         validateDuplicateUser(userEntity);
         userRepository.save(userEntity);
+        log.info("회원가입 완료");
         return userEntity.getUserId();
     }
 

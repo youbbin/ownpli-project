@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -25,6 +28,10 @@ public class MusicService {
      */
     public List<MusicEntity> findAllMusics() {
         return musicRepository.findAll();
+    }
+
+    public MusicEntity findByMusicId(String musicId) {
+        return musicRepository.findById(musicId).get();
     }
 
     /**
@@ -64,14 +71,43 @@ public class MusicService {
         return musicRepository.findByMusicId(musicIds);
     }
 
-//    /**
-//     * 음악 아이디로 mood 조회
-//     * @param id
-//     * @return
-//     */
-//    public List<MoodEntity> findMoodByMusicId(String id) {
-//        List<Long> moodIds = musicMoodRepository.findMoodsByMusicId(id);
-//        return moodRepository.findByIds(moodIds);
-//    }
+    /**
+     * 장르 아이디로 장르 이름 출력
+     * @param genreId
+     * @return String
+     */
+    public String findByGenreId(Long genreId) {
+        return genreRepository.findById(genreId).get().getGenreName();
+    }
+
+    /**
+     * musicId로 txt파일에서 가사 불러오기
+     * @param musicId
+     * @return Model
+     * @throws IOException
+     */
+    public String readLirics(String musicId) throws IOException {
+        //파일 읽기
+        BufferedReader br = new BufferedReader(new FileReader(musicRepository.findById(musicId).get().getLiricsFile()));
+        String line ="", result = "";
+
+        //한 줄 씩 읽은 내용 쓰기
+        while( (line=br.readLine()) != null ) {
+            result += line;
+            result += "\n";
+        }
+
+        return result;
+    }
+
+    /**
+     * 음악 아이디로 mood 조회
+     * @param musicId
+     * @return List[String]
+     */
+    public List<String> findMoodByMusicId(String musicId) {
+        List<Long> byMusicId = musicMoodRepository.findByMusicId(musicId);
+        return moodRepository.findByIds(byMusicId);
+    }
 
 }
