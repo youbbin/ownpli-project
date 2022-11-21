@@ -4,12 +4,15 @@ import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.service.Mp3Service;
 import dbproject.ownpli.service.MusicService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -51,7 +54,6 @@ public class MusicController {
         return new ResponseEntity<>(model, HttpStatus.OK);
     }
 
-
     /**
      * 단일 음악 정보 보내기
      * @param musicId
@@ -63,12 +65,16 @@ public class MusicController {
         MusicEntity byMusicId = musicService.findByMusicId(musicId);
         List<String> moodByMusicId = musicService.findMoodByMusicId(musicId);
 
+        String inputFile = byMusicId.getImageFile();
+        Path path = new File(inputFile).toPath();
+        FileSystemResource resource = new FileSystemResource(path);
+
         Model model = null;
         model.addAttribute("musicId", byMusicId.getMusicId());
         model.addAttribute("title", byMusicId.getTitle());
         model.addAttribute("genre", byMusicId.getGenreId().getGenreName());
         model.addAttribute("mood", moodByMusicId);
-        model.addAttribute("imageFile", byMusicId.getImageFile());
+        model.addAttribute("imageFile", resource);
         model.addAttribute("album", byMusicId.getAlbum());
         model.addAttribute("date", byMusicId.getDate());
         model.addAttribute("country", byMusicId.getCountry());
@@ -76,6 +82,7 @@ public class MusicController {
 
         return model;
     }
+
 
     /**
      * mp3파일을 보내기 위해 클라이언트와 통신
