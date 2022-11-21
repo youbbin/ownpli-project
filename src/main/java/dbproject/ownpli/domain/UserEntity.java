@@ -22,7 +22,7 @@ public class UserEntity {
     private String userId;      //email?
 
     @Column(nullable = false, length = 50)
-    private String passward;
+    private String password;
 
     @Column(nullable = false, length = 50)
     private String nickname;

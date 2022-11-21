@@ -41,6 +41,12 @@ public class UserService {
             throw new IllegalStateException("이미 존재하는 회원입니다.");
     }
 
+    public UserEntity login(String loginId, String password) {
+        return userRepository.findById(loginId)
+            .filter(m -> m.getPassword().equals(password))
+            .orElse(null);
+    }
+
     /**
      * 회원 전체 조회
      * @return

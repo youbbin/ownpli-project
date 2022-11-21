@@ -21,7 +21,7 @@ public class PlaylistController {
      * 회원의 모든 Playlist 조회
      * @param userId
      * @return
-     *
+     * @address
      * /playlist/getlist
      */
     @GetMapping("/getlist")
@@ -34,15 +34,26 @@ public class PlaylistController {
      * playlistId로 playlist에 포함된 음악 list 조회
      * @param playlistId
      * @return
-     *
+     * @address
      * /playlist/getlist/playlistId
-     *
-     *  @PathVariable 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
+     * @container
+     *  `@PathVariable` 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
      */
     @GetMapping("/getlist/{playlistId}")
     public ResponseEntity<MusicEntity[]> findMusicList(@PathVariable(name = "playlistId") String playlistId) {
         MusicEntity[] musicEntities = playlistService.findMusicsByPlaylistId(playlistId).toArray(new MusicEntity[0]);
         return new ResponseEntity<>(musicEntities, HttpStatus.OK);
+    }
+
+    @PostMapping()
+    public ResponseEntity<String> createPlaylist(@RequestParam String userId, String title, List<String> musicId) {
+        playlistService.savePlaylist(userId, title, musicId);
+
+
+        if(userId == null)
+            return new ResponseEntity<>("회원가입 실패", HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity("회원가입 성공", HttpStatus.OK);
     }
 
 }
