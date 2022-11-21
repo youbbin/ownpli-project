@@ -45,15 +45,33 @@ public class PlaylistController {
         return new ResponseEntity<>(musicEntities, HttpStatus.OK);
     }
 
-    @PostMapping()
-    public ResponseEntity<String> createPlaylist(@RequestParam String userId, String title, List<String> musicId) {
-        playlistService.savePlaylist(userId, title, musicId);
+    /**
+     * 플레이리스트 생성
+     * @param userId
+     * @param title
+     * @param musicId
+     * @return
+     */
+    @PostMapping("/create")
+    public ResponseEntity<String> createPlaylist(@RequestParam String userId, @RequestParam String title, @RequestParam List<String> musicId) {
+        String playlistId = playlistService.savePlaylist(userId, title, musicId);
 
+        if(playlistId == null)
+            return new ResponseEntity<>("생성 실패", HttpStatus.BAD_REQUEST);
 
-        if(userId == null)
-            return new ResponseEntity<>("회원가입 실패", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity("생성 성공", HttpStatus.OK);
+    }
 
-        return new ResponseEntity("회원가입 성공", HttpStatus.OK);
+    /**
+     * 플레이리스트 삭제
+     * @param playlistId
+     * @return
+     */
+    @PostMapping("/delete")
+    public ResponseEntity<String> deletePlaylist(@RequestParam String playlistId) {
+        playlistService.deletePlaylist(playlistId);
+
+        return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
     }
 
 }
