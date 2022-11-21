@@ -15,7 +15,8 @@ public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEnti
     /**
      * [select] 플레이리스트 아이디로 해당 컬럼 출력
      * @param playlistId
-     * @return
+     * @return List[PlaylistEntity]
+     * @CRUD read
      */
     @Query(value = "SELECT pm FROM PlaylistMusicEntity pm WHERE pm.playlistId = :playlistId", nativeQuery = true)
     List<PlaylistEntity> findByPlaylistId(@Param("playlistId") List<String> playlistId);
@@ -23,11 +24,18 @@ public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEnti
     /**
      * [select] 플레이리스트 아이디로 음악 id만 출력
      * @param playlistId
-     * @return
+     * @return List[String]
+     * @CRUD read
      */
     @Query(value = "SELECT pm.musicId FROM PlaylistMusicEntity pm WHERE pm.playlistId = :playlistId", nativeQuery = true)
     List<String> findMusicIdsByPlaylistId(String playlistId);
 
+    /**
+     * [select] 플레이리스트 아이디로 playlistMusicEntity 출력
+     * @param playlistId
+     * @return List[PlaylistMusicEntity]
+     * @CRUD read
+     */
     @Query(value = "SELECT pm FROM PlaylistMusicEntity pm join fetch pm.musicId WHERE :playlistId", nativeQuery = true)
     List<PlaylistMusicEntity> findAllByPlaylistId(String playlistId);
 

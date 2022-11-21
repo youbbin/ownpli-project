@@ -22,7 +22,7 @@ public class UserEntity {
     private String userId;      //email?
 
     @Column(nullable = false, length = 50)
-    private String passward;
+    private String password;
 
     @Column(nullable = false, length = 50)
     private String nickname;
@@ -33,8 +33,7 @@ public class UserEntity {
     @Column(nullable = false)
     private int sex;
 
-    public UserEntity update(String userId, String nickname) {
-        this.userId = userId;
+    public UserEntity update(String nickname) {
         this.nickname = nickname;
         return this;
     }

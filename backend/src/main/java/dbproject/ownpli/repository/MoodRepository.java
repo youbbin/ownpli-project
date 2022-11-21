@@ -11,6 +11,12 @@ import java.util.List;
 @Repository
 public interface MoodRepository extends JpaRepository<MoodEntity, Long> {
 
-    @Query(value = "SELECT m FROM MoodEntity m WHERE m.moodId in :moodId", nativeQuery = true)
-    List<MoodEntity> findByIds(@Param("moodId") List<Long> moodId);
+    /**
+     * [select] moodId 리스트로 moodName 리스트 출력
+     * @param moodId
+     * @return List[String]
+     * @CRUD read
+     */
+    @Query(value = "SELECT m.moodName FROM MoodEntity m WHERE m.moodId in :moodId", nativeQuery = true)
+    List<String> findByIds(@Param("moodId") List<Long> moodId);
 }

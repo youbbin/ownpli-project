@@ -21,11 +21,11 @@ public class PlaylistController {
      * 회원의 모든 Playlist 조회
      * @param userId
      * @return
-     *
+     * @address
      * /playlist/getlist
      */
     @GetMapping("/getlist")
-    public ResponseEntity<List<PlaylistEntity>> findAllPlaylists(String userId) {
+    public ResponseEntity<List<PlaylistEntity>> findAllPlaylists(@RequestBody String userId) {
         List<PlaylistEntity> playlistEntities = playlistService.findPlaylistByUserId(userId);
         return new ResponseEntity<>(playlistEntities, HttpStatus.OK);
     }
@@ -34,10 +34,10 @@ public class PlaylistController {
      * playlistId로 playlist에 포함된 음악 list 조회
      * @param playlistId
      * @return
-     *
+     * @address
      * /playlist/getlist/playlistId
-     *
-     *  @PathVariable 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
+     * @container
+     *  `@PathVariable` 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
      */
     @GetMapping("/getlist/{playlistId}")
     public ResponseEntity<MusicEntity[]> findMusicList(@PathVariable(name = "playlistId") String playlistId) {
@@ -45,11 +45,15 @@ public class PlaylistController {
         return new ResponseEntity<>(musicEntities, HttpStatus.OK);
     }
 
-//    @GetMapping("/response-body-json-v1")
-//    public ResponseEntity<HelloData> responseBodyJsonV1() {
-//        HelloData helloData = new HelloData();
-//        helloData.setUsername("userA");
-//        helloData.setAge(20);
-//
-//        return new ResponseEntity<>(helloData, HttpStatus.OK);
+    @PostMapping()
+    public ResponseEntity<String> createPlaylist(@RequestParam String userId, String title, List<String> musicId) {
+        playlistService.savePlaylist(userId, title, musicId);
+
+
+        if(userId == null)
+            return new ResponseEntity<>("회원가입 실패", HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity("회원가입 성공", HttpStatus.OK);
+    }
+
 }

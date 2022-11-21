@@ -3,12 +3,14 @@ package dbproject.ownpli.service;
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -24,6 +26,7 @@ public class UserService {
     public String join(UserEntity userEntity) {
         validateDuplicateUser(userEntity);
         userRepository.save(userEntity);
+        log.info("회원가입 완료");
         return userEntity.getUserId();
     }
 
@@ -36,6 +39,12 @@ public class UserService {
         UserEntity user2 = findUser.get();
         if(!user2.equals(null))
             throw new IllegalStateException("이미 존재하는 회원입니다.");
+    }
+
+    public UserEntity login(String loginId, String password) {
+        return userRepository.findById(loginId)
+            .filter(m -> m.getPassword().equals(password))
+            .orElse(null);
     }
 
     /**

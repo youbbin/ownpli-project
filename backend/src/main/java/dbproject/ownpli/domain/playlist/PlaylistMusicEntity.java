@@ -2,9 +2,10 @@ package dbproject.ownpli.domain.playlist;
 
 import dbproject.ownpli.domain.music.MusicEntity;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -14,7 +15,9 @@ import java.sql.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistMusicEntity {
 
+    // pm0000 형식?
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long playlistMusicId;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -24,7 +27,8 @@ public class PlaylistMusicEntity {
     @JoinColumn(name = "MUSIC_ID")
     private MusicEntity musicId;
 
+    @CreatedDate
     @Column(nullable = false)
-    private Date date;
+    private LocalDate date;
 
 }
