@@ -16,6 +16,6 @@ public class GenreEntity {
     @Column(nullable = false)
     private Long genreId;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 20)
     private String genreName;
 }

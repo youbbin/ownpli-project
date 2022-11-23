@@ -13,6 +13,7 @@ import javax.persistence.*;
 public class MusicMoodEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long musicMoodId;
 
     @OneToOne(fetch = FetchType.LAZY)

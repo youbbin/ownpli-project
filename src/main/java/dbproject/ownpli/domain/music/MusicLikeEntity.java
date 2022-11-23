@@ -15,6 +15,7 @@ import java.util.List;
 public class MusicLikeEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long musicLikeId;
 
     /**
@@ -23,7 +24,7 @@ public class MusicLikeEntity {
     @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY)
     private List<UserEntity> userId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private MusicEntity musicId;
 
     //쓸데 불러오게 ~lazy?

@@ -15,7 +15,6 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistMusicEntity {
 
-    // pm0000 형식?
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long playlistMusicId;
