@@ -24,7 +24,7 @@ public class UserEntity {
     @Column(nullable = false, length = 50)
     private String password;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 20)
     private String nickname;
 
     @Column(nullable = false)
@@ -32,10 +32,5 @@ public class UserEntity {
 
     @Column(nullable = false)
     private int sex;
-
-    public UserEntity update(String nickname) {
-        this.nickname = nickname;
-        return this;
-    }
 
 }

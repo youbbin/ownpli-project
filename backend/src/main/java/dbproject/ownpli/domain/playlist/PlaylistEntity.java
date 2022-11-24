@@ -1,10 +1,15 @@
 package dbproject.ownpli.domain.playlist;
 
-import dbproject.ownpli.domain.UserEntity;
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+/**
+ * 조인으로 연동하기
+ */
 @Data
 @Builder
 @AllArgsConstructor
@@ -24,12 +29,5 @@ public class PlaylistEntity {
     @Column(nullable = false, length = 50)
     private String playlistTitle;
 
-    /**
-     * OneToOne
-     * optional
-     * true = left outer join (default)
-     * false = inner join
-     */
-    @OneToOne(fetch = FetchType.LAZY)
-    private UserEntity userId;
+    private String userId;
 }

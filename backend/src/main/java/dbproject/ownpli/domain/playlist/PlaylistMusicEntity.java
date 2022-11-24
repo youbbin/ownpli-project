@@ -1,31 +1,29 @@
 package dbproject.ownpli.domain.playlist;
 
-import dbproject.ownpli.domain.music.MusicEntity;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
+/**
+ * 조인으로 연동하기
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(name = "PLAYLIST_MUSIC")
+@Table(name = "PLAYLISTMUSIC")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistMusicEntity {
 
-    // pm0000 형식?
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long playlistMusicId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private PlaylistEntity playlistId;
+    private String playlistId;
 
-    @ManyToOne(targetEntity = MusicEntity.class, fetch = FetchType.LAZY)        //다대일 단방향 매핑
-    @JoinColumn(name = "MUSIC_ID")
-    private MusicEntity musicId;
+    private String musicId;
 
     @CreatedDate
     @Column(nullable = false)

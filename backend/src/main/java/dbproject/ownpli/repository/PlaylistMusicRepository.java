@@ -13,12 +13,12 @@ import java.util.List;
 public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEntity, String> {
 
     /**
-     * [select] 플레이리스트 아이디로 해당 컬럼 출력
+     * [select] 플레이리스트 아이디들로 해당 컬럼 출력
      * @param playlistId
      * @return List[PlaylistEntity]
      * @CRUD read
      */
-    @Query(value = "SELECT pm FROM PlaylistMusicEntity pm WHERE pm.playlistId = :playlistId", nativeQuery = true)
+    @Query(value = "SELECT pm FROM PlaylistMusicEntity pm WHERE pm.playlistId in :playlistId", nativeQuery = true)
     List<PlaylistEntity> findByPlaylistId(@Param("playlistId") List<String> playlistId);
 
     /**

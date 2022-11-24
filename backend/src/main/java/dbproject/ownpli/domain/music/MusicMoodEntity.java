@@ -4,6 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 
+/**
+ * 조인으로 연동하기
+ */
 @Data
 @Builder
 @AllArgsConstructor
@@ -13,13 +16,11 @@ import javax.persistence.*;
 public class MusicMoodEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long musicMoodId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private MusicEntity musicId;
+    private String musicId;
 
-    @ManyToOne(fetch = FetchType.LAZY)      //다대일 단방향 매핑
-    @JoinColumn(name="moodId")
-    private MoodEntity moodNum;
+    private String moodNum;
 
 }

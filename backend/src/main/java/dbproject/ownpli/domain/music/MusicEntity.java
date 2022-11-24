@@ -5,10 +5,13 @@ import lombok.*;
 import javax.persistence.*;
 import java.sql.Date;
 
+/**
+ * 조인으로 연동하기
+ */
 @Data
 @Builder
 @AllArgsConstructor
-@Entity(name = "MUSIC")
+@Entity
 @Table(name = "MUSIC")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MusicEntity {
@@ -18,33 +21,32 @@ public class MusicEntity {
     private String musicId;
 
     //제목
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 200)
     private String title;
 
     //가수
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 200)
     private String singer;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private GenreEntity genreId;
+    //앨범명
+    @Column(length = 200)
+    private String album;
+
+    private Long genreId;
 
     //이미지파일경로
     @Column(nullable = false, length = 50)
     private String imageFile;
 
-    //앨범명
-    @Column(nullable = false, length = 50)
-    private String album;
-
-    @Column(nullable = false)
+    @Column
     private Date date;
 
     //나라
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String country;
 
     //가사 파일 경로
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String liricsFile;
 
     //mp3 파일 경로

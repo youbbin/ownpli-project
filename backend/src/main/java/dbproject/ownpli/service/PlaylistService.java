@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -55,7 +53,7 @@ public class PlaylistService {
      * @param title
      * @param musicIds
      */
-    public void savePlaylist(String userId, String title, List<String> musicIds) {
+    public String savePlaylist(String userId, String title, List<String> musicIds) {
         String id = playlistRepository.findTop1ByUserIdOrderByPlaylistIdDesc(userId).getPlaylistId();
         StringTokenizer st = new StringTokenizer("p", id);
         Long idLong = Long.parseLong(st.nextToken());
@@ -65,30 +63,35 @@ public class PlaylistService {
         id = "p" + idLong;
 
         playlistRepository.save(
-            PlaylistEntity.builder().playlistId(id)
-                .playlistTitle("title")
-                .userId(userRepository.findById(userId).get())
+            PlaylistEntity.builder()
+                .playlistId(id)
+                .playlistTitle(title)
+                .userId(userRepository.findById(userId).get().getUserId())
                 .build()
         );
 
         for(int i = 0; i < musicIds.size(); i++) {
             playlistMusicRepository.save(
                 PlaylistMusicEntity.builder()
-                    .playlistId(playlistRepository.findById(id).get())
-                    .musicId(musicRepository.findById(musicIds.get(i)).get())
+                    .playlistId(playlistRepository.findById(id).get().getPlaylistId())
+                    .musicId(musicRepository.findById(musicIds.get(i)).get().getMusicId())
                     .build());
         }
 
         log.info("플레이리스트 저장");
+        return id;
     }
 
-    private String toYYYY_MM_DD(Date date) {
-        if(date!=null) {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            return formatter.format(date);
-        }else{
-            return null;
-        }
+    /**
+     * 플레이리스트 삭제
+     * @param playlistId
+     */
+    public void deletePlaylist(String playlistId) {
+        playlistRepository.deleteById(playlistId);
+        List<PlaylistMusicEntity> allByPlaylistId = playlistMusicRepository.findAllByPlaylistId(playlistId);
+
+        for(int i = 0; i < allByPlaylistId.size(); i++)
+            playlistMusicRepository.delete(allByPlaylistId.get(i));
     }
 
 }
