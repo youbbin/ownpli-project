@@ -64,6 +64,7 @@ public class MusicController {
     public Model getMusics(@RequestBody String musicId) throws IOException {
         MusicEntity byMusicId = musicService.findByMusicId(musicId);
         List<String> moodByMusicId = musicService.findMoodByMusicId(musicId);
+        String byGenreId = musicService.findByGenreId(byMusicId.getGenreId());
 
         String inputFile = byMusicId.getImageFile();
         Path path = new File(inputFile).toPath();
@@ -72,7 +73,7 @@ public class MusicController {
         Model model = null;
         model.addAttribute("musicId", byMusicId.getMusicId());
         model.addAttribute("title", byMusicId.getTitle());
-        model.addAttribute("genre", byMusicId.getGenreId().getGenreName());
+        model.addAttribute("genre", byGenreId);
         model.addAttribute("mood", moodByMusicId);
         model.addAttribute("imageFile", resource);
         model.addAttribute("album", byMusicId.getAlbum());

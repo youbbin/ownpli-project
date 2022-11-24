@@ -66,15 +66,15 @@ public class PlaylistService {
             PlaylistEntity.builder()
                 .playlistId(id)
                 .playlistTitle(title)
-                .userId(userRepository.findById(userId).get())
+                .userId(userRepository.findById(userId).get().getUserId())
                 .build()
         );
 
         for(int i = 0; i < musicIds.size(); i++) {
             playlistMusicRepository.save(
                 PlaylistMusicEntity.builder()
-                    .playlistId(playlistRepository.findById(id).get())
-                    .musicId(musicRepository.findById(musicIds.get(i)).get())
+                    .playlistId(playlistRepository.findById(id).get().getPlaylistId())
+                    .musicId(musicRepository.findById(musicIds.get(i)).get().getMusicId())
                     .build());
         }
 

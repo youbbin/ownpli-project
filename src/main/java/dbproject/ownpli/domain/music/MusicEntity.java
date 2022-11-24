@@ -5,6 +5,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.sql.Date;
 
+/**
+ * 조인으로 연동하기
+ */
 @Data
 @Builder
 @AllArgsConstructor
@@ -29,8 +32,7 @@ public class MusicEntity {
     @Column(length = 200)
     private String album;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private GenreEntity genreId;
+    private Long genreId;
 
     //이미지파일경로
     @Column(nullable = false, length = 50)
