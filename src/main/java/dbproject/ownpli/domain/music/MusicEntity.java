@@ -8,7 +8,7 @@ import java.sql.Date;
 @Data
 @Builder
 @AllArgsConstructor
-@Entity(name = "MUSIC")
+@Entity
 @Table(name = "MUSIC")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MusicEntity {

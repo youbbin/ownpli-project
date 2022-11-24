@@ -20,7 +20,7 @@ public class MusicMoodEntity {
     private MusicEntity musicId;
 
     @ManyToOne(fetch = FetchType.LAZY)      //다대일 단방향 매핑
-    @JoinColumn(name="moodId")
+    @JoinColumn(name="moodId", referencedColumnName = "moodId", unique = true)
     private MoodEntity moodNum;
 
 }

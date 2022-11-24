@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(name = "PLAYLIST_MUSIC")
+@Table(name = "PLAYLISTMUSIC")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistMusicEntity {
 
@@ -23,7 +23,7 @@ public class PlaylistMusicEntity {
     private PlaylistEntity playlistId;
 
     @ManyToOne(targetEntity = MusicEntity.class, fetch = FetchType.LAZY)        //다대일 단방향 매핑
-    @JoinColumn(name = "MUSIC_ID")
+    @JoinColumn(name = "MUSIC_ID", referencedColumnName = "musicId", unique = true)
     private MusicEntity musicId;
 
     @CreatedDate

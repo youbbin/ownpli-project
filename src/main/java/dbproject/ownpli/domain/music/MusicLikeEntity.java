@@ -24,8 +24,8 @@ public class MusicLikeEntity {
     @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY)
     private List<UserEntity> userId;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private MusicEntity musicId;
+    @OneToMany(mappedBy = "musicId", fetch = FetchType.LAZY)
+    private List<MusicEntity> musicId;
 
     //쓸데 불러오게 ~lazy?
 }
