@@ -3,12 +3,16 @@ package dbproject.ownpli.service;
 import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
@@ -69,6 +73,44 @@ public class MusicService {
     public List<MusicEntity> findMusicListByUserId(String userId) {
         List<String> musicIds = musicLikeRepository.findByUserId(userId);
         return musicRepository.findByMusicId(musicIds);
+    }
+
+    /**
+     * 단일 음악 정보 보내기
+     * @param musicId
+     * @return Model
+     * @throws IOException
+     */
+    public Model findMusicInfo(String musicId) {
+        MusicEntity byMusicId = findByMusicId(musicId);
+        List<String> moodByMusicId = findMoodByMusicId(musicId);
+        String byGenreId = findByGenreId(byMusicId.getGenreId());
+
+        String inputFile = byMusicId.getImageFile();
+        Path path = new File(inputFile).toPath();
+        FileSystemResource resource = new FileSystemResource(path);
+
+        Model model = null;
+        model.addAttribute("musicId", byMusicId.getMusicId());
+        model.addAttribute("title", byMusicId.getTitle());
+        model.addAttribute("genre", byGenreId);
+        model.addAttribute("mood", moodByMusicId);
+        model.addAttribute("imageFile", resource);
+        model.addAttribute("album", byMusicId.getAlbum());
+        model.addAttribute("date", byMusicId.getDate());
+        model.addAttribute("country", byMusicId.getCountry());
+
+        return model;
+    }
+
+    public List<Model> findMusicInfosByPlaylist(List<String> musicIds) {
+        List<Model> models = null;
+
+        for(int i = 0; i < musicIds.size(); i++) {
+            models.add(findMusicInfo(musicIds.get(i)));
+        }
+
+        return models;
     }
 
     /**

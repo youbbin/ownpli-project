@@ -4,15 +4,12 @@ import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.service.Mp3Service;
 import dbproject.ownpli.service.MusicService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -60,30 +57,21 @@ public class MusicController {
      * @return
      * @throws Exception
      */
-    @GetMapping("/play")
-    public Model getMusics(@RequestBody String musicId) throws IOException {
-        MusicEntity byMusicId = musicService.findByMusicId(musicId);
-        List<String> moodByMusicId = musicService.findMoodByMusicId(musicId);
-        String byGenreId = musicService.findByGenreId(byMusicId.getGenreId());
+    @GetMapping("/{musicId}")
+    public ResponseEntity<Model> getMusics(@PathVariable("musicId") String musicId) {
+        Model musicInfo = musicService.findMusicInfo(musicId);
 
-        String inputFile = byMusicId.getImageFile();
-        Path path = new File(inputFile).toPath();
-        FileSystemResource resource = new FileSystemResource(path);
-
-        Model model = null;
-        model.addAttribute("musicId", byMusicId.getMusicId());
-        model.addAttribute("title", byMusicId.getTitle());
-        model.addAttribute("genre", byGenreId);
-        model.addAttribute("mood", moodByMusicId);
-        model.addAttribute("imageFile", resource);
-        model.addAttribute("album", byMusicId.getAlbum());
-        model.addAttribute("date", byMusicId.getDate());
-        model.addAttribute("country", byMusicId.getCountry());
-        model.addAttribute("lyrics", musicService.readLirics(musicId));
-
-        return model;
+        return new ResponseEntity<>(musicInfo, HttpStatus.OK);
     }
 
+    @GetMapping("/play/lyrics")
+    public ResponseEntity<Model> getLyrics(String musicId) throws IOException {
+        String s = musicService.readLirics(musicId);
+        Model model = null;
+        model.addAttribute("lylics", s);
+
+        return new ResponseEntity<>(model, HttpStatus.OK);
+    }
 
     /**
      * mp3파일을 보내기 위해 클라이언트와 통신
