@@ -69,12 +69,12 @@ public class UserService {
 
     /**
      * 회원 닉네임 수정
-     * @param nickname
+     * @param name
      * @param userId
      * @return
      */
-    public void updateNicknameByUserId(String nickname, String userId) {
-        int i = userRepository.updateUserNickname(nickname, userId);
+    public void updateNicknameByUserId(String name, String userId) {
+        int i = userRepository.updateUserName(name, userId);
     }
 
 

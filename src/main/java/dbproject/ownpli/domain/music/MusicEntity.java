@@ -12,12 +12,12 @@ import java.sql.Date;
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(name = "MUSIC")
+@Table(name = "music")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MusicEntity {
 
     @Id
-    @Column(nullable = false, length = 50)
+    @Column(name = "music id", nullable = false, length = 50)
     private String musicId;
 
     //제목
@@ -32,10 +32,11 @@ public class MusicEntity {
     @Column(length = 200)
     private String album;
 
-    private Long genreId;
+    @Column(name = "genre num")
+    private Long genreNum;
 
     //이미지파일경로
-    @Column(nullable = false, length = 50)
+    @Column(name = "image file", nullable = false, length = 50)
     private String imageFile;
 
     @Column
@@ -46,11 +47,11 @@ public class MusicEntity {
     private String country;
 
     //가사 파일 경로
-    @Column(length = 50)
-    private String liricsFile;
+    @Column(name = "lyrics file", length = 50)
+    private String lyricsFile;
 
     //mp3 파일 경로
-    @Column(nullable = false, length = 50)
+    @Column(name = "mp3 file", nullable = false, length = 50)
     private String mp3File;
 
 

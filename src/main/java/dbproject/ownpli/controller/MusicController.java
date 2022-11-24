@@ -1,9 +1,12 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.domain.music.MusicEntity;
+import dbproject.ownpli.dto.MusicDTO;
 import dbproject.ownpli.service.Mp3Service;
 import dbproject.ownpli.service.MusicService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -13,6 +16,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/musics")
@@ -23,12 +27,11 @@ public class MusicController {
 
     /**
      * 모든 음악 리스트 보내기
-     * @param userId
-     * @return
+     * @return ResponseEntity [List [Model]]
      */
-    @GetMapping("/getAllList")
-    public ResponseEntity<List<MusicEntity>> getAllPlaylists(@RequestBody String userId) {
-        List<MusicEntity> musicEntities = musicService.findAllMusics();
+    @GetMapping("/getall")
+    public ResponseEntity<List<MusicDTO>> getAllPlaylists() {
+        List<MusicDTO> musicEntities = musicService.findAllMusics();
         return new ResponseEntity<>(musicEntities, HttpStatus.OK);
     }
 
@@ -58,8 +61,8 @@ public class MusicController {
      * @throws Exception
      */
     @GetMapping("/{musicId}")
-    public ResponseEntity<Model> getMusics(@PathVariable("musicId") String musicId) {
-        Model musicInfo = musicService.findMusicInfo(musicId);
+    public ResponseEntity<MusicDTO> getMusics(@PathVariable("musicId") String musicId) throws JSONException {
+        MusicDTO musicInfo = musicService.findMusicInfo(musicId);
 
         return new ResponseEntity<>(musicInfo, HttpStatus.OK);
     }

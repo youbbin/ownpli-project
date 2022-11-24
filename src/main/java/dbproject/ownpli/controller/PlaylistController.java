@@ -1,12 +1,12 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.domain.playlist.PlaylistEntity;
+import dbproject.ownpli.dto.MusicDTO;
 import dbproject.ownpli.service.MusicService;
 import dbproject.ownpli.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,9 +42,9 @@ public class PlaylistController {
      *  `@PathVariable` 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
      */
     @GetMapping("/getlist/{playlistId}")
-    public ResponseEntity<List<Model>> findMusicList(@PathVariable(name = "playlistId") String playlistId) {
+    public ResponseEntity<List<MusicDTO>> findMusicList(@PathVariable(name = "playlistId") String playlistId) {
         List<String> musicsByPlaylistId = playlistService.findMusicsByPlaylistId(playlistId);
-        List<Model> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
+        List<MusicDTO> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
         return new ResponseEntity<>(musicInfosByPlaylist, HttpStatus.OK);
     }
 

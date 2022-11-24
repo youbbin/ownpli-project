@@ -1,20 +1,24 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.music.MusicEntity;
+import dbproject.ownpli.dto.MusicDTO;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -30,10 +34,21 @@ public class MusicService {
      * 모든 음악리스트 찾기
      * @return
      */
-    public List<MusicEntity> findAllMusics() {
-        return musicRepository.findAll();
+    public List<MusicDTO> findAllMusics() {
+        List<MusicEntity> all = musicRepository.findAll();
+        List<MusicDTO> models = new ArrayList<>();
+
+        for(int i = 0; i < all.size(); i++) {
+            models.add(findMusicInfo(all.get(i).getMusicId()));
+        }
+        return models;
     }
 
+    /**
+     * 음악 아이디로 음악 엔티티 찾기
+     * @param musicId
+     * @return
+     */
     public MusicEntity findByMusicId(String musicId) {
         return musicRepository.findById(musicId).get();
     }
@@ -81,36 +96,34 @@ public class MusicService {
      * @return Model
      * @throws IOException
      */
-    public Model findMusicInfo(String musicId) {
+    public MusicDTO findMusicInfo(String musicId) {
+        log.info("musicId = " + musicId);
         MusicEntity byMusicId = findByMusicId(musicId);
         List<String> moodByMusicId = findMoodByMusicId(musicId);
-        String byGenreId = findByGenreId(byMusicId.getGenreId());
+        String byGenreId = findByGenreId(byMusicId.getGenreNum());
+
+        Optional<Long> aLong = musicLikeRepository.countByMusicId(musicId);
+        Long likes = Long.valueOf(0);
+        if (!aLong.isEmpty()) likes = aLong.get();
 
         String inputFile = byMusicId.getImageFile();
         Path path = new File(inputFile).toPath();
         FileSystemResource resource = new FileSystemResource(path);
 
-        Model model = null;
-        model.addAttribute("musicId", byMusicId.getMusicId());
-        model.addAttribute("title", byMusicId.getTitle());
-        model.addAttribute("genre", byGenreId);
-        model.addAttribute("mood", moodByMusicId);
-        model.addAttribute("imageFile", resource);
-        model.addAttribute("album", byMusicId.getAlbum());
-        model.addAttribute("date", byMusicId.getDate());
-        model.addAttribute("country", byMusicId.getCountry());
+        log.info("byMusicId.getMusicId = " + byMusicId.getMusicId());
 
-        return model;
+        return MusicDTO.from(byMusicId, byGenreId, moodByMusicId, likes, resource);
     }
 
-    public List<Model> findMusicInfosByPlaylist(List<String> musicIds) {
-        List<Model> models = null;
+    public List<MusicDTO> findMusicInfosByPlaylist(List<String> musicIds) {
+        List<MusicDTO> arr = new ArrayList<>();
+
 
         for(int i = 0; i < musicIds.size(); i++) {
-            models.add(findMusicInfo(musicIds.get(i)));
+            arr.add(findMusicInfo(musicIds.get(i)));
         }
 
-        return models;
+        return arr;
     }
 
     /**
@@ -119,7 +132,7 @@ public class MusicService {
      * @return String
      */
     public String findByGenreId(Long genreId) {
-        return genreRepository.findById(genreId).get().getGenreName();
+        return genreRepository.findById(genreId).get().getGenre();
     }
 
     /**
@@ -130,7 +143,7 @@ public class MusicService {
      */
     public String readLirics(String musicId) throws IOException {
         //파일 읽기
-        BufferedReader br = new BufferedReader(new FileReader(musicRepository.findById(musicId).get().getLiricsFile()));
+        BufferedReader br = new BufferedReader(new FileReader(musicRepository.findById(musicId).get().getLyricsFile()));
         String line ="", result = "";
 
         //한 줄 씩 읽은 내용 쓰기
