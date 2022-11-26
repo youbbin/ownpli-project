@@ -2,6 +2,7 @@ package dbproject.ownpli.controller;
 
 import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.dto.MusicDTO;
+import dbproject.ownpli.dto.SearchDTO;
 import dbproject.ownpli.service.Mp3Service;
 import dbproject.ownpli.service.MusicService;
 import lombok.RequiredArgsConstructor;
@@ -68,16 +69,12 @@ public class MusicController {
      * /musics/{musicSearch}
      */
     @GetMapping("/{musicSearch}")
-    public ResponseEntity<Model> searchMusics(@PathVariable("musicSearch") String musicSearch) {
+    public ResponseEntity<SearchDTO> searchMusics(@PathVariable("musicSearch") String musicSearch) {
 
-        List<MusicEntity> searchTitle = musicService.findByTitleContain(musicSearch);
-        List<MusicEntity> searchSinger = musicService.findBySingerContain(musicSearch);
+        List<MusicDTO> searchTitle = musicService.musicEntitiesToMusicDTO(musicService.findByTitleContain(musicSearch));
+        List<MusicDTO> searchSinger = musicService.musicEntitiesToMusicDTO(musicService.findBySingerContain(musicSearch));
 
-        Model model = null;
-        model.addAttribute(searchTitle);
-        model.addAttribute(searchSinger);
-
-        return new ResponseEntity<>(model, HttpStatus.OK);
+        return new ResponseEntity<>(SearchDTO.from(searchTitle, searchSinger), HttpStatus.OK);
     }
 
     /**
@@ -101,12 +98,8 @@ public class MusicController {
      */
 
     @GetMapping("/play/lyrics")
-    public ResponseEntity<Model> getLyrics(String musicId) throws IOException {
-        String s = musicService.readLirics(musicId);
-        Model model = null;
-        model.addAttribute("lylics", s);
-
-        return new ResponseEntity<>(model, HttpStatus.OK);
+    public ResponseEntity<String> getLyrics(String musicId) throws IOException {
+        return new ResponseEntity<>(musicService.readLirics(musicId), HttpStatus.OK);
     }
 
     /**

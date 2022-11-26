@@ -5,10 +5,12 @@ import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,14 +19,14 @@ public class UserController {
 
     private final UserService userService;
 
-    /**
-     * 멤버조회
-     * @return ResponseEntity [List [UserEntity]]]
-     */
-    @GetMapping("user")
-    public ResponseEntity<List<UserEntity>> findAllMember() {
-        return new ResponseEntity<>(userService.findUsers(), HttpStatus.OK);
-    }
+//    /**
+//     * 멤버조회
+//     * @return ResponseEntity [List [UserEntity]]]
+//     */
+//    @GetMapping("user")
+//    public ResponseEntity<List<UserEntity>> findAllMember() {
+//        return new ResponseEntity<>(userService.findUsers(), HttpStatus.OK);
+//    }
 
     /**
      * 회원가입
@@ -49,7 +51,6 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResponseEntity<Cookie> login(@RequestParam String loginId, @RequestParam String password) {
-
         UserEntity loginUser = userService.login(loginId, password);
 
         //로그인 실패
