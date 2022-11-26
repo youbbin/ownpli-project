@@ -1,21 +1,23 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.domain.music.MusicEntity;
+import dbproject.ownpli.dto.MusicDTO;
+import dbproject.ownpli.dto.SearchDTO;
 import dbproject.ownpli.service.Mp3Service;
 import dbproject.ownpli.service.MusicService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.FileSystemResource;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/musics")
@@ -26,13 +28,37 @@ public class MusicController {
 
     /**
      * 모든 음악 리스트 보내기
-     * @param userId
+     * @return ResponseEntity [List [Model]]
+     */
+    @GetMapping("/getall")
+    public ResponseEntity<List<MusicDTO>> getAllPlaylists() {
+        List<MusicDTO> musicEntities = musicService.findAllMusics();
+        return new ResponseEntity<>(musicEntities, HttpStatus.OK);
+    }
+
+    /**
+     * 조건에 따라 음악 검색하기
+     * @param model
      * @return
      */
-    @GetMapping("/getAllList")
-    public ResponseEntity<List<MusicEntity>> getAllPlaylists(@RequestBody String userId) {
-        List<MusicEntity> musicEntities = musicService.findAllMusics();
-        return new ResponseEntity<>(musicEntities, HttpStatus.OK);
+    @GetMapping("/add")
+    public ResponseEntity<List<MusicDTO>> getMusicAboutCondition(Model model) {
+        List<String> genre = (List<String>) model.getAttribute("genre");
+        List<String> moods = (List<String>) model.getAttribute("mood");
+        List<MusicDTO> result;
+
+        if(genre.isEmpty() && moods.isEmpty()) {
+            result = musicService.findAllMusics();
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+
+        List<Long> byGenre = musicService.findGenresByGenre(genre);
+        List<MusicEntity> musics = musicService.findMusicsByGenreIds(byGenre);
+
+        List<Long> moodNumByMood = musicService.findMoodEntitiesByMood(moods);
+        result = musicService.findMusicsByMoodIds(moodNumByMood, musics);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**
@@ -43,15 +69,12 @@ public class MusicController {
      * /musics/{musicSearch}
      */
     @GetMapping("/{musicSearch}")
-    public ResponseEntity<Model> searchMusics(@PathVariable("musicSearch") String musicSearch) {
-        List<MusicEntity> searchTitle = musicService.findByTitleContain(musicSearch);
-        List<MusicEntity> searchSinger = musicService.findBySingerContain(musicSearch);
+    public ResponseEntity<SearchDTO> searchMusics(@PathVariable("musicSearch") String musicSearch) {
 
-        Model model = null;
-        model.addAttribute(searchTitle);
-        model.addAttribute(searchSinger);
+        List<MusicDTO> searchTitle = musicService.musicEntitiesToMusicDTO(musicService.findByTitleContain(musicSearch));
+        List<MusicDTO> searchSinger = musicService.musicEntitiesToMusicDTO(musicService.findBySingerContain(musicSearch));
 
-        return new ResponseEntity<>(model, HttpStatus.OK);
+        return new ResponseEntity<>(SearchDTO.from(searchTitle, searchSinger), HttpStatus.OK);
     }
 
     /**
@@ -60,30 +83,24 @@ public class MusicController {
      * @return
      * @throws Exception
      */
-    @GetMapping("/play")
-    public Model getMusics(@RequestBody String musicId) throws IOException {
-        MusicEntity byMusicId = musicService.findByMusicId(musicId);
-        List<String> moodByMusicId = musicService.findMoodByMusicId(musicId);
-        String byGenreId = musicService.findByGenreId(byMusicId.getGenreId());
+    @GetMapping("/{musicId}")
+    public ResponseEntity<MusicDTO> getMusics(@PathVariable("musicId") String musicId) throws JSONException {
+        MusicDTO musicInfo = musicService.findMusicInfo(musicId);
 
-        String inputFile = byMusicId.getImageFile();
-        Path path = new File(inputFile).toPath();
-        FileSystemResource resource = new FileSystemResource(path);
-
-        Model model = null;
-        model.addAttribute("musicId", byMusicId.getMusicId());
-        model.addAttribute("title", byMusicId.getTitle());
-        model.addAttribute("genre", byGenreId);
-        model.addAttribute("mood", moodByMusicId);
-        model.addAttribute("imageFile", resource);
-        model.addAttribute("album", byMusicId.getAlbum());
-        model.addAttribute("date", byMusicId.getDate());
-        model.addAttribute("country", byMusicId.getCountry());
-        model.addAttribute("lyrics", musicService.readLirics(musicId));
-
-        return model;
+        return new ResponseEntity<>(musicInfo, HttpStatus.OK);
     }
 
+    /**
+     * 가사 보내기
+     * @param musicId
+     * @return
+     * @throws IOException
+     */
+
+    @GetMapping("/play/lyrics")
+    public ResponseEntity<String> getLyrics(String musicId) throws IOException {
+        return new ResponseEntity<>(musicService.readLirics(musicId), HttpStatus.OK);
+    }
 
     /**
      * mp3파일을 보내기 위해 클라이언트와 통신

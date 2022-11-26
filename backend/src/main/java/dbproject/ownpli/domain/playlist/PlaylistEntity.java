@@ -13,8 +13,8 @@ import javax.persistence.Table;
 @Data
 @Builder
 @AllArgsConstructor
-@Entity
-@Table(name = "PLAYLIST")
+@Entity(name = "playlist")
+@Table(name = "playlist")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistEntity {
 
@@ -23,11 +23,12 @@ public class PlaylistEntity {
      * "pl" + xxxx 형식으로
      */
     @Id
-    @Column(nullable = false, length = 50)
+    @Column(name = "playlist id", nullable = false, length = 50)
     private String playlistId;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "playlist title", nullable = false, length = 50)
     private String playlistTitle;
 
+    @Column(name = "user id", nullable = false)
     private String userId;
 }

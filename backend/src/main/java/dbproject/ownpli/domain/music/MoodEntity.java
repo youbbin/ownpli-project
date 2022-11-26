@@ -5,17 +5,17 @@ import lombok.*;
 import javax.persistence.*;
 
 @Data
-@Entity
+@Entity(name = "mood")
 @Builder
-@Table(name = "MOOD")
+@Table(name = "mood")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MoodEntity {
 
     @Id
-    @Column(nullable = false)
-    private Long moodId;
+    @Column(name = "mood num", nullable = false)
+    private Long moodNum;
 
     @Column(nullable = false, length = 20)
-    private String moodName;
+    private String mood;
 }

@@ -12,17 +12,19 @@ import java.time.LocalDate;
 @Data
 @Builder
 @AllArgsConstructor
-@Entity
-@Table(name = "PLAYLISTMUSIC")
+@Entity(name = "playlist-music")
+@Table(name = "playlist-music")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistMusicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long playlistMusicId;
+    private Long key;
 
+    @Column(name = "playlist id")
     private String playlistId;
 
+    @Column(name = "music id")
     private String musicId;
 
     @CreatedDate

@@ -1,6 +1,5 @@
 package dbproject.ownpli.service;
 
-import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.playlist.PlaylistEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import dbproject.ownpli.repository.MusicRepository;
@@ -40,11 +39,11 @@ public class PlaylistService {
      * @param playlistId
      * @return
      */
-    public List<MusicEntity> findMusicsByPlaylistId(String playlistId) {
+    public List<String> findMusicsByPlaylistId(String playlistId) {
         List<String> musicIds = playlistMusicRepository.findMusicIdsByPlaylistId(playlistId);
-        List<MusicEntity> musics = musicRepository.findByMusicId(musicIds);
+        //List<MusicEntity> musics = musicRepository.findByMusicId(musicIds);
 
-        return musics;
+        return musicIds;
     }
 
     /**

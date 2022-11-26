@@ -9,19 +9,21 @@ import javax.persistence.*;
  */
 
 @Data
-@Entity
+@Entity(name = "music_like")
 @Builder
-@Table(name = "MUSICLIKE")
+@Table(name = "music-like")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MusicLikeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long musicLikeId;
+    private Long key;
 
+    @Column(name = "user id")
     private String userId;
 
+    @Column(name = "music id")
     private String musicId;
 
 }

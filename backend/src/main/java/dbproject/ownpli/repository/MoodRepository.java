@@ -13,10 +13,13 @@ public interface MoodRepository extends JpaRepository<MoodEntity, Long> {
 
     /**
      * [select] moodId 리스트로 moodName 리스트 출력
-     * @param moodId
+     * @param moodNum
      * @return List[String]
      * @CRUD read
      */
-    @Query(value = "SELECT m.moodName FROM MoodEntity m WHERE m.moodId in :moodId", nativeQuery = true)
-    List<String> findByIds(@Param("moodId") List<Long> moodId);
+    @Query(value = "SELECT m.mood FROM mood m WHERE m.moodNum in :moodNum")
+    List<String> findByIds(@Param("moodNum") List<Long> moodNum);
+
+    @Query("SELECT m.moodNum from mood m WHERE m.mood in :mood")
+    List<Long> findMoodEntitiesByMood(List<String> mood);
 }

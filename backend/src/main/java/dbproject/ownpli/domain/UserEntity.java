@@ -12,20 +12,20 @@ import javax.persistence.Table;
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(name = "USER")
+@Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate //update 할때 실제 값이 변경됨 컬럼으로만 update 쿼리를 만듦
 public class UserEntity {
 
     @Id
-    @Column(name = "USER_ID", nullable = false, length = 50)
+    @Column(name = "user id", nullable = false, length = 50)
     private String userId;      //email?
 
     @Column(nullable = false, length = 50)
     private String password;
 
     @Column(nullable = false, length = 20)
-    private String nickname;
+    private String name;
 
     @Column(nullable = false)
     private int age;

@@ -5,17 +5,17 @@ import lombok.*;
 import javax.persistence.*;
 
 @Data
-@Entity
+@Entity(name = "genre")
 @Builder
-@Table(name = "GENRE")
+@Table(name = "genre")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GenreEntity {
 
     @Id
-    @Column(nullable = false)
-    private Long genreId;
+    @Column(name = "genre num", nullable = false)
+    private Long genreNum;
 
     @Column(length = 20)
-    private String genreName;
+    private String genre;
 }

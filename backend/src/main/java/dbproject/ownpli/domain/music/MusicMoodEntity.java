@@ -10,17 +10,19 @@ import javax.persistence.*;
 @Data
 @Builder
 @AllArgsConstructor
-@Entity
-@Table(name = "MUSICMOOD")
+@Entity(name = "music_mood")
+@Table(name = "music-mood")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MusicMoodEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long musicMoodId;
+    private Long key;
 
+    @Column(name = "music id")
     private String musicId;
 
-    private String moodNum;
+    @Column(name = "mood num")
+    private Long moodNum;
 
 }
