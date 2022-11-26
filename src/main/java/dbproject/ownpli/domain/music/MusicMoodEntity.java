@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Data
 @Builder
 @AllArgsConstructor
-@Entity(name = "music-mood")
+@Entity(name = "music_mood")
 @Table(name = "music-mood")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MusicMoodEntity {
@@ -23,6 +23,6 @@ public class MusicMoodEntity {
     private String musicId;
 
     @Column(name = "mood num")
-    private String moodNum;
+    private Long moodNum;
 
 }

@@ -74,4 +74,11 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
     @Query(value = "SELECT m.genre FROM MusicEntity m WHERE m.musicId = :musicId", nativeQuery = true)
     Long findGenreByMusicId(@Param("musicId") String musicId);
 
+    /**
+     * genreNum으로 musicEntity들 찾기
+     * @param genreNum
+     * @return
+     */
+    List<MusicEntity> findMusicEntitiesByGenreNum(List<Long> genreNum);
+
 }

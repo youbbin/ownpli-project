@@ -19,4 +19,7 @@ public interface MoodRepository extends JpaRepository<MoodEntity, Long> {
      */
     @Query(value = "SELECT m.mood FROM mood m WHERE m.moodNum in :moodNum")
     List<String> findByIds(@Param("moodNum") List<Long> moodNum);
+
+    @Query("SELECT m.moodNum from mood m WHERE m.mood in :mood")
+    List<Long> findMoodEntitiesByMood(List<String> mood);
 }

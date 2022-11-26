@@ -36,6 +36,31 @@ public class MusicController {
     }
 
     /**
+     * 조건에 따라 음악 검색하기
+     * @param model
+     * @return
+     */
+    @GetMapping("/add")
+    public ResponseEntity<List<MusicDTO>> getMusicAboutCondition(Model model) {
+        List<String> genre = (List<String>) model.getAttribute("genre");
+        List<String> moods = (List<String>) model.getAttribute("mood");
+        List<MusicDTO> result;
+
+        if(genre.isEmpty() && moods.isEmpty()) {
+            result = musicService.findAllMusics();
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+
+        List<Long> byGenre = musicService.findGenresByGenre(genre);
+        List<MusicEntity> musics = musicService.findMusicsByGenreIds(byGenre);
+
+        List<Long> moodNumByMood = musicService.findMoodEntitiesByMood(moods);
+        result = musicService.findMusicsByMoodIds(moodNumByMood, musics);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
      * 제목과 가수 이름으로 음악을 검색하는 기능
      * @param musicSearch
      * @return
@@ -44,6 +69,7 @@ public class MusicController {
      */
     @GetMapping("/{musicSearch}")
     public ResponseEntity<Model> searchMusics(@PathVariable("musicSearch") String musicSearch) {
+
         List<MusicEntity> searchTitle = musicService.findByTitleContain(musicSearch);
         List<MusicEntity> searchSinger = musicService.findBySingerContain(musicSearch);
 
@@ -66,6 +92,13 @@ public class MusicController {
 
         return new ResponseEntity<>(musicInfo, HttpStatus.OK);
     }
+
+    /**
+     * 가사 보내기
+     * @param musicId
+     * @return
+     * @throws IOException
+     */
 
     @GetMapping("/play/lyrics")
     public ResponseEntity<Model> getLyrics(String musicId) throws IOException {

@@ -14,9 +14,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -31,7 +29,7 @@ public class MusicService {
     private final MoodRepository moodRepository;
 
     /**
-     * 모든 음악리스트 찾기
+     * 모든 음악리스트 찾기(DTO)
      * @return
      */
     public List<MusicDTO> findAllMusics() {
@@ -42,6 +40,30 @@ public class MusicService {
             models.add(findMusicInfo(all.get(i).getMusicId()));
         }
         return models;
+    }
+
+    /**
+     * MusicEntity 리스트를 MusicDTO로 변환
+     * @param musicEntities
+     * @return
+     */
+    public List<MusicDTO> musicEntitiesToMusicDTO(List<MusicEntity> musicEntities) {
+        List<MusicDTO> models = new ArrayList<>();
+
+        for(int i = 0; i < musicEntities.size(); i++) {
+            models.add(findMusicInfo(musicEntities.get(i).getMusicId()));
+        }
+        return models;
+    }
+
+    /**
+     * 모든 음악리스트 찾기(DTO)
+     * @return
+     */
+    public List<MusicEntity> findAll() {
+        List<MusicEntity> all = musicRepository.findAll();
+
+        return all;
     }
 
     /**
@@ -115,6 +137,11 @@ public class MusicService {
         return MusicDTO.from(byMusicId, byGenreId, moodByMusicId, likes, resource);
     }
 
+    /**
+     * 플레이리스트에서 뮤직 정보 가져오기
+     * @param musicIds
+     * @return
+     */
     public List<MusicDTO> findMusicInfosByPlaylist(List<String> musicIds) {
         List<MusicDTO> arr = new ArrayList<>();
 
@@ -136,6 +163,47 @@ public class MusicService {
     }
 
     /**
+     * 장르 아이디로 음악 리스트 출력
+     * @param genre
+     * @return
+     */
+    public List<MusicEntity> findMusicsByGenreIds(List<Long> genre) {
+        if(genre.isEmpty()) return null;
+        return musicRepository.findMusicEntitiesByGenreNum(genre);
+    }
+
+    /**
+     * 무드아이디 리스트와 음악 엔티티들을 이용해 최종 정보 출력
+     * @param moods
+     * @param musicEntities
+     * @return
+     */
+    public List<MusicDTO> findMusicsByMoodIds(List<Long> moods, List<MusicEntity> musicEntities) {
+        if(moods.isEmpty() && musicEntities.isEmpty())
+            return findAllMusics();
+        else if(moods.isEmpty() && !musicEntities.isEmpty())
+            return musicEntitiesToMusicDTO(musicEntities);
+        else if(musicEntities.isEmpty()) musicEntities = findAll();
+
+        List<String> byMoodNum = musicMoodRepository.findByMoodNum(moods);
+        Set<String> set = new HashSet<>(byMoodNum);     //중복제거
+        List<String> musicIds = new ArrayList<>();       //musicId를 담을 리스트
+        List<MusicDTO> musics = new ArrayList<>();      //음악 정보 리스트
+
+        for(int i = 0; i < byMoodNum.size(); i++)
+            if(Collections.frequency(byMoodNum, set.toArray()[i].toString()) == moods.size()) {
+                musicIds.add(set.toArray()[i].toString());
+            }
+
+        for(int i = 0; i < musicEntities.size(); i++)
+            for(int j = 0; j < musicIds.size(); j++)
+                if(musicEntities.get(i).getMusicId().equals(musicIds))
+                    musics.add(findMusicInfo(musicEntities.get(i).getMusicId()));
+
+        return musics;
+    }
+
+    /**
      * musicId로 txt파일에서 가사 불러오기
      * @param musicId
      * @return Model
@@ -153,6 +221,24 @@ public class MusicService {
         }
 
         return result;
+    }
+
+    /**
+     * 장르 이름 리스트로 장르 아이디 리스트 찾기
+     * @param genre
+     * @return
+     */
+    public List<Long> findGenresByGenre(List<String> genre) {
+        return genreRepository.findGenreNumsByGenre(genre);
+    }
+
+    /**
+     * mood 이름 리스트로 mood 아이디 리스트 찾기
+     * @param mood
+     * @return
+     */
+    public List<Long> findMoodEntitiesByMood(List<String> mood) {
+        return moodRepository.findMoodEntitiesByMood(mood);
     }
 
     /**
