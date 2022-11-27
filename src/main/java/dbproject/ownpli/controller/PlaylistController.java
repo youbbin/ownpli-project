@@ -1,7 +1,8 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.domain.playlist.PlaylistEntity;
 import dbproject.ownpli.dto.MusicDTO;
+import dbproject.ownpli.dto.PlaylistDTO;
+import dbproject.ownpli.dto.PlaylistMusicDTO;
 import dbproject.ownpli.service.MusicService;
 import dbproject.ownpli.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +28,9 @@ public class PlaylistController {
      * /playlist/getlist
      */
     @GetMapping("/getlist")
-    public ResponseEntity<List<PlaylistEntity>> findAllPlaylists(@RequestBody String userId) {
-        List<PlaylistEntity> playlistEntities = playlistService.findPlaylistByUserId(userId);
-        return new ResponseEntity<>(playlistEntities, HttpStatus.OK);
+    public ResponseEntity<List<PlaylistDTO>> findAllPlaylists(@RequestBody String userId) {
+        List<PlaylistDTO> playlistDTOList = playlistService.findPlaylistByUserId(userId);
+        return new ResponseEntity<>(playlistDTOList, HttpStatus.OK);
     }
 
     /**
@@ -42,10 +43,12 @@ public class PlaylistController {
      *  `@PathVariable` 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
      */
     @GetMapping("/getlist/{playlistId}")
-    public ResponseEntity<List<MusicDTO>> findMusicList(@PathVariable(name = "playlistId") String playlistId) {
+    public ResponseEntity<PlaylistMusicDTO> findMusicList(@PathVariable(name = "playlistId") String playlistId) {
         List<String> musicsByPlaylistId = playlistService.findMusicsByPlaylistId(playlistId);
         List<MusicDTO> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
-        return new ResponseEntity<>(musicInfosByPlaylist, HttpStatus.OK);
+        return new ResponseEntity<>(
+            PlaylistMusicDTO.from(playlistService.getPlaylistDTOByPlaylistId(playlistId), musicInfosByPlaylist),
+            HttpStatus.OK);
     }
 
     /**
