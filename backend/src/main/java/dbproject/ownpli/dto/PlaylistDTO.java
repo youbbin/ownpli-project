@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
@@ -15,15 +14,13 @@ public class PlaylistDTO {
     private String playlistId;
     private String title;
     private String userId;
-    private List<MusicDTO> musicDTOs;
-    private Date date;
+    private LocalDate date;
 
-    public static PlaylistDTO from(PlaylistEntity playlist, List<MusicDTO> musicDTOList, Date date) {
+    public static PlaylistDTO from(PlaylistEntity playlist, LocalDate date) {
         return new PlaylistDTO(
             playlist.getPlaylistId(),
             playlist.getPlaylistTitle(),
             playlist.getUserId(),
-            musicDTOList,
             date);
     }
 }

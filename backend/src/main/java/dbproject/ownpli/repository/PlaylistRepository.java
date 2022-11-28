@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String> {
 
@@ -15,14 +18,14 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
      * @CRUD read
      */
     @Query(value = "SELECT p FROM PlaylistEntity p WHERE p.userId = :id", nativeQuery = true)
-    PlaylistEntity findByUserId(String id);
+    List<PlaylistEntity> findByUserId(String id);
 
     /**
      * [select] 가장 마지막 행 가져오기
      * @param userId
      * @return PlaylistEntity
      */
-    PlaylistEntity findTop1ByUserIdOrderByPlaylistIdDesc(String userId);
+    Optional<PlaylistEntity> findTop1ByUserIdOrderByPlaylistIdDesc(String userId);
 
 //    오류!
 //    /**

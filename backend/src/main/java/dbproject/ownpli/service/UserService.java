@@ -24,7 +24,9 @@ public class UserService {
      * @return
      */
     public String join(UserEntity userEntity) {
-        validateDuplicateUser(userEntity);
+        boolean flag = validateDuplicateUser(userEntity);
+        if(!flag) return null;
+
         userRepository.save(userEntity);
         log.info("회원가입 완료");
         return userEntity.getUserId();
@@ -34,13 +36,19 @@ public class UserService {
      * 회원 아이디 중복검사
      * @param user
      */
-    private void validateDuplicateUser(UserEntity user) {
+    private boolean validateDuplicateUser(UserEntity user) {
         Optional<UserEntity> findUser = userRepository.findById(user.getUserId());
-        UserEntity user2 = findUser.get();
-        if(!user2.equals(null))
-            throw new IllegalStateException("이미 존재하는 회원입니다.");
+        if(!findUser.isEmpty())
+            return false;
+        return true;
     }
 
+    /**
+     * 로그인
+     * @param loginId
+     * @param password
+     * @return
+     */
     public UserEntity login(String loginId, String password) {
         return userRepository.findById(loginId)
             .filter(m -> m.getPassword().equals(password))

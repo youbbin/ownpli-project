@@ -1,56 +1,58 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.dto.UserDTO;
 import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedHashMap;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
 
-//    /**
-//     * 멤버조회
-//     * @return ResponseEntity [List [UserEntity]]]
-//     */
-//    @GetMapping("user")
-//    public ResponseEntity<List<UserEntity>> findAllMember() {
-//        return new ResponseEntity<>(userService.findUsers(), HttpStatus.OK);
-//    }
-
     /**
      * 회원가입
-     * @param userEntity
-     * @return ResponseEntity
+     * @param user
+     * @return
      */
     @PostMapping("/signup")
-    public ResponseEntity<String> signUpUser(@RequestParam UserEntity userEntity) {
-        String userId = userService.join(userEntity);
+    public ResponseEntity<String> signUpUser(@RequestBody UserEntity user) {
+        /**
+         * {
+         *     "userId": "test123@naver.com",
+         *     "password": "1234",
+         *     "name": "test_user",
+         *     "age": 25,
+         *     "sex": 1
+         * }
+         */
 
-        if(userId == null)
-            return new ResponseEntity<>("회원가입 실패", HttpStatus.BAD_REQUEST);
+        String getUserId = userService.join(user);
+
+        if(getUserId == null)
+            return new ResponseEntity<>("이미 존재하는 아이디입니다.", HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity("회원가입 성공", HttpStatus.OK);
     }
 
     /**
      * 로그인
-     * @param loginId
-     * @param password
+     * @param param
      * @return ResponseEntity [Coolie]
      */
     @PostMapping("/login")
-    public ResponseEntity<Cookie> login(@RequestParam String loginId, @RequestParam String password) {
+    public ResponseEntity<Cookie> login(@RequestBody LinkedHashMap<String, String> param) {
+        String loginId = param.get("userId");
+        String password = param.get("password");
+
         UserEntity loginUser = userService.login(loginId, password);
 
         //로그인 실패
@@ -66,7 +68,40 @@ public class UserController {
 
     }
 
+    /**
+     * 유저 정보 가져오기
+     * @param userId
+     * @return
+     */
+    @GetMapping("/home")
+    public ResponseEntity<UserDTO> homeLogin(@CookieValue(name = "userId") String userId) {
+        if (userId == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
+        UserEntity loginUser = userService.findByUserId(userId);
 
+        if (loginUser == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(UserDTO.from(loginUser), HttpStatus.OK);
+    }
+
+    /**
+     * 로그아웃
+     * @param response
+     * @return
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<HttpServletResponse> logout(HttpServletResponse response) {
+        expiredCookie(response, "userId");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private void expiredCookie(HttpServletResponse response, String cookieName) {
+        Cookie cookie = new Cookie(cookieName, null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
 
 }
