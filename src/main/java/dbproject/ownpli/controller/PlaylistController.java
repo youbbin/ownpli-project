@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class PlaylistController {
      * /playlist/getlist
      */
     @GetMapping("/getlist")
-    public ResponseEntity<List<PlaylistDTO>> findAllPlaylists(@RequestBody String userId) {
+    public ResponseEntity<List<PlaylistDTO>> findAllPlaylists(@CookieValue(name = "userId") String userId) {
         List<PlaylistDTO> playlistDTOList = playlistService.findPlaylistByUserId(userId);
         return new ResponseEntity<>(playlistDTOList, HttpStatus.OK);
     }
@@ -54,12 +55,14 @@ public class PlaylistController {
     /**
      * 플레이리스트 생성
      * @param userId
-     * @param title
-     * @param musicId
+     * @param param
      * @return
      */
     @PostMapping("/create")
-    public ResponseEntity<String> createPlaylist(@RequestParam String userId, @RequestParam String title, @RequestParam List<String> musicId) {
+    public ResponseEntity<String> createPlaylist(@CookieValue(name = "userId") String userId,
+                                                 @RequestBody LinkedHashMap param) {
+        String title = param.get("title").toString();
+        List musicId = (List) param.get("musicIds");
         String playlistId = playlistService.savePlaylist(userId, title, musicId);
 
         if(playlistId == null)

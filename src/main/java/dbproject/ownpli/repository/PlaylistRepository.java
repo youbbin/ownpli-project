@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String> {
@@ -24,7 +25,7 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
      * @param userId
      * @return PlaylistEntity
      */
-    PlaylistEntity findTop1ByUserIdOrderByPlaylistIdDesc(String userId);
+    Optional<PlaylistEntity> findTop1ByUserIdOrderByPlaylistIdDesc(String userId);
 
 //    오류!
 //    /**
