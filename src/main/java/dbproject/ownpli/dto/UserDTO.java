@@ -12,6 +12,6 @@ public class UserDTO {
     private int sex;
 
     public static UserDTO from(UserEntity userEntity) {
-        return new UserDTO(userEntity.getUserId(), userEntity.getName(), userEntity.getAge(), userEntity.getAge());
+        return new UserDTO(userEntity.getUserId(), userEntity.getName(), userEntity.getAge(), userEntity.getSex());
     }
 }
