@@ -27,7 +27,7 @@ public class UserController {
 
     /**
      * 회원가입
-     * @param model
+     * @param user
      * @return
      */
     @PostMapping("/signup")
