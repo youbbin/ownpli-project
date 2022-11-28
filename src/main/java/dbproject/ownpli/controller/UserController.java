@@ -5,10 +5,7 @@ import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 
@@ -30,25 +27,26 @@ public class UserController {
 
     /**
      * 회원가입
-     * @param userId
-     * @param password
-     * @param name
-     * @param age
-     * @param sex
+     * @param model
      * @return
      */
     @PostMapping("/signup")
-    public ResponseEntity<String> signUpUser(@RequestParam String userId,
-                                             @RequestParam String password,
-                                             @RequestParam String name,
-                                             @RequestParam int age,
-                                             @RequestParam int sex) {
+    public ResponseEntity<String> signUpUser(@RequestBody UserEntity user) {
+
+//        String userId = model.getAttribute("userId").toString();
+//        String password = model.getAttribute("password").toString();
+//        String name = model.getAttribute("name").toString();
+//        int age = Integer.parseInt(model.getAttribute("age").toString());
+//        int sex = Integer.parseInt(model.getAttribute("sex").toString());
 
 
-        String getUserId = userService.join(new UserEntity(userId, password, name, age, sex));
+//        String getUserId = userService.join(new UserEntity(userId, password, name, age, sex));
 
-        if(!userId.equals(getUserId))
-            return new ResponseEntity<>("회원가입 실패", HttpStatus.BAD_REQUEST);
+        String getUserId = userService.join(user);
+
+//        if(!userId.equals(getUserId))
+        if(getUserId == null)
+            return new ResponseEntity<>("이미 존재하는 아이디입니다.", HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity("회원가입 성공", HttpStatus.OK);
     }
