@@ -36,11 +36,16 @@ public class UserService {
      */
     private void validateDuplicateUser(UserEntity user) {
         Optional<UserEntity> findUser = userRepository.findById(user.getUserId());
-        UserEntity user2 = findUser.get();
-        if(!user2.equals(null))
+        if(!findUser.isEmpty())
             throw new IllegalStateException("이미 존재하는 회원입니다.");
     }
 
+    /**
+     * 로그인
+     * @param loginId
+     * @param password
+     * @return
+     */
     public UserEntity login(String loginId, String password) {
         return userRepository.findById(loginId)
             .filter(m -> m.getPassword().equals(password))

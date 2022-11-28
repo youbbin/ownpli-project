@@ -30,14 +30,24 @@ public class UserController {
 
     /**
      * 회원가입
-     * @param userEntity
-     * @return ResponseEntity
+     * @param userId
+     * @param password
+     * @param name
+     * @param age
+     * @param sex
+     * @return
      */
     @PostMapping("/signup")
-    public ResponseEntity<String> signUpUser(@RequestParam UserEntity userEntity) {
-        String userId = userService.join(userEntity);
+    public ResponseEntity<String> signUpUser(@RequestParam String userId,
+                                             @RequestParam String password,
+                                             @RequestParam String name,
+                                             @RequestParam int age,
+                                             @RequestParam int sex) {
 
-        if(userId == null)
+
+        String getUserId = userService.join(new UserEntity(userId, password, name, age, sex));
+
+        if(!userId.equals(getUserId))
             return new ResponseEntity<>("회원가입 실패", HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity("회원가입 성공", HttpStatus.OK);
@@ -65,6 +75,16 @@ public class UserController {
         return new ResponseEntity<>(idCookie, HttpStatus.OK);
 
     }
+
+    /**
+     * {
+     *     "userId": "test123@naver.com",
+     *     "password": "1234",
+     *     "name": "test_user",
+     *     "age": 25,
+     *     "sex": 1
+     * }
+     */
 
 
 
