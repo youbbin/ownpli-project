@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 @AllArgsConstructor
-@Entity(name = "playlist-music")
+@Entity(name = "playlist_music")
 @Table(name = "playlist-music")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistMusicEntity {

@@ -112,11 +112,11 @@ public class PlaylistService {
      * @param playlistId
      */
     public void deletePlaylist(String playlistId) {
-        playlistRepository.deleteById(playlistId);
         List<PlaylistMusicEntity> allByPlaylistId = playlistMusicRepository.findAllByPlaylistId(playlistId);
-
         for(int i = 0; i < allByPlaylistId.size(); i++)
             playlistMusicRepository.delete(allByPlaylistId.get(i));
+
+        playlistRepository.deleteById(playlistId);
     }
 
 }

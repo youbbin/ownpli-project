@@ -36,7 +36,7 @@ public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEnti
      * @return List[PlaylistMusicEntity]
      * @CRUD read
      */
-    @Query(value = "SELECT pm FROM PlaylistMusicEntity pm join fetch pm.musicId WHERE :playlistId", nativeQuery = true)
+    @Query(value = "SELECT pm FROM playlist_music pm WHERE pm.playlistId = :playlistId")
     List<PlaylistMusicEntity> findAllByPlaylistId(String playlistId);
 
 //    /**

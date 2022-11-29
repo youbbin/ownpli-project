@@ -73,11 +73,12 @@ public class PlaylistController {
 
     /**
      * 플레이리스트 삭제
-     * @param playlistId
+     * @param param
      * @return
      */
     @PostMapping("/delete")
-    public ResponseEntity<String> deletePlaylist(@RequestParam String playlistId) {
+    public ResponseEntity<String> deletePlaylist(@RequestBody LinkedHashMap param) {
+        String playlistId = param.get("playlistId").toString();
         playlistService.deletePlaylist(playlistId);
 
         return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
