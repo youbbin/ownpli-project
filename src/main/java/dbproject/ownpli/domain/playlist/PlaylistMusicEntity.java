@@ -4,7 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.sql.Date;
 
 /**
  * 조인으로 연동하기
@@ -29,6 +29,6 @@ public class PlaylistMusicEntity {
 
     @CreatedDate
     @Column(nullable = false)
-    private LocalDate date;
+    private Date date;
 
 }

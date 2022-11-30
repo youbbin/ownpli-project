@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,10 +76,11 @@ public class PlaylistService {
         Optional<PlaylistEntity> idOptional = playlistRepository.findTop1ByUserIdOrderByPlaylistIdDesc(userId);
         String id = "";
         if(idOptional.isEmpty())
-            id = "p0001";
+            id = "p1";
         else {
             id = idOptional.get().getPlaylistId();
-            StringTokenizer st = new StringTokenizer("p", id);
+            log.info("id={}", id);
+            StringTokenizer st = new StringTokenizer(id, "p");
             Long idLong = Long.parseLong(st.nextToken());
 
             idLong++;
@@ -99,7 +101,7 @@ public class PlaylistService {
                 PlaylistMusicEntity.builder()
                     .playlistId(playlistRepository.findById(id).get().getPlaylistId())
                     .musicId(musicRepository.findById(musicIds.get(i)).get().getMusicId())
-                    .date(LocalDate.now())
+                    .date(Date.valueOf(LocalDate.now()))
                     .build());
         }
 
