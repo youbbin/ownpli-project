@@ -88,6 +88,29 @@ public class UserController {
     }
 
     /**
+     * 유저 닉네임 변경
+     * @param userId
+     * @param param
+     * @return
+     */
+    @PostMapping("/update")
+    public ResponseEntity<UserDTO> changeName(@CookieValue(name = "userId") String userId,
+                                              @RequestBody LinkedHashMap param) {
+        if (userId == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        String name = param.get("name").toString();
+
+        UserDTO userDTO = userService.updateNicknameByUserId(name, userId);
+        if(userDTO == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+
+    }
+
+    /**
      * 로그아웃
      * @param response
      * @return

@@ -1,6 +1,7 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.dto.UserDTO;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,10 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public UserEntity findByUserId(String userId) {
-        return userRepository.findById(userId).get();
+        Optional<UserEntity> user = userRepository.findById(userId);
+        if(user.isEmpty()) return null;
+
+        return user.get();
     }
 
 
@@ -81,8 +85,13 @@ public class UserService {
      * @param userId
      * @return
      */
-    public void updateNicknameByUserId(String name, String userId) {
+    public UserDTO updateNicknameByUserId(String name, String userId) {
         int i = userRepository.updateUserName(name, userId);
+
+        UserEntity byUserId = findByUserId(userId);
+        if(byUserId == null) return null;
+
+        return UserDTO.from(byUserId);
     }
 
 

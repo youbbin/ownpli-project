@@ -21,13 +21,13 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     /**
      * [update] 닉네임 변경
      * @param name
-     * @param id
+     * @param userId
      * @return int
      * @CRUD update
      */
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE UserEntity u SET u.name = :name where u.userId = :id", nativeQuery = true)
-    int updateUserName(@Param("name") String name, @Param("id") String id);
+    @Query(value = "UPDATE UserEntity u SET u.name = :name where u.userId = :userId")
+    int updateUserName(@Param("name") String name, @Param("userId") String userId);
 
 
 }
