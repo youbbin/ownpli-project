@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.*;
 
 @Slf4j
@@ -27,6 +28,7 @@ public class MusicService {
     private final MusicLikeRepository musicLikeRepository;
     private final GenreRepository genreRepository;
     private final MoodRepository moodRepository;
+    private final QueryRepository queryRepository;
 
     /**
      * 모든 음악리스트 찾기(DTO)
@@ -121,7 +123,6 @@ public class MusicService {
     public MusicDTO findMusicInfo(String musicId) {
         log.info("musicId = " + musicId);
         MusicEntity byMusicId = findByMusicId(musicId);
-        List<String> moodByMusicId = findMoodByMusicId(musicId);
         String byGenreId = findByGenreId(byMusicId.getGenreNum());
 
         Optional<Long> aLong = musicLikeRepository.countByMusicId(musicId);
@@ -134,7 +135,33 @@ public class MusicService {
 
         log.info("byMusicId.getMusicId = " + byMusicId.getMusicId());
 
-        return MusicDTO.from(byMusicId, byGenreId, moodByMusicId, likes, resource);
+        return MusicDTO.from(byMusicId, byGenreId, likes, resource);
+    }
+
+    public List<MusicDTO> addMusics(LinkedHashMap param) throws ParseException {
+        List<Long> genre = genreRepository.findGenreNumsByGenre((List<String>) param.get("genre"));
+
+        List<MusicEntity> musicEntities = filteringMusics((List<String>) param.get("likes"), (List<String>) param.get("hates"),
+            genre, (List<String>) param.get("Langs"), (List<String>) param.get("year"));
+
+        List<Long> mood = findMoodEntitiesByMood((List<String>) param.get("mood"));
+
+        return findMusicsByMoodIds(mood, musicEntities);
+    }
+
+    /**
+     * 동적query QueryDSL 검색 필터링
+     * @param likes
+     * @param hates
+     * @param genre
+     * @param Langs
+     * @param year
+     * @return MusicEntity List
+     * @throws ParseException
+     */
+    private List<MusicEntity> filteringMusics(List<String> likes, List<String> hates,
+                                              List<Long> genre, List<String> Langs, List<String> year) throws ParseException {
+        return queryRepository.findDynamicQueryAdvance(likes, hates, genre, Langs, year);
     }
 
     /**
