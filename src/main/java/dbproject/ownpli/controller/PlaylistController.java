@@ -36,15 +36,16 @@ public class PlaylistController {
 
     /**
      * playlistId로 playlist에 포함된 음악 list 정보 조회
-     * @param playlistId
+     * @param param
      * @return
      * @address
      * /playlist/getlist/playlistId
      * @container
      *  `@PathVariable` 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
      */
-    @GetMapping("/getlist/{playlistId}")
-    public ResponseEntity<PlaylistMusicDTO> findMusicList(@PathVariable(name = "playlistId") String playlistId) {
+    @PostMapping("/getlist")
+    public ResponseEntity<PlaylistMusicDTO> findMusicList(@RequestBody LinkedHashMap param) {
+        String playlistId = param.get("playlistId").toString();
         List<String> musicsByPlaylistId = playlistService.findMusicsByPlaylistId(playlistId);
         List<MusicDTO> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
         return new ResponseEntity<>(
@@ -62,8 +63,9 @@ public class PlaylistController {
     public ResponseEntity<String> createPlaylist(@CookieValue(name = "userId") String userId,
                                                  @RequestBody LinkedHashMap param) {
         String title = param.get("title").toString();
-        List<String> musicId = (List<String>) param.get("musicIds");
-        String playlistId = playlistService.savePlaylist(userId, title, musicId);
+        String musicId = param.get("musicIds").toString();
+        List<String> musicIds = musicService.divString(musicId);
+        String playlistId = playlistService.savePlaylist(userId, title, musicIds);
 
         if(playlistId == null)
             return new ResponseEntity<>("생성 실패", HttpStatus.BAD_REQUEST);
@@ -82,8 +84,9 @@ public class PlaylistController {
                                                  @RequestBody LinkedHashMap param) {
 
         String playlistId = param.get("playlistId").toString();
-        List<String> musicId = (List<String>) param.get("songsId");
-        String result = playlistService.addPlaylist(userId, playlistId, musicId);
+        String musicId = param.get("songsId").toString();
+        List<String> musicIds = musicService.divString(musicId);
+        String result = playlistService.addPlaylist(userId, playlistId, musicIds);
 
         if(result == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

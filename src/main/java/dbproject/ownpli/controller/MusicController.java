@@ -31,7 +31,7 @@ public class MusicController {
      * @return MusicDTO List
      */
     @PostMapping("/add")
-    public ResponseEntity<List<MusicDTO>> getMusicAboutCondition(LinkedHashMap param) throws ParseException {
+    public ResponseEntity<List<MusicDTO>> getMusicAboutCondition(@RequestBody LinkedHashMap param) throws ParseException {
         return new ResponseEntity<>(musicService.addMusics(param), HttpStatus.OK);
     }
 

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEntity, String> {
@@ -38,6 +39,17 @@ public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEnti
      */
     @Query(value = "SELECT pm FROM playlist_music pm WHERE pm.playlistId = :playlistId")
     List<PlaylistMusicEntity> findAllByPlaylistId(String playlistId);
+
+    /**
+     * 음악 아이디 count
+     * @param musicId
+     * @return
+     */
+    @Query("SELECT count(pm.musicId) FROM playlist_music pm WHERE pm.musicId = :musicId GROUP BY pm.musicId")
+    Long countByMusicId(String musicId);
+
+    @Query("SELECT DISTINCT pm.musicId FROM playlist_music pm")
+    Optional<List<String>> findDistinctMusicId();
 
 //    /**
 //     * [select] fk(musicId)값으로 playlistMusic 조회하기

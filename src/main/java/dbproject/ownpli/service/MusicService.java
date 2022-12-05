@@ -30,6 +30,25 @@ public class MusicService {
     private final MoodRepository moodRepository;
     private final QueryRepository queryRepository;
 
+//    public List<MusicDTO> findTop10Musics() {
+//        Map<Long, String> musicLikes = new HashMap<>();
+//        if(musicLikeRepository.findAll().isEmpty())
+//            return musicEntitiesToMusicDTO(musicRepository.findAll());
+//        for(int i = 0; i < musicRepository.findAll().size(); i++) {
+//            if(musicLikeRepository.countByMusicId(musicRepository.findAll().get(i).getMusicId()).isEmpty())
+//                continue;
+//            musicLikes.put(musicLikeRepository.countByMusicId(musicRepository.findAll().get(i).getMusicId()).get(), musicRepository.findAll().get(i).getMusicId());
+//        }
+//
+//        Map<Long, String> sortedMap = new TreeMap<>(musicLikes);
+//
+//        List<MusicDTO> models = new ArrayList<>();
+//
+//        for(int i = 0; i < sortedMap.size(); i++) {
+//            models.add(findMusicInfo(sortedMap.get(i)));
+//        }
+//    }
+
     /**
      * 모든 음악리스트 찾기(DTO)
      * @return
@@ -77,14 +96,14 @@ public class MusicService {
         return musicRepository.findById(musicId).get();
     }
 
-    /**
-     * 음악 이름으로 음악 리스트 찾기
-     * @param title
-     * @return
-     */
-    public List<MusicEntity> findByTitle(String title) {
-        return musicRepository.findByTitle(title);
-    }
+//    /**
+//     * 음악 이름으로 음악 리스트 찾기
+//     * @param title
+//     * @return
+//     */
+//    public List<MusicEntity> findByTitle(String title) {
+//        return musicRepository.findByTitle(title);
+//    }
 
     /**
      * 음악 이름으로 음악 리스트 검색
@@ -131,8 +150,7 @@ public class MusicService {
 
         String inputFile = byMusicId.getImageFile();
 
-        //D to C
-        inputFile.replaceFirst("D", "C");
+        inputFile = inputFile.replaceFirst("D", "C");
 
         Path path = new File(inputFile).toPath();
         FileSystemResource resource = new FileSystemResource(path);
@@ -142,19 +160,26 @@ public class MusicService {
         return MusicDTO.from(byMusicId, byGenreId, likes, resource);
     }
 
+    /**
+     * 음악 필터링해서 추가
+     * @param param
+     * @return
+     * @throws ParseException
+     */
     public List<MusicDTO> addMusics(LinkedHashMap param) throws ParseException {
-        Optional<List<Long>> genreOptional = Optional.ofNullable(genreRepository.findGenreNumsByGenre((List<String>) param.get("genre")));
-        List<Long> genre;
-
-        if(genreOptional.isEmpty()) genre = null;
-        else genre = genreOptional.get();
-
+        List<Long> genre, mood;
+        Optional g = Optional.ofNullable(param.get("genre"));
+        if(g.isEmpty()) genre = null;
+        else genre = genreRepository.findGenreNumsByGenre(divString(g.get().toString()));
 
         List<MusicEntity> musicEntities = filteringMusics(param, genre);
 
-        Optional<List<Long>> mood = Optional.ofNullable(findMoodEntitiesByMood((List<String>) param.get("mood")));
-        if(mood.isEmpty()) return musicEntitiesToMusicDTO(musicEntities);
-        else return findMusicsByMoodIds(mood.get(), musicEntities);
+        Optional m = Optional.ofNullable(param.get("mood"));
+        if(m.isEmpty()) mood = null;
+        else mood = findMoodEntitiesByMood(divString(m.get().toString()));
+
+        if(mood == null) return musicEntitiesToMusicDTO(musicEntities);
+        else return findMusicsByMoodIds(mood, musicEntities);
     }
 
     /**
@@ -165,26 +190,48 @@ public class MusicService {
      * @throws ParseException
      */
     private List<MusicEntity> filteringMusics(LinkedHashMap param, List<Long> genre) throws ParseException {
-        List<String> likes, hates, langs, year;
+        List<String> likes, hates, crty, year;
 
-        Optional<List<String>> l = (Optional<List<String>>) param.get("likedSingerId");
-        Optional<List<String>> h = (Optional<List<String>>) param.get("dislikedSingerId");
-        Optional<List<String>> lang = (Optional<List<String>>) param.get("language");
-        Optional<List<String>> y = (Optional<List<String>>) param.get("year");
+        Optional l = Optional.ofNullable(param.get("likedSinger"));
+        Optional h = Optional.ofNullable(param.get("dislikedSinger"));
+        Optional c = Optional.ofNullable(param.get("country"));
+        Optional y = Optional.ofNullable(param.get("year"));
 
-        if(l.isEmpty()) likes = null;
-        else likes = l.get();
+        if(l.isEmpty()) {
+            likes = null;
+            log.info("likes=null");
+        }
+        else likes = divString(l.get().toString());
 
-        if(h.isEmpty()) hates = null;
-        else hates = h.get();
+        if(h.isEmpty()) {
+            hates = null;
+            log.info("hates=null");
+        }
+        else hates = divString(h.get().toString());
 
-        if(lang.isEmpty()) langs = null;
-        else langs = lang.get();
+        if(c.isEmpty()) {
+            crty = null;
+            log.info("langs=null");
+        }
+        else crty = divString(c.get().toString());
 
-        if(y.isEmpty()) year = null;
-        else year = y.get();
+        if(y.isEmpty()) {
+            year = null;
+            log.info("year=null");
+        }
+        else year = divString(y.get().toString());
 
-        return queryRepository.findDynamicQueryAdvance(likes, hates, genre, langs, year);
+        return queryRepository.findDynamicQueryAdvance(likes, hates, genre, crty, year);
+    }
+
+    public List<String> divString(String s) {
+        StringTokenizer st = new StringTokenizer(s, ",");
+
+        List<String> list = new ArrayList<>();
+        for(int i = 0; i < st.countTokens() + 1; i++) {
+            list.add(st.nextToken());
+        }
+        return list;
     }
 
     /**
@@ -267,8 +314,8 @@ public class MusicService {
      * @param genre
      * @return
      */
-    public List<Long> findGenresByGenre(List<String> genre) {
-        return genreRepository.findGenreNumsByGenre(genre);
+    public Optional<List<Long>> findGenresByGenre(List<String> genre) {
+        return Optional.ofNullable(genreRepository.findGenreNumsByGenre(genre));
     }
 
     /**

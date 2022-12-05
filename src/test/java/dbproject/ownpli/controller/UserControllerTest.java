@@ -16,8 +16,8 @@ public class UserControllerTest {
     public void insertTest() {
         final UserEntity user = UserEntity.builder()
             .userId("testuser@naver.com")
-            .nickname("test user")
-            .passward("1234")
+            .name("test user")
+            .password("1234")
             .age(14)
             .sex(1)
             .build();

@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 
-import java.util.Date;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,10 +18,11 @@ public class MusicDTO {
     private Long likes;
     private FileSystemResource imageFile;
     private String album;
-    private Date date;
+    private String year;
     private String country;
 
     public static MusicDTO from(MusicEntity musicEntity, String genre, Long likes, FileSystemResource imageFile) {
+
         return new MusicDTO(
             musicEntity.getMusicId(),
             musicEntity.getTitle(),
@@ -32,7 +31,7 @@ public class MusicDTO {
             likes,
             imageFile,
             musicEntity.getAlbum(),
-            musicEntity.getDate(),
+            musicEntity.getDate().toString().substring(0, 4),
             musicEntity.getCountry());
     }
 }
