@@ -1,6 +1,5 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.dto.MusicDTO;
 import dbproject.ownpli.dto.SearchDTO;
 import dbproject.ownpli.service.Mp3Service;
@@ -10,55 +9,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/musics")
+@RequestMapping("/music")
 public class MusicController {
 
     private final MusicService musicService;
     private final Mp3Service mp3Service;
 
     /**
-     * 모든 음악 리스트 보내기
-     * @return ResponseEntity [List [Model]]
-     */
-    @GetMapping("/getall")
-    public ResponseEntity<List<MusicDTO>> getAllPlaylists() {
-        List<MusicDTO> musicEntities = musicService.findAllMusics();
-        return new ResponseEntity<>(musicEntities, HttpStatus.OK);
-    }
-
-    /**
      * 조건에 따라 음악 검색하기
-     * @param model
-     * @return
+     * @param param
+     * @return MusicDTO List
      */
-    @GetMapping("/add")
-    public ResponseEntity<List<MusicDTO>> getMusicAboutCondition(Model model) {
-        List<String> genre = (List<String>) model.getAttribute("genre");
-        List<String> moods = (List<String>) model.getAttribute("mood");
-        List<MusicDTO> result;
-
-        if(genre.isEmpty() && moods.isEmpty()) {
-            result = musicService.findAllMusics();
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }
-
-        List<Long> byGenre = musicService.findGenresByGenre(genre);
-        List<MusicEntity> musics = musicService.findMusicsByGenreIds(byGenre);
-
-        List<Long> moodNumByMood = musicService.findMoodEntitiesByMood(moods);
-        result = musicService.findMusicsByMoodIds(moodNumByMood, musics);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    @PostMapping("/add")
+    public ResponseEntity<List<MusicDTO>> getMusicAboutCondition(@RequestBody LinkedHashMap param) throws ParseException {
+        return new ResponseEntity<>(musicService.addMusics(param), HttpStatus.OK);
     }
 
     /**

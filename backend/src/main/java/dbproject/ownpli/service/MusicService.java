@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.*;
 
 @Slf4j
@@ -27,6 +28,26 @@ public class MusicService {
     private final MusicLikeRepository musicLikeRepository;
     private final GenreRepository genreRepository;
     private final MoodRepository moodRepository;
+    private final QueryRepository queryRepository;
+
+//    public List<MusicDTO> findTop10Musics() {
+//        Map<Long, String> musicLikes = new HashMap<>();
+//        if(musicLikeRepository.findAll().isEmpty())
+//            return musicEntitiesToMusicDTO(musicRepository.findAll());
+//        for(int i = 0; i < musicRepository.findAll().size(); i++) {
+//            if(musicLikeRepository.countByMusicId(musicRepository.findAll().get(i).getMusicId()).isEmpty())
+//                continue;
+//            musicLikes.put(musicLikeRepository.countByMusicId(musicRepository.findAll().get(i).getMusicId()).get(), musicRepository.findAll().get(i).getMusicId());
+//        }
+//
+//        Map<Long, String> sortedMap = new TreeMap<>(musicLikes);
+//
+//        List<MusicDTO> models = new ArrayList<>();
+//
+//        for(int i = 0; i < sortedMap.size(); i++) {
+//            models.add(findMusicInfo(sortedMap.get(i)));
+//        }
+//    }
 
     /**
      * 모든 음악리스트 찾기(DTO)
@@ -75,14 +96,14 @@ public class MusicService {
         return musicRepository.findById(musicId).get();
     }
 
-    /**
-     * 음악 이름으로 음악 리스트 찾기
-     * @param title
-     * @return
-     */
-    public List<MusicEntity> findByTitle(String title) {
-        return musicRepository.findByTitle(title);
-    }
+//    /**
+//     * 음악 이름으로 음악 리스트 찾기
+//     * @param title
+//     * @return
+//     */
+//    public List<MusicEntity> findByTitle(String title) {
+//        return musicRepository.findByTitle(title);
+//    }
 
     /**
      * 음악 이름으로 음악 리스트 검색
@@ -115,13 +136,12 @@ public class MusicService {
     /**
      * 단일 음악 정보 보내기
      * @param musicId
-     * @return Model
+     * @return MusicDTO
      * @throws IOException
      */
     public MusicDTO findMusicInfo(String musicId) {
         log.info("musicId = " + musicId);
         MusicEntity byMusicId = findByMusicId(musicId);
-        List<String> moodByMusicId = findMoodByMusicId(musicId);
         String byGenreId = findByGenreId(byMusicId.getGenreNum());
 
         Optional<Long> aLong = musicLikeRepository.countByMusicId(musicId);
@@ -129,12 +149,89 @@ public class MusicService {
         if (!aLong.isEmpty()) likes = aLong.get();
 
         String inputFile = byMusicId.getImageFile();
+
+        inputFile = inputFile.replaceFirst("D", "C");
+
         Path path = new File(inputFile).toPath();
         FileSystemResource resource = new FileSystemResource(path);
 
         log.info("byMusicId.getMusicId = " + byMusicId.getMusicId());
 
-        return MusicDTO.from(byMusicId, byGenreId, moodByMusicId, likes, resource);
+        return MusicDTO.from(byMusicId, byGenreId, likes, resource);
+    }
+
+    /**
+     * 음악 필터링해서 추가
+     * @param param
+     * @return
+     * @throws ParseException
+     */
+    public List<MusicDTO> addMusics(LinkedHashMap param) throws ParseException {
+        List<Long> genre, mood;
+        Optional g = Optional.ofNullable(param.get("genre"));
+        if(g.isEmpty()) genre = null;
+        else genre = genreRepository.findGenreNumsByGenre(divString(g.get().toString()));
+
+        List<MusicEntity> musicEntities = filteringMusics(param, genre);
+
+        Optional m = Optional.ofNullable(param.get("mood"));
+        if(m.isEmpty()) mood = null;
+        else mood = findMoodEntitiesByMood(divString(m.get().toString()));
+
+        if(mood == null) return musicEntitiesToMusicDTO(musicEntities);
+        else return findMusicsByMoodIds(mood, musicEntities);
+    }
+
+    /**
+     * 동적 query QueryDSL 검색 필터링
+     * @param param
+     * @param genre
+     * @return MusicEntity List
+     * @throws ParseException
+     */
+    private List<MusicEntity> filteringMusics(LinkedHashMap param, List<Long> genre) throws ParseException {
+        List<String> likes, hates, crty, year;
+
+        Optional l = Optional.ofNullable(param.get("likedSinger"));
+        Optional h = Optional.ofNullable(param.get("dislikedSinger"));
+        Optional c = Optional.ofNullable(param.get("country"));
+        Optional y = Optional.ofNullable(param.get("year"));
+
+        if(l.isEmpty()) {
+            likes = null;
+            log.info("likes=null");
+        }
+        else likes = divString(l.get().toString());
+
+        if(h.isEmpty()) {
+            hates = null;
+            log.info("hates=null");
+        }
+        else hates = divString(h.get().toString());
+
+        if(c.isEmpty()) {
+            crty = null;
+            log.info("langs=null");
+        }
+        else crty = divString(c.get().toString());
+
+        if(y.isEmpty()) {
+            year = null;
+            log.info("year=null");
+        }
+        else year = divString(y.get().toString());
+
+        return queryRepository.findDynamicQueryAdvance(likes, hates, genre, crty, year);
+    }
+
+    public List<String> divString(String s) {
+        StringTokenizer st = new StringTokenizer(s, ",");
+
+        List<String> list = new ArrayList<>();
+        for(int i = 0; i < st.countTokens() + 1; i++) {
+            list.add(st.nextToken());
+        }
+        return list;
     }
 
     /**
@@ -144,7 +241,6 @@ public class MusicService {
      */
     public List<MusicDTO> findMusicInfosByPlaylist(List<String> musicIds) {
         List<MusicDTO> arr = new ArrayList<>();
-
 
         for(int i = 0; i < musicIds.size(); i++) {
             arr.add(findMusicInfo(musicIds.get(i)));
@@ -160,16 +256,6 @@ public class MusicService {
      */
     public String findByGenreId(Long genreId) {
         return genreRepository.findById(genreId).get().getGenre();
-    }
-
-    /**
-     * 장르 아이디로 음악 리스트 출력
-     * @param genre
-     * @return
-     */
-    public List<MusicEntity> findMusicsByGenreIds(List<Long> genre) {
-        if(genre.isEmpty()) return null;
-        return musicRepository.findMusicEntitiesByGenreNum(genre);
     }
 
     /**
@@ -228,8 +314,8 @@ public class MusicService {
      * @param genre
      * @return
      */
-    public List<Long> findGenresByGenre(List<String> genre) {
-        return genreRepository.findGenreNumsByGenre(genre);
+    public Optional<List<Long>> findGenresByGenre(List<String> genre) {
+        return Optional.ofNullable(genreRepository.findGenreNumsByGenre(genre));
     }
 
     /**

@@ -73,7 +73,7 @@ public class UserController {
      * @param userId
      * @return
      */
-    @GetMapping("/home")
+    @GetMapping("/mypage")
     public ResponseEntity<UserDTO> homeLogin(@CookieValue(name = "userId") String userId) {
         if (userId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -93,7 +93,7 @@ public class UserController {
      * @param param
      * @return
      */
-    @PostMapping("/update")
+    @PostMapping("/mypage/update")
     public ResponseEntity<UserDTO> changeName(@CookieValue(name = "userId") String userId,
                                               @RequestBody LinkedHashMap param) {
         if (userId == null) {

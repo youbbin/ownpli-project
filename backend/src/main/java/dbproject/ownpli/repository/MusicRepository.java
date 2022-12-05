@@ -11,6 +11,11 @@ import java.util.List;
 @Repository
 public interface MusicRepository extends JpaRepository<MusicEntity, String> {
 
+    /**
+     * 제목으로 음악 엔티티 찾기
+     * @param title
+     * @return
+     */
     List<MusicEntity> findByTitle(@Param("title") String title);
 
     /**
