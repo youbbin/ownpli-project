@@ -117,7 +117,7 @@ public class MusicService {
     /**
      * 단일 음악 정보 보내기
      * @param musicId
-     * @return Model
+     * @return MusicDTO
      * @throws IOException
      */
     public MusicDTO findMusicInfo(String musicId) {
@@ -130,6 +130,10 @@ public class MusicService {
         if (!aLong.isEmpty()) likes = aLong.get();
 
         String inputFile = byMusicId.getImageFile();
+
+        //D to C
+        inputFile.replaceFirst("D", "C");
+
         Path path = new File(inputFile).toPath();
         FileSystemResource resource = new FileSystemResource(path);
 
@@ -139,29 +143,48 @@ public class MusicService {
     }
 
     public List<MusicDTO> addMusics(LinkedHashMap param) throws ParseException {
-        List<Long> genre = genreRepository.findGenreNumsByGenre((List<String>) param.get("genre"));
+        Optional<List<Long>> genreOptional = Optional.ofNullable(genreRepository.findGenreNumsByGenre((List<String>) param.get("genre")));
+        List<Long> genre;
 
-        List<MusicEntity> musicEntities = filteringMusics((List<String>) param.get("likes"), (List<String>) param.get("hates"),
-            genre, (List<String>) param.get("Langs"), (List<String>) param.get("year"));
+        if(genreOptional.isEmpty()) genre = null;
+        else genre = genreOptional.get();
 
-        List<Long> mood = findMoodEntitiesByMood((List<String>) param.get("mood"));
 
-        return findMusicsByMoodIds(mood, musicEntities);
+        List<MusicEntity> musicEntities = filteringMusics(param, genre);
+
+        Optional<List<Long>> mood = Optional.ofNullable(findMoodEntitiesByMood((List<String>) param.get("mood")));
+        if(mood.isEmpty()) return musicEntitiesToMusicDTO(musicEntities);
+        else return findMusicsByMoodIds(mood.get(), musicEntities);
     }
 
     /**
-     * 동적query QueryDSL 검색 필터링
-     * @param likes
-     * @param hates
+     * 동적 query QueryDSL 검색 필터링
+     * @param param
      * @param genre
-     * @param Langs
-     * @param year
      * @return MusicEntity List
      * @throws ParseException
      */
-    private List<MusicEntity> filteringMusics(List<String> likes, List<String> hates,
-                                              List<Long> genre, List<String> Langs, List<String> year) throws ParseException {
-        return queryRepository.findDynamicQueryAdvance(likes, hates, genre, Langs, year);
+    private List<MusicEntity> filteringMusics(LinkedHashMap param, List<Long> genre) throws ParseException {
+        List<String> likes, hates, langs, year;
+
+        Optional<List<String>> l = (Optional<List<String>>) param.get("likedSingerId");
+        Optional<List<String>> h = (Optional<List<String>>) param.get("dislikedSingerId");
+        Optional<List<String>> lang = (Optional<List<String>>) param.get("language");
+        Optional<List<String>> y = (Optional<List<String>>) param.get("year");
+
+        if(l.isEmpty()) likes = null;
+        else likes = l.get();
+
+        if(h.isEmpty()) hates = null;
+        else hates = h.get();
+
+        if(lang.isEmpty()) langs = null;
+        else langs = lang.get();
+
+        if(y.isEmpty()) year = null;
+        else year = y.get();
+
+        return queryRepository.findDynamicQueryAdvance(likes, hates, genre, langs, year);
     }
 
     /**
@@ -171,7 +194,6 @@ public class MusicService {
      */
     public List<MusicDTO> findMusicInfosByPlaylist(List<String> musicIds) {
         List<MusicDTO> arr = new ArrayList<>();
-
 
         for(int i = 0; i < musicIds.size(); i++) {
             arr.add(findMusicInfo(musicIds.get(i)));
@@ -187,16 +209,6 @@ public class MusicService {
      */
     public String findByGenreId(Long genreId) {
         return genreRepository.findById(genreId).get().getGenre();
-    }
-
-    /**
-     * 장르 아이디로 음악 리스트 출력
-     * @param genre
-     * @return
-     */
-    public List<MusicEntity> findMusicsByGenreIds(List<Long> genre) {
-        if(genre.isEmpty()) return null;
-        return musicRepository.findMusicEntitiesByGenreNum(genre);
     }
 
     /**

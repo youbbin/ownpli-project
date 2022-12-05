@@ -62,13 +62,33 @@ public class PlaylistController {
     public ResponseEntity<String> createPlaylist(@CookieValue(name = "userId") String userId,
                                                  @RequestBody LinkedHashMap param) {
         String title = param.get("title").toString();
-        List musicId = (List) param.get("musicIds");
+        List<String> musicId = (List<String>) param.get("musicIds");
         String playlistId = playlistService.savePlaylist(userId, title, musicId);
 
         if(playlistId == null)
             return new ResponseEntity<>("생성 실패", HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity("생성 성공", HttpStatus.OK);
+    }
+
+    /**
+     * 플레이리스트에 음악 추가
+     * @param userId
+     * @param param
+     * @return
+     */
+    @PostMapping("/addSongs")
+    public ResponseEntity<String> updatePlaylist(@CookieValue(name = "userId") String userId,
+                                                 @RequestBody LinkedHashMap param) {
+
+        String playlistId = param.get("playlistId").toString();
+        List<String> musicId = (List<String>) param.get("songsId");
+        String result = playlistService.addPlaylist(userId, playlistId, musicId);
+
+        if(result == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     /**

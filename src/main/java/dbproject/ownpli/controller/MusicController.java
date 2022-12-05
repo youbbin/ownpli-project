@@ -25,20 +25,10 @@ public class MusicController {
     private final MusicService musicService;
     private final Mp3Service mp3Service;
 
-//    /**
-//     * 모든 음악 리스트 보내기
-//     * @return ResponseEntity [List [Model]]
-//     */
-//    @GetMapping("/getall")
-//    public ResponseEntity<List<MusicDTO>> getAllPlaylists() {
-//        List<MusicDTO> musicEntities = musicService.findAllMusics();
-//        return new ResponseEntity<>(musicEntities, HttpStatus.OK);
-//    }
-
     /**
      * 조건에 따라 음악 검색하기
      * @param param
-     * @return
+     * @return MusicDTO List
      */
     @PostMapping("/add")
     public ResponseEntity<List<MusicDTO>> getMusicAboutCondition(LinkedHashMap param) throws ParseException {

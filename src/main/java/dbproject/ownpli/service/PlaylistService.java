@@ -110,6 +110,37 @@ public class PlaylistService {
     }
 
     /**
+     * 플레이리스트에 음악 추가
+     * @Param userId
+     * @param playlistId
+     * @param musicIds
+     * @return
+     */
+    public String addPlaylist(String userId, String playlistId, List<String> musicIds) {
+        boolean flag = false;
+        List<PlaylistEntity> byUserId = playlistRepository.findByUserId(userId);
+        for(int i = 0; i < byUserId.size(); i++) {
+            if(byUserId.get(i).getPlaylistId().equals(playlistId)) flag = true;
+        }
+
+        if(!flag) return null;
+
+        for(int i = 0; i < musicIds.size(); i++) {
+            playlistMusicRepository.save(
+                PlaylistMusicEntity.builder()
+                    .playlistId(playlistRepository.findById(playlistId).get().getPlaylistId())
+                    .musicId(musicRepository.findById(musicIds.get(i)).get().getMusicId())
+                    .date(Date.valueOf(LocalDate.now()))
+                    .build());
+        }
+
+        log.info("플레이리스트 저장");
+        return playlistId;
+    }
+
+
+
+    /**
      * 플레이리스트 삭제
      * @param playlistId
      */
