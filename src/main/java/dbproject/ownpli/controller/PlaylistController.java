@@ -63,8 +63,8 @@ public class PlaylistController {
     public ResponseEntity<String> createPlaylist(@CookieValue(name = "userId") String userId,
                                                  @RequestBody LinkedHashMap param) {
         String title = param.get("title").toString();
-        String musicId = param.get("musicIds").toString();
-        List<String> musicIds = musicService.divString(musicId);
+        String musicTitle = param.get("songsTitle").toString();
+        List<String> musicIds = musicService.findByTitle(musicService.divString(musicTitle));
         String playlistId = playlistService.savePlaylist(userId, title, musicIds);
 
         if(playlistId == null)
@@ -84,8 +84,8 @@ public class PlaylistController {
                                                  @RequestBody LinkedHashMap param) {
 
         String playlistId = param.get("playlistId").toString();
-        String musicId = param.get("songsId").toString();
-        List<String> musicIds = musicService.divString(musicId);
+        String musicTitle = param.get("songsTitle").toString();
+        List<String> musicIds = musicService.findByTitle(musicService.divString(musicTitle));
         String result = playlistService.addPlaylist(userId, playlistId, musicIds);
 
         if(result == null)
