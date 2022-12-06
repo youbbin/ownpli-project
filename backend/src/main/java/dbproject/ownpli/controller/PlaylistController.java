@@ -44,8 +44,10 @@ public class PlaylistController {
      *  `@PathVariable` 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
      */
     @PostMapping("/getlist")
-    public ResponseEntity<PlaylistMusicDTO> findMusicList(@RequestBody LinkedHashMap param) {
-        String playlistId = param.get("playlistId").toString();
+    public ResponseEntity<PlaylistMusicDTO> findMusicList(@CookieValue(name = "userId") String userId, @RequestBody LinkedHashMap param) {
+        String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(param.get("title").toString(), userId);
+        if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
         List<String> musicsByPlaylistId = playlistService.findMusicsByPlaylistId(playlistId);
         List<MusicDTO> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
         return new ResponseEntity<>(
@@ -63,12 +65,12 @@ public class PlaylistController {
     public ResponseEntity<String> createPlaylist(@CookieValue(name = "userId") String userId,
                                                  @RequestBody LinkedHashMap param) {
         String title = param.get("title").toString();
-        String musicId = param.get("musicIds").toString();
-        List<String> musicIds = musicService.divString(musicId);
+        String musicTitle = param.get("songsTitle").toString();
+        List<String> musicIds = musicService.findByTitle(musicService.divString(musicTitle));
         String playlistId = playlistService.savePlaylist(userId, title, musicIds);
 
         if(playlistId == null)
-            return new ResponseEntity<>("생성 실패", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("이미 존재하는 제목입니다.", HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity("생성 성공", HttpStatus.OK);
     }
@@ -83,9 +85,11 @@ public class PlaylistController {
     public ResponseEntity<String> updatePlaylist(@CookieValue(name = "userId") String userId,
                                                  @RequestBody LinkedHashMap param) {
 
-        String playlistId = param.get("playlistId").toString();
-        String musicId = param.get("songsId").toString();
-        List<String> musicIds = musicService.divString(musicId);
+        String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(param.get("title").toString(), userId);
+        if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        String musicTitle = param.get("songsTitle").toString();
+        List<String> musicIds = musicService.findByTitle(musicService.divString(musicTitle));
         String result = playlistService.addPlaylist(userId, playlistId, musicIds);
 
         if(result == null)
@@ -100,8 +104,10 @@ public class PlaylistController {
      * @return
      */
     @PostMapping("/delete")
-    public ResponseEntity<String> deletePlaylist(@RequestBody LinkedHashMap param) {
-        String playlistId = param.get("playlistId").toString();
+    public ResponseEntity<String> deletePlaylist(@CookieValue(name = "userId") String userId, @RequestBody LinkedHashMap param) {
+        String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(param.get("title").toString(), userId);
+        if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
         playlistService.deletePlaylist(playlistId);
 
         return new ResponseEntity<>("삭제 완료", HttpStatus.OK);

@@ -30,25 +30,6 @@ public class MusicService {
     private final MoodRepository moodRepository;
     private final QueryRepository queryRepository;
 
-//    public List<MusicDTO> findTop10Musics() {
-//        Map<Long, String> musicLikes = new HashMap<>();
-//        if(musicLikeRepository.findAll().isEmpty())
-//            return musicEntitiesToMusicDTO(musicRepository.findAll());
-//        for(int i = 0; i < musicRepository.findAll().size(); i++) {
-//            if(musicLikeRepository.countByMusicId(musicRepository.findAll().get(i).getMusicId()).isEmpty())
-//                continue;
-//            musicLikes.put(musicLikeRepository.countByMusicId(musicRepository.findAll().get(i).getMusicId()).get(), musicRepository.findAll().get(i).getMusicId());
-//        }
-//
-//        Map<Long, String> sortedMap = new TreeMap<>(musicLikes);
-//
-//        List<MusicDTO> models = new ArrayList<>();
-//
-//        for(int i = 0; i < sortedMap.size(); i++) {
-//            models.add(findMusicInfo(sortedMap.get(i)));
-//        }
-//    }
-
     /**
      * 모든 음악리스트 찾기(DTO)
      * @return
@@ -96,14 +77,14 @@ public class MusicService {
         return musicRepository.findById(musicId).get();
     }
 
-//    /**
-//     * 음악 이름으로 음악 리스트 찾기
-//     * @param title
-//     * @return
-//     */
-//    public List<MusicEntity> findByTitle(String title) {
-//        return musicRepository.findByTitle(title);
-//    }
+    /**
+     * 음악 이름으로 음악 아이디들 찾기
+     * @param title
+     * @return
+     */
+    public List<String> findByTitle(List<String> title) {
+        return musicRepository.findMusicIdsByTitle(title);
+    }
 
     /**
      * 음악 이름으로 음악 리스트 검색

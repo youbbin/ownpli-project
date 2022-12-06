@@ -16,7 +16,8 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      * @param title
      * @return
      */
-    List<MusicEntity> findByTitle(@Param("title") String title);
+    @Query("SELECT m.musicId FROM MusicEntity m WHERE m.title in :title")
+    List<String> findMusicIdsByTitle(@Param("title") List<String> title);
 
     /**
      * [select] singerName으로 음악 정보 출력
@@ -32,7 +33,7 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      * @return String
      * @CRUD read
      */
-    @Query(value = "SELECT m.mp3File FROM MusicEntity m WHERE m.musicId = :musicId", nativeQuery = true)
+    @Query(value = "SELECT m.mp3File FROM MusicEntity m WHERE m.musicId = :musicId")
     String findMp3FileByMusicId(@Param("musicId") String musicId);
 
     /**
@@ -67,24 +68,24 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      * @return List[MusicEntity]
      * @CRUD read
      */
-    @Query(value = "SELECT m FROM MusicEntity m WHERE m.musicId in :musicId", nativeQuery = true)
+    @Query(value = "SELECT m FROM MusicEntity m WHERE m.musicId in :musicId")
     List<MusicEntity> findByMusicId(@Param("musicId") List<String> musicId);
 
-    /**
-     * [select] 단일 음악 장르 출력
-     * @param musicId
-     * @return Long
-     * @CRUD read
-     */
-    @Query(value = "SELECT m.genre FROM MusicEntity m WHERE m.musicId = :musicId", nativeQuery = true)
-    Long findGenreByMusicId(@Param("musicId") String musicId);
-
-    /**
-     * genreNum으로 musicEntity들 찾기
-     * @param genreNum
-     * @return
-     */
-    @Query("SELECT m FROM MusicEntity m WHERE m.genreNum in :genreNum")
-    List<MusicEntity> findMusicEntitiesByGenreNum(@Param("genreNum") List<Long> genreNum);
+//    /**
+//     * [select] 단일 음악 장르 출력
+//     * @param musicId
+//     * @return Long
+//     * @CRUD read
+//     */
+//    @Query(value = "SELECT m.genre FROM MusicEntity m WHERE m.musicId = :musicId")
+//    Long findGenreByMusicId(@Param("musicId") String musicId);
+//
+//    /**
+//     * genreNum으로 musicEntity들 찾기
+//     * @param genreNum
+//     * @return
+//     */
+//    @Query("SELECT m FROM MusicEntity m WHERE m.genreNum in :genreNum")
+//    List<MusicEntity> findMusicEntitiesByGenreNum(@Param("genreNum") List<Long> genreNum);
 
 }
