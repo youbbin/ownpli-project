@@ -66,6 +66,12 @@ public class PlaylistService {
         return musicIds;
     }
 
+    public String findPlaylistIdByPlaylistTitleAndUserId(String title, String userId) {
+        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(title, userId);
+        if(byPlaylistTitleAndUserId.isEmpty()) return null;
+        else return byPlaylistTitleAndUserId.get().getPlaylistId();
+    }
+
     /**
      * 새 플레이리스트 저장
      * @param userId
@@ -73,6 +79,11 @@ public class PlaylistService {
      * @param musicIds
      */
     public String savePlaylist(String userId, String title, List<String> musicIds) {
+
+        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(title, userId);
+        if(!byPlaylistTitleAndUserId.isEmpty())
+            return null;
+
         Optional<PlaylistEntity> idOptional = playlistRepository.findTop1ByUserIdOrderByPlaylistIdDesc(userId);
         String id = "";
         if(idOptional.isEmpty())

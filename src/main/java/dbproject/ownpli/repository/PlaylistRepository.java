@@ -27,6 +27,14 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
      */
     Optional<PlaylistEntity> findTop1ByUserIdOrderByPlaylistIdDesc(String userId);
 
+    /**
+     * userId와 제목을 이용해 플레이리스트 엔티티 찾기
+     * @param playlistTitle
+     * @param userId
+     * @return
+     */
+    Optional<PlaylistEntity> findByPlaylistTitleAndUserId(String playlistTitle, String userId);
+
 //    오류!
 //    /**
 //     * [select] fk(musicId)값으로 플레이리스트 조회하기
