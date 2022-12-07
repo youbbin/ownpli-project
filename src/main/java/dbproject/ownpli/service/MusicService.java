@@ -87,6 +87,15 @@ public class MusicService {
     }
 
     /**
+     * 음악 이름으로 음악 아이디들 찾기
+     * @param title
+     * @return
+     */
+    public MusicEntity findOneMusicIdByTitle(String title) {
+        return musicRepository.findMusicEntityByTitleContainingIgnoreCase(title);
+    }
+
+    /**
      * 음악 이름으로 음악 리스트 검색
      * @param title
      * @return
@@ -131,6 +140,7 @@ public class MusicService {
 
         String inputFile = byMusicId.getImageFile();
 
+        //D to C
         inputFile = inputFile.replaceFirst("D", "C");
 
         Path path = new File(inputFile).toPath();
@@ -206,7 +216,7 @@ public class MusicService {
     }
 
     public List<String> divString(String s) {
-        StringTokenizer st = new StringTokenizer(s, ",");
+        StringTokenizer st = new StringTokenizer(s, "@");
 
         List<String> list = new ArrayList<>();
         for(int i = 0; i < st.countTokens() + 1; i++) {
@@ -276,9 +286,12 @@ public class MusicService {
      * @return Model
      * @throws IOException
      */
-    public String readLirics(String musicId) throws IOException {
+    public String readLyrics(String musicId) throws IOException {
+        String path = musicRepository.findById(musicId).get().getLyricsFile();
+        //D to C
+        path = path.replaceFirst("D", "C");
         //파일 읽기
-        BufferedReader br = new BufferedReader(new FileReader(musicRepository.findById(musicId).get().getLyricsFile()));
+        BufferedReader br = new BufferedReader(new FileReader(path));
         String line ="", result = "";
 
         //한 줄 씩 읽은 내용 쓰기

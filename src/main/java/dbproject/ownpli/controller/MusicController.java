@@ -6,7 +6,6 @@ import dbproject.ownpli.service.Mp3Service;
 import dbproject.ownpli.service.MusicService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,10 +39,10 @@ public class MusicController {
      * @param musicSearch
      * @return
      * @Container
-     * /musics/{musicSearch}
+     * /music/search?q=!
      */
-    @GetMapping("/{musicSearch}")
-    public ResponseEntity<SearchDTO> searchMusics(@PathVariable("musicSearch") String musicSearch) {
+    @GetMapping("/search")
+    public ResponseEntity<SearchDTO> searchMusics(@RequestParam(name = "q") String musicSearch) {
 
         List<MusicDTO> searchTitle = musicService.musicEntitiesToMusicDTO(musicService.findByTitleContain(musicSearch));
         List<MusicDTO> searchSinger = musicService.musicEntitiesToMusicDTO(musicService.findBySingerContain(musicSearch));
@@ -53,12 +52,13 @@ public class MusicController {
 
     /**
      * 단일 음악 정보 보내기
-     * @param musicId
+     * @param musicTitle
      * @return
-     * @throws Exception
+     * @url /music/title?q=~
      */
-    @GetMapping("/{musicId}")
-    public ResponseEntity<MusicDTO> getMusics(@PathVariable("musicId") String musicId) throws JSONException {
+    @GetMapping("/title")
+    public ResponseEntity<MusicDTO> getMusics(@RequestParam(name = "q") String musicTitle) {
+        String musicId = musicService.findOneMusicIdByTitle(musicTitle).getMusicId();
         MusicDTO musicInfo = musicService.findMusicInfo(musicId);
 
         return new ResponseEntity<>(musicInfo, HttpStatus.OK);
@@ -66,14 +66,16 @@ public class MusicController {
 
     /**
      * 가사 보내기
-     * @param musicId
+     * @param title
      * @return
      * @throws IOException
+     * @url /play/lyrics?title=~
      */
 
     @GetMapping("/play/lyrics")
-    public ResponseEntity<String> getLyrics(String musicId) throws IOException {
-        return new ResponseEntity<>(musicService.readLirics(musicId), HttpStatus.OK);
+    public ResponseEntity<String> getLyrics(@RequestParam(name = "title") String title) throws IOException {
+        String musicId = musicService.findOneMusicIdByTitle(title).getMusicId();
+        return new ResponseEntity<>(musicService.readLyrics(musicId), HttpStatus.OK);
     }
 
     /**
@@ -85,9 +87,10 @@ public class MusicController {
      * JSon 포맷으로 전송된 request parameter 데이터를 받을 액션 메서드의 파라미터 변수에는 @RequestBody 어노테이션을 붙여주어야 한다.
      */
     @PostMapping("/play")
-    public LinkedHashMap getAudio(@RequestBody LinkedHashMap param, String musicId) throws Exception{
+    public LinkedHashMap getAudio(@RequestBody LinkedHashMap param, @RequestParam(name = "title") String title) throws Exception{
         //위에 스트링으로 만들어준 객체를 답변을 위한 해쉬맵 객체에 넣어
         //프론트로 보내기 위해 적재
+        String musicId = musicService.findOneMusicIdByTitle(title).getMusicId();
         return mp3Service.playAudio(param, musicId);
     }
 

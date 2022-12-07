@@ -19,6 +19,8 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
     @Query("SELECT m.musicId FROM MusicEntity m WHERE m.title in :title")
     List<String> findMusicIdsByTitle(@Param("title") List<String> title);
 
+    MusicEntity findMusicEntityByTitleContainingIgnoreCase(@Param("title") String title);
+
     /**
      * [select] singerName으로 음악 정보 출력
      * @param singer
