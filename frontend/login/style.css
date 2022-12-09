@@ -1,0 +1,71 @@
+@font-face {
+  font-family: 'MonoplexKR-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_Monoplex-kr@1.0/MonoplexKR-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'MonoplexKR-Regular';
+  border-radius: 5px;
+  background-color: #f5f5f5;
+}
+ 
+body {
+  margin: 0;
+  
+}
+ 
+.login-form {
+    width: 80vw;
+   
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 50px;
+    padding: 20px 100px;
+    text-align: left;
+    border: none;
+    box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
+}
+
+.login-form > div {
+    width: 50vw;
+    margin: auto;
+
+}
+
+.form{
+ 
+  display: flex;
+
+}
+
+ 
+.text-field {
+      font-size: 16px;
+      padding: 10px;
+      border: 1px solid #dddddd;
+      width: 30vw;
+      margin-bottom: 10px;
+      margin-right: 20px;    
+}
+ 
+.submit-btn {
+  font-size: 16px;
+  border: none;
+  padding: 10px;
+  width: 40vw;
+  background-color: #499d77;
+  margin: 0px 0px 15px 0px;
+  color: white;
+}
+ 
+.links {
+    text-align: right;
+}
+ 
+.links a {
+  font-size: 14px;
+  color: #9B9B9B;
+}
