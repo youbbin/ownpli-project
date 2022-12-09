@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - 회원가입 페이지 디자인</title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<form action="doJoin" method="POST" class="joinForm" onsubmit="DoJoinForm__submit(this); return false;">
+                                                                                               
+      <h2>회원가입</h2>
+      <div class="textForm">
+        <input name="loginId" type="text" class="id" placeholder="아이디">
+        </input>
+      </div>
+      <div class="textForm">
+        <input name="loginPw" type="password" class="pw" placeholder="비밀번호">
+      </div>
+      <div class="textForm">
+        <input name="name" type="text" class="name" placeholder="이름">
+      </div>
+       <div class="textForm">
+        <input name="age" type="text" class="age" placeholder="나이">
+      </div>
+      <div class="radioForm">
+        <div class = "sex">
+          <input name="sex" type="radio" value="male" required>
+        <label for="male">남자</label>
+        <input name="sex" type="radio" value="female">
+        <label for="female">여자</label>
+        </div>
+        
+      </div>
+      <input type="submit" class="btn" value="J O I N"/>
+    </form>
+
+</body>
+</html>
