@@ -44,6 +44,10 @@ public class MusicService {
         return models;
     }
 
+    public List<String> findSingerList() {
+        return musicRepository.findSingers();
+    }
+
     /**
      * MusicEntity 리스트를 MusicDTO로 변환
      * @param musicEntities

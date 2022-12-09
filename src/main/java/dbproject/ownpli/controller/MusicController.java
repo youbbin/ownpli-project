@@ -35,6 +35,17 @@ public class MusicController {
     }
 
     /**
+     * 가수 리스트 가져오기
+     * @return
+     */
+    @GetMapping("/add")
+    public ResponseEntity<LinkedHashMap> getMusicAboutCondition() {
+        LinkedHashMap<String, List> res = new LinkedHashMap<>();
+        res.put("singerName", musicService.findSingerList());
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    /**
      * 제목과 가수 이름으로 음악을 검색하는 기능
      * @param musicSearch
      * @return
