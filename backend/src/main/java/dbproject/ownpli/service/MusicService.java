@@ -1,6 +1,7 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.music.MusicEntity;
+import dbproject.ownpli.domain.music.MusicLikeEntity;
 import dbproject.ownpli.dto.MusicDTO;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,28 @@ public class MusicService {
         return models;
     }
 
+    public List<String> findSingerList() {
+        return musicRepository.findSingers();
+    }
+
+    public boolean validateDuplicateLikes(String userId, String musicId) {
+        Optional<MusicLikeEntity> findLikes = musicLikeRepository.findByUserIdAndMusicId(userId, musicId);
+
+        if(!findLikes.isEmpty())
+            return false;
+        return true;
+    }
+
+    public String musicLikeSetting(String userId, String musicId) {
+
+        boolean flag = validateDuplicateLikes(userId, musicId);
+        if(!flag) return null;
+
+        musicLikeRepository.save(MusicLikeEntity.builder().musicId(musicId).userId(userId).build());
+        log.info("회원가입 완료");
+        return musicId;
+    }
+
     /**
      * MusicEntity 리스트를 MusicDTO로 변환
      * @param musicEntities
@@ -84,6 +107,15 @@ public class MusicService {
      */
     public List<String> findByTitle(List<String> title) {
         return musicRepository.findMusicIdsByTitle(title);
+    }
+
+    /**
+     * 음악 이름으로 음악 아이디들 찾기
+     * @param title
+     * @return
+     */
+    public MusicEntity findOneMusicIdByTitle(String title) {
+        return musicRepository.findMusicEntityByTitleContainingIgnoreCase(title);
     }
 
     /**
@@ -131,6 +163,7 @@ public class MusicService {
 
         String inputFile = byMusicId.getImageFile();
 
+        //D to C
         inputFile = inputFile.replaceFirst("D", "C");
 
         Path path = new File(inputFile).toPath();
@@ -206,7 +239,7 @@ public class MusicService {
     }
 
     public List<String> divString(String s) {
-        StringTokenizer st = new StringTokenizer(s, ",");
+        StringTokenizer st = new StringTokenizer(s, "@");
 
         List<String> list = new ArrayList<>();
         for(int i = 0; i < st.countTokens() + 1; i++) {
@@ -276,9 +309,12 @@ public class MusicService {
      * @return Model
      * @throws IOException
      */
-    public String readLirics(String musicId) throws IOException {
+    public String readLyrics(String musicId) throws IOException {
+        String path = musicRepository.findById(musicId).get().getLyricsFile();
+        //D to C
+        path = path.replaceFirst("D", "C");
         //파일 읽기
-        BufferedReader br = new BufferedReader(new FileReader(musicRepository.findById(musicId).get().getLyricsFile()));
+        BufferedReader br = new BufferedReader(new FileReader(path));
         String line ="", result = "";
 
         //한 줄 씩 읽은 내용 쓰기

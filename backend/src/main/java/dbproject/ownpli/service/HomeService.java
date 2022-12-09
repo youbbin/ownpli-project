@@ -1,6 +1,8 @@
 package dbproject.ownpli.service;
 
+import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.dto.MusicDTO;
+import dbproject.ownpli.repository.MusicLikeRepository;
 import dbproject.ownpli.repository.MusicRepository;
 import dbproject.ownpli.repository.PlaylistMusicRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ public class HomeService {
     private final PlaylistMusicRepository playlistMusicRepository;
     private final MusicRepository musicRepository;
     private final MusicService musicService;
+    private final MusicLikeRepository musicLikeRepository;
 
     /**
      * playlist 많이 담은 순으로 음악 보내기
@@ -47,6 +50,20 @@ public class HomeService {
         }
 
         return musicDTOList;
+    }
+
+    public List<MusicDTO> findTop10LikeList() {
+        Optional<List<String>> musicIds = musicLikeRepository.findMusicIds();
+        List<MusicDTO> musicDTOList = new ArrayList<>();
+        if(musicIds.isEmpty() || musicIds.get().size() < 10) {
+            for (int i = 0; i < 10; i++) {
+                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
+            }
+            return musicDTOList;
+        }
+
+        List<MusicEntity> byMusicId = musicRepository.findByMusicId(musicIds.get());
+        return musicService.musicEntitiesToMusicDTO(byMusicId);
     }
 
     public class MusicList {

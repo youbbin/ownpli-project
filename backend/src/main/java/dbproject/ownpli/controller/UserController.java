@@ -6,10 +6,11 @@ import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
 
 @RestController
@@ -49,7 +50,7 @@ public class UserController {
      * @return ResponseEntity [Coolie]
      */
     @PostMapping("/login")
-    public ResponseEntity<Cookie> login(@RequestBody LinkedHashMap<String, String> param) {
+    public ResponseEntity<LinkedHashMap> login(@RequestBody LinkedHashMap<String, String> param) {
         String loginId = param.get("userId");
         String password = param.get("password");
 
@@ -60,21 +61,21 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        //로그인 성공 처리
+        LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put("userId", loginId);
 
-        //쿠키에 시간 정보를 주지 않으면 세션 쿠기(브라우저 종료시 모두 종료)
-        Cookie idCookie = new Cookie("userId", loginUser.getUserId());
-        return new ResponseEntity<>(idCookie, HttpStatus.OK);
+        return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
 
     }
 
     /**
      * 유저 정보 가져오기
-     * @param userId
+     * @param param
      * @return
      */
     @GetMapping("/mypage")
-    public ResponseEntity<UserDTO> homeLogin(@CookieValue(name = "userId") String userId) {
+    public ResponseEntity<UserDTO> homeLogin(@RequestBody LinkedHashMap param) {
+        String userId = param.get("userId").toString();
         if (userId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -89,13 +90,12 @@ public class UserController {
 
     /**
      * 유저 닉네임 변경
-     * @param userId
      * @param param
      * @return
      */
     @PostMapping("/mypage/update")
-    public ResponseEntity<UserDTO> changeName(@CookieValue(name = "userId") String userId,
-                                              @RequestBody LinkedHashMap param) {
+    public ResponseEntity<UserDTO> changeName(@RequestBody LinkedHashMap param) {
+        String userId = param.get("userId").toString();
         if (userId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -109,22 +109,22 @@ public class UserController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
 
     }
-
-    /**
-     * 로그아웃
-     * @param response
-     * @return
-     */
-    @PostMapping("/logout")
-    public ResponseEntity<HttpServletResponse> logout(HttpServletResponse response) {
-        expiredCookie(response, "userId");
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    private void expiredCookie(HttpServletResponse response, String cookieName) {
-        Cookie cookie = new Cookie(cookieName, null);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-    }
+//
+//    /**
+//     * 로그아웃
+//     * @param response
+//     * @return
+//     */
+//    @PostMapping("/logout")
+//    public ResponseEntity<HttpServletResponse> logout(HttpServletResponse response) {
+//        expiredCookie(response, "userId");
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
+//
+//    private void expiredCookie(HttpServletResponse response, String cookieName) {
+//        Cookie cookie = new Cookie(cookieName, null);
+//        cookie.setMaxAge(0);
+//        response.addCookie(cookie);
+//    }
 
 }

@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 @RequiredArgsConstructor
@@ -20,12 +19,11 @@ public class Mp3Service {
 
     /**
      * 읽어들이는 파일을 컨트롤러를 통해 보내기 위해 적재하는 메소드
-     * @param param
      * @param musicId
      * @return LinkedHashMap
      * @throws Exception
      */
-    public LinkedHashMap playAudio(HashMap param, String musicId) throws Exception{
+    public LinkedHashMap playAudio(String musicId) throws Exception{
 
         String mp3FileAddress = musicRepository.findMp3FileByMusicId(musicId);
         //파일을 파일객체에 넣는다/
