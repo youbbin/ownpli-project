@@ -50,7 +50,7 @@ public class UserController {
      * @return ResponseEntity [Coolie]
      */
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LinkedHashMap<String, String> param) {
+    public ResponseEntity<LinkedHashMap> login(@RequestBody LinkedHashMap<String, String> param) {
         String loginId = param.get("userId");
         String password = param.get("password");
 
@@ -61,7 +61,10 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put("userId", loginId);
+
+        return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
 
     }
 

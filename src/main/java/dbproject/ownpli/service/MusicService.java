@@ -1,6 +1,7 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.music.MusicEntity;
+import dbproject.ownpli.domain.music.MusicLikeEntity;
 import dbproject.ownpli.dto.MusicDTO;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,24 @@ public class MusicService {
 
     public List<String> findSingerList() {
         return musicRepository.findSingers();
+    }
+
+    public boolean validateDuplicateLikes(String userId, String musicId) {
+        Optional<MusicLikeEntity> findLikes = musicLikeRepository.findByUserIdAndMusicId(userId, musicId);
+
+        if(!findLikes.isEmpty())
+            return false;
+        return true;
+    }
+
+    public String musicLikeSetting(String userId, String musicId) {
+
+        boolean flag = validateDuplicateLikes(userId, musicId);
+        if(!flag) return null;
+
+        musicLikeRepository.save(MusicLikeEntity.builder().musicId(musicId).userId(userId).build());
+        log.info("회원가입 완료");
+        return musicId;
     }
 
     /**

@@ -21,6 +21,14 @@ public interface MusicLikeRepository extends JpaRepository<MusicLikeEntity, Long
     @Query("SELECT count(ml.musicId) FROM music_like ml WHERE ml.musicId = :musicId")
     Optional<Long> countByMusicId(@Param("musicId") String musicId);
 
+    @Query("SELECT DISTINCT ml.musicId FROM music_like ml")
+    Optional<List<String>> findMusicIds();
+
+//    @Query("SELECT ml.musicId, count(ml.musicId) FROM music_like ml")
+//    Optional<List<Long>> countByMusicIdList();
+
+    Optional<MusicLikeEntity> findByUserIdAndMusicId(String userId, String musicId);
+
     /**
      * [select] 사용자가 좋아요한 노래 목록
      * @param userId

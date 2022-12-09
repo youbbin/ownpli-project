@@ -1,5 +1,6 @@
 package dbproject.ownpli.controller;
 
+import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.dto.MusicDTO;
 import dbproject.ownpli.dto.SearchDTO;
 import dbproject.ownpli.service.Mp3Service;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -76,33 +78,64 @@ public class MusicController {
     }
 
     /**
+     * 음악 정보에서 좋아요 눌렀을 때
+     * @param param
+     * @param musicTitle
+     * @return
+     */
+    @PostMapping("/title")
+    public ResponseEntity<MusicDTO> musicLikes(@RequestBody LinkedHashMap param, @RequestParam(name = "q") String musicTitle) {
+        String musicId = musicService.findOneMusicIdByTitle(musicTitle).getMusicId();
+        String userId = musicService.musicLikeSetting(param.get("userId").toString(), musicId);
+
+        if(userId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        MusicDTO musicInfo = musicService.findMusicInfo(musicId);
+
+        return new ResponseEntity<>(musicInfo, HttpStatus.OK);
+    }
+
+    /**
      * 가사 보내기
      * @param title
      * @return
      * @throws IOException
-     * @url /play/lyrics?title=~
+     * @url /play/lyrics?q=~
      */
 
-    @GetMapping("/play/lyrics")
-    public ResponseEntity<String> getLyrics(@RequestParam(name = "title") String title) throws IOException {
+    @GetMapping("/title/lyrics")
+    public ResponseEntity<String> getLyrics(@RequestParam(name = "q") String title) throws IOException {
         String musicId = musicService.findOneMusicIdByTitle(title).getMusicId();
         return new ResponseEntity<>(musicService.readLyrics(musicId), HttpStatus.OK);
     }
 
     /**
      * mp3파일을 보내기 위해 클라이언트와 통신
-     * @param param
      * @return
      * @throws Exception
+     * @url /play?q=
      * @container
      * JSon 포맷으로 전송된 request parameter 데이터를 받을 액션 메서드의 파라미터 변수에는 @RequestBody 어노테이션을 붙여주어야 한다.
      */
     @PostMapping("/play")
-    public LinkedHashMap getAudio(@RequestBody LinkedHashMap param, @RequestParam(name = "title") String title) throws Exception{
-        //위에 스트링으로 만들어준 객체를 답변을 위한 해쉬맵 객체에 넣어
-        //프론트로 보내기 위해 적재
-        String musicId = musicService.findOneMusicIdByTitle(title).getMusicId();
-        return mp3Service.playAudio(param, musicId);
+    public ResponseEntity<LinkedHashMap> getAudio(@RequestParam(name = "q") String title,
+                                                  @RequestBody LinkedHashMap param) throws Exception{
+        MusicEntity musicEntity = musicService.findOneMusicIdByTitle(title);
+        LinkedHashMap linkedHashMap = mp3Service.playAudio(musicEntity.getMusicId());
+        String userId = param.get("userId").toString();
+
+        Optional likes = (Optional) param.get("likes");
+
+        if(!likes.isEmpty()) {
+            String s = musicService.musicLikeSetting(param.get("userId").toString(), musicEntity.getMusicId());
+
+            if(!userId.equals(s)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        linkedHashMap.put("title", musicEntity.getTitle());
+        linkedHashMap.put("singer", musicEntity.getSinger());
+        linkedHashMap.put("likeStatus", !musicService.validateDuplicateLikes(userId, musicEntity.getMusicId()));
+
+        return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
     }
 
 }
