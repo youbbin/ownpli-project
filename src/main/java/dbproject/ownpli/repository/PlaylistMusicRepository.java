@@ -51,10 +51,4 @@ public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEnti
     @Query("SELECT DISTINCT pm.musicId FROM playlist_music pm")
     Optional<List<String>> findDistinctMusicId();
 
-//    /**
-//     * [select] fk(musicId)값으로 playlistMusic 조회하기
-//     * @param id
-//     * @return
-//     */
-//    List<MusicEntity> findByMusic_MusicId(String id);
 }

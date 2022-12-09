@@ -28,4 +28,7 @@ public interface MusicMoodRepository extends JpaRepository<MusicMoodEntity, Long
      */
     @Query("SELECT mm.musicId FROM music_mood mm WHERE mm.moodNum in :moodNum")
     List<String> findByMoodNum(List<Long> moodNum);
+
+    @Query("SELECT mm.musicId FROM music_mood mm WHERE mm.moodNum = :moodNum")
+    List<String> findOneByMoodNum(Long moodNum);
 }

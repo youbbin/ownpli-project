@@ -78,7 +78,7 @@ public class PlaylistService {
      * @param title
      * @param musicIds
      */
-    public String savePlaylist(String userId, String title, List<String> musicIds) {
+    public String savePlaylist(String userId, String title) {
 
         Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(title, userId);
         if(!byPlaylistTitleAndUserId.isEmpty())
@@ -107,16 +107,7 @@ public class PlaylistService {
                 .build()
         );
 
-        for(int i = 0; i < musicIds.size(); i++) {
-            playlistMusicRepository.save(
-                PlaylistMusicEntity.builder()
-                    .playlistId(playlistRepository.findById(id).get().getPlaylistId())
-                    .musicId(musicRepository.findById(musicIds.get(i)).get().getMusicId())
-                    .date(Date.valueOf(LocalDate.now()))
-                    .build());
-        }
-
-        log.info("플레이리스트 저장");
+        log.info("플레이리스트 생성");
         return id;
     }
 

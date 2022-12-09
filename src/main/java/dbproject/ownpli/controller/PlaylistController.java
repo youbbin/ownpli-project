@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -68,9 +69,17 @@ public class PlaylistController {
     public ResponseEntity<String> createPlaylist(@RequestBody LinkedHashMap param) {
         String userId = param.get("userId").toString();
         String title = param.get("title").toString();
-        String musicTitle = param.get("songsTitle").toString();
-        List<String> musicIds = musicService.findByTitle(musicService.divString(musicTitle));
-        String playlistId = playlistService.savePlaylist(userId, title, musicIds);
+        Optional<String> songTitle = Optional.ofNullable(param.get("songsTitle").toString());
+        String playlistId = playlistService.savePlaylist(userId, title);
+
+        if(songTitle != null) {
+            List<String> musicIds = musicService.findByTitle(musicService.divString(songTitle.get()));
+            String result = playlistService.addPlaylist(userId, playlistId, musicIds);
+
+            if(result == null )
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(HttpStatus.OK);
+        }
 
         if(playlistId == null)
             return new ResponseEntity<>("이미 존재하는 제목입니다.", HttpStatus.BAD_REQUEST);
