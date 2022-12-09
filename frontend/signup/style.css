@@ -1,124 +1,134 @@
 @font-face {
-    font-family: 'MonoplexKR-Regular';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_Monoplex-kr@1.0/MonoplexKR-Regular.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
-  }
+  font-family: 'MonoplexKR-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_Monoplex-kr@1.0/MonoplexKR-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
 * {
-    margin: 0px;
-    padding: 0px;
-    text-decoration: none;
-    font-family: 'MonoplexKR-Regular';
-  
-  }
-  
-  body {
-    background-image:#34495e;
-  }
-  
-  .joinForm {
-    position:absolute;
-    width:30%;
-    height:400px;
-    padding: 30px, 20px;
-    background-color:#FFFFFF;
-    text-align:center;
-    top:40%;
-    left:50%;
-    transform: translate(-50%,-50%);
-    border-radius: 15px;
-  }
-  
-  .joinForm h2 {
-    text-align: center;
-    margin: 30px;
-  }
-  
-  .textForm {
-    border-bottom: 2px solid #adadad;
-    margin: 30px;
-    padding: 10px 10px;
+  margin: 0px;
+  padding: 0px;
+  text-decoration: none;
+  font-family: 'MonoplexKR-Regular';
+  background-color: #ffffff;
+}
 
-  }
-  .radioForm {
-    border-bottom: 2px solid #adadad;
-    margin: 30px;
-    padding: 10px 10px;
-    text-align: left;
-  
-  }
-  
-  
-  .id {
-    width: 100%;
-    border:none;
-    outline:none;
-    color: #636e72;
-    font-size:16px;
-    height:25px;
-    background: none;
-  }
-  
-  .pw {
-    width: 100%;
-    border:none;
-    outline:none;
-    color: #636e72;
-    font-size:16px;
-    height:25px;
-    background: none;
-  }
-  
-  .name {
-    width: 100%;
-    border:none;
-    outline:none;
-    color: #636e72;
-    font-size:16px;
-    height:25px;
-    background: none;
-  }
-  
+body {
+  background-color: #f5f5f5;
+}
 
+.joinForm {
+  position: absolute;
+  width: 30%;
+  height: 550px;
+  padding: 30px, 20px;
+  background-color: #FFFFFF;
+  text-align: center;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f5f5f5;
+  border-radius: 30px;
+  box-shadow: 5px 5px 10px rgba(204, 204, 204, 0.473);
+  align-items: center;
+}
+
+.joinForm h2 {
+  text-align: center;
+  margin: 30px;
+  background-color: #f5f5f5;
   
-  .age {
-    width: 100%;
-    border:none;
-    outline:none;
-    color: #636e72;
-    font-size:16px;
-    height:25px;
-    background: none;
-  }
+}
+
+.textForm {
+  border-bottom: 2px solid #adadad;
+  margin: 30px auto;
+  padding: 10px 10px;
+  background-color: #f5f5f5;
+  width : 80%;
   
-  .sex{
-    width: 100%;
-    border:none;
-    outline:none;
-    color: #636e72;
-    font-size:16px;
-    height:25px;
-    background: none;
-    
-  }
-  
-  .btn {
-    position:relative;
-    left:40%;
-    transform: translateX(-50%);
-    margin-bottom: 40px;
-    width:80%;
-    height:40px;
-    background-color: #499d77;
-    background-size: 200%;
-    color:white;
-    font-weight: bold;
-    border:none;
-    cursor:pointer;
-    transition: 0.4s;
-    display:inline;
-  }
-  
-  .btn:hover {
-    background-position: right;
-  }
+}
+
+.radioForm {
+  border-bottom: 2px solid #adadad;
+  margin: 30px auto;
+  padding: 10px 10px;
+  text-align: left;
+  width : 80%;
+  background-color: #f5f5f5;
+}
+
+
+.id {
+  width: 100%;
+  border: none;
+  outline: none;
+  color: #636e72;
+  font-size: 16px;
+  height: 25px;
+  background: none;
+}
+
+.pw {
+  width: 100%;
+  border: none;
+  outline: none;
+  color: #636e72;
+  font-size: 16px;
+  height: 25px;
+  background: none;
+}
+
+.name {
+  width: 100%;
+  border: none;
+  outline: none;
+  color: #636e72;
+  font-size: 16px;
+  height: 25px;
+  background: none;
+}
+
+
+
+.age {
+  width: 100%;
+  border: none;
+  outline: none;
+  color: #636e72;
+  font-size: 16px;
+  height: 25px;
+  background: none;
+}
+
+.sex {
+  width: 100%;
+  border: none;
+  outline: none;
+  color: #636e72;
+  font-size: 16px;
+  height: 25px;
+  background: none;
+
+}
+
+.btn {
+  position: relative;
+  left: 40%;
+  transform: translateX(-50%);
+  margin-bottom: 40px;
+  width: 80%;
+  height: 40px;
+  background-color: #499d77;
+  background-size: 200%;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: 0.4s;
+  display: inline;
+}
+
+.btn:hover {
+  background-position: right;
+}
