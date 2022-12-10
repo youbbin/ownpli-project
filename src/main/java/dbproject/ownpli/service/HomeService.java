@@ -1,6 +1,5 @@
 package dbproject.ownpli.service;
 
-import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.dto.MusicDTO;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,30 +28,16 @@ public class HomeService {
      */
     public List<MusicDTO> findTop10Musics() {
         Optional<List<String>> distinctMusicIdOptional = playlistMusicRepository.findDistinctMusicId();
-        List<MusicDTO> musicDTOList = new ArrayList<>();
 
         if(distinctMusicIdOptional.isEmpty() || distinctMusicIdOptional.get().size() < 10) {
+            List<MusicDTO> musicDTOList = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
                 musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
             }
             return musicDTOList;
         }
 
-        List<String> distinctMusicId = distinctMusicIdOptional.get();
-        List<MusicList> musicLists = new ArrayList<>();
-
-        for(int i = 0; i < distinctMusicId.size(); i++) {
-            musicLists.add(new MusicList(playlistMusicRepository.countByMusicId(distinctMusicId.get(i)), distinctMusicId.get(i)));
-        }
-
-        Collections.sort(musicLists, Collections.reverseOrder());
-
-
-        for (int i = 0; i < 10; i++) {
-            musicDTOList.add(musicService.findMusicInfo(musicLists.get(i).musicId));
-        }
-
-        return musicDTOList;
+        return musicService.findMusicInfosByPlaylist(distinctMusicIdOptional.get());
     }
 
     /**
@@ -62,28 +46,16 @@ public class HomeService {
      */
     public List<MusicDTO> findTop10LikeList() {
         Optional<List<String>> musicIds = musicLikeRepository.findMusicIds();
-        List<MusicDTO> musicDTOList = new ArrayList<>();
 
-        if(musicIds.isEmpty() || musicIds.get().size() < 10) {
-            for (int i = 0; i < 10; i++) {
-                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
-            }
-            return musicDTOList;
-        }
+//        if(musicIds == null || musicIds.get().size() < 10) {
+//            List<MusicDTO> musicDTOList = new ArrayList<>();
+//            for (int i = 0; i < 10; i++) {
+//                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
+//            }
+//            return musicDTOList;
+//        }
 
-        List<MusicEntity> byMusicId = musicRepository.findByMusicId(musicIds.get());
-        List<MusicList> musicLists = new ArrayList<>();
-
-        for(int i = 0; i < byMusicId.size(); i++) {
-            musicLists.add(new MusicList(musicLikeRepository.countByMusicId(byMusicId.get(i).getMusicId()).get(), byMusicId.get(i).getMusicId()));
-        }
-
-        Collections.sort(musicLists, Collections.reverseOrder());
-
-        for (int i = 0; i < 10; i++) {
-            musicDTOList.add(musicService.findMusicInfo(musicLists.get(i).musicId));
-        }
-        return musicDTOList;
+        return musicService.findMusicInfosByPlaylist(musicIds.get());
     }
 
     public List<MusicDTO> ageList(String userId) {
@@ -116,13 +88,4 @@ public class HomeService {
         return musicService.musicEntitiesToMusicDTO(musicRepository.findByMusicId(oneByMoodNum).subList(0, 6));
     }
 
-    public class MusicList {
-        private Long count;
-        private String musicId;
-
-        MusicList(Long count, String musicId) {
-            this.count = count;
-            this.musicId = musicId;
-        }
-    }
 }

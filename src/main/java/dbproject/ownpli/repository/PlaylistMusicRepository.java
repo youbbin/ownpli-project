@@ -47,7 +47,11 @@ public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEnti
     @Query("SELECT count(pm.musicId) FROM playlist_music pm WHERE pm.musicId = :musicId GROUP BY pm.musicId")
     Long countByMusicId(String musicId);
 
-    @Query("SELECT DISTINCT pm.musicId FROM playlist_music pm")
+    /**
+     * playlist에 많이 담긴 순으로
+     * @return
+     */
+    @Query("SELECT DISTINCT pm.musicId FROM playlist_music pm GROUP BY pm.musicId ORDER BY count(pm.musicId) DESC")
     Optional<List<String>> findDistinctMusicId();
 
 }

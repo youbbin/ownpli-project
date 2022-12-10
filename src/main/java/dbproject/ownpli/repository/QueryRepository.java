@@ -16,6 +16,7 @@ import java.util.List;
 
 import static dbproject.ownpli.domain.QUserEntity.userEntity;
 import static dbproject.ownpli.domain.music.QMusicEntity.musicEntity;
+import static dbproject.ownpli.domain.music.QMusicMoodEntity.musicMoodEntity;
 import static dbproject.ownpli.domain.playlist.QPlaylistEntity.playlistEntity;
 
 
@@ -30,14 +31,18 @@ public class QueryRepository {
                                                      List<String> hates,
                                                      List<Long> genre,
                                                      List<String> country,
-                                                     List<String> year) throws ParseException {
+                                                     List<String> year,
+                                                     List<Long> mood) throws ParseException {
         return jpaQueryFactory
             .selectFrom(musicEntity)
-            .where(inSingers(likes),
-                notInSingers(hates),
+            .from(musicEntity, musicMoodEntity)
+            .where(musicMoodEntity.musicId.eq(musicEntity.musicId),
+                inSingers(likes),
+                notInSingers(hates).not(),
                 inGenre(genre),
                 inCountry(country),
-                betweenDate(year)
+                betweenDate(year),
+                inMood(mood)
             ).fetch();
     }
 
@@ -62,7 +67,7 @@ public class QueryRepository {
 
         for (String like : likes){
             log.info("singerLike = {}", like);
-            booleanBuilder.or(musicEntity.singer.contains(like));
+            booleanBuilder.or(musicEntity.singer.eq(like));
         }
 
         return booleanBuilder;
@@ -77,7 +82,7 @@ public class QueryRepository {
 
         for (String hate : hates){
             log.info("singerHate={}", hate);
-            booleanBuilder.or(musicEntity.singer.eq(hate).not());
+            booleanBuilder.or(musicEntity.singer.eq(hate));
         }
 
         return booleanBuilder;
@@ -128,6 +133,20 @@ public class QueryRepository {
             date2 = new Date(format.parse((Integer.parseInt(a) + 9) + "-12-31").getTime());
 
             booleanBuilder.or(musicEntity.date.between(date1, date2));
+        }
+
+        return booleanBuilder;
+    }
+
+    private BooleanBuilder inMood(List<Long> mood) {
+        if (mood == null) {
+            return null;
+        }
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+        for (Long m : mood){
+            log.info("mood={}", m);
+            booleanBuilder.or(musicMoodEntity.moodNum.eq(m));
         }
 
         return booleanBuilder;

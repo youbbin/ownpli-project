@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -40,22 +43,24 @@ public class MusicController {
      * 가수 리스트 가져오기
      * @return
      */
-    @GetMapping("/add")
+    @PostMapping("/singer")
     public ResponseEntity<LinkedHashMap> getMusicAboutCondition() {
         LinkedHashMap<String, List> res = new LinkedHashMap<>();
+//        String join = StringUtils.join(musicService.findSingerList(), '@');
         res.put("singerName", musicService.findSingerList());
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     /**
      * 제목과 가수 이름으로 음악을 검색하는 기능
-     * @param musicSearch
+     * @param param
      * @return
      * @Container
      * /music/search?q=!
      */
-    @GetMapping("/search")
-    public ResponseEntity<SearchDTO> searchMusics(@RequestParam(name = "q") String musicSearch) {
+    @PostMapping("/search")
+    public ResponseEntity<SearchDTO> searchMusics(@RequestBody LinkedHashMap param) {
+        String musicSearch = param.get("musicSearch").toString();
 
         List<MusicDTO> searchTitle = musicService.musicEntitiesToMusicDTO(musicService.findByTitleContain(musicSearch));
         List<MusicDTO> searchSinger = musicService.musicEntitiesToMusicDTO(musicService.findBySingerContain(musicSearch));
@@ -68,7 +73,7 @@ public class MusicController {
      * @return
      * @url /music/title?q=~
      */
-    @GetMapping("/title")
+    @PostMapping("/title")
     public ResponseEntity<MusicDTO> getMusics(@RequestBody LinkedHashMap param) {
         String musicId = musicService.findOneMusicIdByTitle(param.get("title").toString()).getMusicId();
         MusicDTO musicInfo = musicService.findMusicInfo(musicId);
