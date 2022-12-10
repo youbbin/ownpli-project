@@ -16,38 +16,25 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/home")
 public class HomeController {
+
     private final HomeService homeService;
 
 //    로그인 전: 신곡, top10, 좋아요 순
 //    로그인 후: 신곡, top10, 좋아요 순, 연령별 추천(플레이리스트 담은 순), 분위기1 별 노래5?(랜덤으로)
+//    한번에
 
-    /**
-     * Top10 음악 찾기
-     * @return
-     * @container
-     * 플레이리스트에 담은 곡이 10곡 이상이 안되면 첫 곡부터 10곡 출력
-     */
-    @GetMapping("/top10")
-    public ResponseEntity<List<MusicDTO>> top10Musics() {
-        return new ResponseEntity<>(homeService.findTop10Musics(), HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<LinkedHashMap<String, List<MusicDTO>>> homeController(@RequestBody(required = false) LinkedHashMap param) {
+        LinkedHashMap<String, List<MusicDTO>> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put("top10", homeService.findTop10Musics());
+        linkedHashMap.put("likes", homeService.findTop10LikeList());
+
+        if(param != null) {
+            linkedHashMap.put("age", homeService.ageList(param.get("userId").toString()));
+            linkedHashMap.put("mood", homeService.mood5List());
+        }
+
+        return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
     }
 
-    /**
-     * 좋아요 많이 받은 순으로 노래 보내기
-     * @return
-     */
-    @GetMapping("/likes")
-    public ResponseEntity<List<MusicDTO>> searchMusics() {
-        return new ResponseEntity<>(homeService.findTop10LikeList(), HttpStatus.OK);
-    }
-
-    @PostMapping("/??")
-    public ResponseEntity<List<MusicDTO>> ageMusics(@RequestBody LinkedHashMap param) {
-        return new ResponseEntity<>(homeService.findTop10LikeList(), HttpStatus.OK);
-    }
-
-    @GetMapping("/moods")
-    public ResponseEntity<List<MusicDTO>> moodMusics() {
-        return new ResponseEntity<>(homeService.mood5List(), HttpStatus.OK);
-    }
 }

@@ -1,7 +1,9 @@
 package dbproject.ownpli.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +14,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import static dbproject.ownpli.domain.QUserEntity.userEntity;
 import static dbproject.ownpli.domain.music.QMusicEntity.musicEntity;
+import static dbproject.ownpli.domain.playlist.QPlaylistEntity.playlistEntity;
+
 
 @Slf4j
 @Repository
@@ -33,6 +38,16 @@ public class QueryRepository {
                 inGenre(genre),
                 inCountry(country),
                 betweenDate(year)
+            ).fetch();
+    }
+
+    public List<String> findAgeCompare(UserEntity user) {
+        return jpaQueryFactory
+            .selectFrom(playlistEntity)
+            .select(playlistEntity.playlistId)
+            .from(playlistEntity, userEntity)
+            .where(playlistEntity.userId.eq(userEntity.userId),
+                betweenAge(user.getAge())
             ).fetch();
     }
 
@@ -116,6 +131,12 @@ public class QueryRepository {
         }
 
         return booleanBuilder;
+    }
+
+    private BooleanExpression betweenAge(int age) {
+        int age1 = age / 10 * 10;
+        int age2 = age1 + 9;
+        return userEntity.age.between(age1, age2);
     }
 
 }

@@ -26,6 +26,9 @@ public class Mp3Service {
     public LinkedHashMap playAudio(String musicId) throws Exception{
 
         String mp3FileAddress = musicRepository.findMp3FileByMusicId(musicId);
+
+        //D to C
+        mp3FileAddress = mp3FileAddress.replaceFirst("D", "C");
         //파일을 파일객체에 넣는다/
         File file = new File(mp3FileAddress);
 
@@ -61,7 +64,7 @@ public class Mp3Service {
         inputStream = new FileInputStream(file);
         byteOutStream = new ByteArrayOutputStream();
         int len = 0;
-        //바이트 배열임시생성 (왜 1024인지는 모른다 안다면 댓글부탁 드립니다.)
+        //바이트 배열임시생성
         byte[] buf = new byte[1024];
 
         //읽어들인 스트림이 False(-1)이 아닐때까지 루프를 돌린다.

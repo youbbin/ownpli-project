@@ -1,6 +1,5 @@
 package dbproject.ownpli.repository;
 
-import dbproject.ownpli.domain.playlist.PlaylistEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,13 +13,13 @@ import java.util.Optional;
 public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEntity, String> {
 
     /**
-     * [select] 플레이리스트 아이디들로 해당 컬럼 출력
+     * [select] 플레이리스트 아이디들로 음악 리스트 출력
      * @param playlistId
      * @return List[PlaylistEntity]
      * @CRUD read
      */
-    @Query(value = "SELECT pm FROM playlist_music pm WHERE pm.playlistId in :playlistId")
-    List<PlaylistEntity> findByPlaylistId(@Param("playlistId") List<String> playlistId);
+    @Query(value = "SELECT distinct pm.musicId FROM playlist_music pm WHERE pm.playlistId in :playlistId")
+    List<String> findByPlaylistId(@Param("playlistId") List<String> playlistId);
 
     /**
      * [select] 플레이리스트 아이디로 음악 id만 출력
@@ -28,7 +27,7 @@ public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEnti
      * @return List[String]
      * @CRUD read
      */
-    @Query(value = "SELECT pm.musicId FROM playlist_music pm WHERE pm.playlistId = :playlistId")
+    @Query(value = "SELECT DISTINCT pm.musicId FROM playlist_music pm WHERE pm.playlistId = :playlistId")
     List<String> findMusicIdsByPlaylistId(String playlistId);
 
     /**

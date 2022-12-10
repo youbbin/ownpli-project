@@ -21,6 +21,8 @@ public class HomeService {
     private final MusicLikeRepository musicLikeRepository;
     private final MoodRepository moodRepository;
     private final MusicMoodRepository musicMoodRepository;
+    private final UserService userService;
+    private final QueryRepository queryRepository;
 
     /**
      * playlist 많이 담은 순으로 음악 보내기
@@ -82,6 +84,23 @@ public class HomeService {
             musicDTOList.add(musicService.findMusicInfo(musicLists.get(i).musicId));
         }
         return musicDTOList;
+    }
+
+    public List<MusicDTO> ageList(String userId) {
+        List<String> ageCompare = queryRepository.findAgeCompare(userService.findByUserId(userId));
+        List<String> byPlaylistId = playlistMusicRepository.findByPlaylistId(ageCompare);
+        List<MusicDTO> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(byPlaylistId);
+
+        if(musicInfosByPlaylist.size() < 10 || musicInfosByPlaylist.isEmpty()) {
+            List<MusicDTO> musicDTOList = new ArrayList<>();
+
+            for (int i = 0; i < 10; i++) {
+                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
+            }
+            return musicDTOList;
+        }
+
+        return musicInfosByPlaylist;
     }
 
     public List<MusicDTO> mood5List() {
