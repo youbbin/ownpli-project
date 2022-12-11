@@ -108,13 +108,14 @@ public class PlaylistService {
         if(byPlaylistTitleAndUserId.isPresent())
             return null;
 
-        Optional<PlaylistEntity> idOptional = playlistRepository.findTop1ByUserIdOrderByPlaylistIdDesc(userId);
+        Optional<PlaylistEntity> idOptional = playlistRepository.findFirstByOrderByPlaylistIdDesc();
         String id = "";
         if(idOptional.isEmpty())
             id = "p1";
         else {
             id = idOptional.get().getPlaylistId();
             log.info("id={}", id);
+//            String[] ps = id.split("p");
             StringTokenizer st = new StringTokenizer(id, "p");
             Long idLong = Long.parseLong(st.nextToken());
 

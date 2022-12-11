@@ -106,17 +106,17 @@ public class PlaylistController {
         Optional songTitle = Optional.ofNullable(param.get("songsTitle"));
         String playlistId = playlistService.savePlaylist(userId, title);
 
+        if(playlistId == null)
+            return new ResponseEntity<>("이미 존재하는 제목입니다.", HttpStatus.BAD_REQUEST);
+
         if(songTitle.isPresent()) {
             List<String> musicIds = musicService.findByTitle(List.of(songTitle.get().toString().split("@")));
             String result = playlistService.addPlaylist(userId, playlistId, musicIds);
 
             if(result == null )
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity("생성 성공", HttpStatus.OK);
         }
-
-        if(playlistId == null)
-            return new ResponseEntity<>("이미 존재하는 제목입니다.", HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity("생성 성공", HttpStatus.OK);
     }

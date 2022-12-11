@@ -29,10 +29,9 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
 
     /**
      * [select] 가장 마지막 행 가져오기
-     * @param userId
      * @return PlaylistEntity
      */
-    Optional<PlaylistEntity> findTop1ByUserIdOrderByPlaylistIdDesc(String userId);
+    Optional<PlaylistEntity> findFirstByOrderByPlaylistIdDesc();
 
     /**
      * userId와 제목을 이용해 플레이리스트 엔티티 찾기

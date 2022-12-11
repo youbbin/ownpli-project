@@ -73,14 +73,18 @@ public class MusicController {
     /**
      * 단일 음악 정보 보내기
      * @return
-     * @url /music/title?q=~
+     * @url /music/title
      */
     @PostMapping("/title")
-    public ResponseEntity<MusicDTO> getMusics(@RequestBody LinkedHashMap param) {
+    public ResponseEntity<LinkedHashMap> getMusics(@RequestBody LinkedHashMap param) throws IOException {
         String musicId = musicService.findOneMusicIdByTitle(param.get("title").toString()).getMusicId();
         MusicDTO musicInfo = musicService.findMusicInfo(musicId);
 
-        return new ResponseEntity<>(musicInfo, HttpStatus.OK);
+        LinkedHashMap hashMap = new LinkedHashMap();
+        hashMap.put("musicInfo", musicInfo);
+        hashMap.put("lyrics", musicService.readLyrics(musicId));
+
+        return new ResponseEntity<>(hashMap, HttpStatus.OK);
     }
 
     /**

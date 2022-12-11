@@ -34,13 +34,13 @@ public class HomeService {
     public List<MusicDTO> findTop10Musics() {
         Optional<List<String>> distinctMusicIdOptional = playlistMusicRepository.findDistinctMusicId();
 
-        if(distinctMusicIdOptional.isEmpty() || distinctMusicIdOptional.get().size() < 10) {
-            List<MusicDTO> musicDTOList = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
-                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
-            }
-            return musicDTOList;
-        }
+//        if(distinctMusicIdOptional.isEmpty() || distinctMusicIdOptional.get().size() < 10) {
+//            List<MusicDTO> musicDTOList = new ArrayList<>();
+//            for (int i = 0; i < 10; i++) {
+//                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
+//            }
+//            return musicDTOList;
+//        }
 
         return musicService.findMusicInfosByPlaylist(distinctMusicIdOptional.get()).subList(0, 10);
     }
