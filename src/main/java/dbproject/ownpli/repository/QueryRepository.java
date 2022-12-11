@@ -36,10 +36,10 @@ public class QueryRepository {
         return jpaQueryFactory
             .selectFrom(musicEntity)
             .select(musicEntity)
-            .from(musicEntity, musicMoodEntity)
+            .from(musicEntity, musicMoodEntity).distinct()
             .where(musicMoodEntity.musicId.eq(musicEntity.musicId),
                 inSingers(likes),
-                notInSingers(hates).not(),
+                notInSingers(hates),
                 inGenre(genre),
                 inCountry(country),
                 betweenDate(year),
@@ -86,7 +86,7 @@ public class QueryRepository {
             booleanBuilder.or(musicEntity.singer.contains(hate));
         }
 
-        return booleanBuilder;
+        return booleanBuilder.not();
     }
 
     private BooleanBuilder inGenre(List<Long> genre) {

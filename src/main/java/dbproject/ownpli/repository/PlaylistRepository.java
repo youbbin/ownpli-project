@@ -22,6 +22,11 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
     @Query(value = "SELECT p FROM playlist p WHERE p.userId = :id")
     List<PlaylistEntity> findByUserId(String id);
 
+    @Query(value = "SELECT p FROM playlist p WHERE p.playlistId in :id")
+    List<PlaylistEntity> findAllByPlaylistId(List<String> id);
+
+
+
     /**
      * [select] 가장 마지막 행 가져오기
      * @param userId
@@ -35,7 +40,10 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
      * @param userId
      * @return
      */
-    Optional<PlaylistEntity> findByPlaylistTitleAndUserId(String playlistTitle, String userId);
+    @Query("SELECT p.playlistId FROM playlist p WHERE p.userId = :userId AND p.playlistTitle in :playlistTitle")
+    Optional<List<String>> findPlaylistIdsByPlaylistTitleAndUserId(List<String> playlistTitle, String userId);
+
+    Optional<PlaylistEntity> findByPlaylistTitleAndUserId(String title, String userId);
 
     /**
      * 플레이리스트 타이틀 변경

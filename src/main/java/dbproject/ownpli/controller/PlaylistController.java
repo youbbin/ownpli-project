@@ -35,6 +35,7 @@ public class PlaylistController {
     public ResponseEntity<List<PlaylistDTO>> findAllPlaylists(@RequestBody LinkedHashMap param) {
         String userId = param.get("userId").toString();
         List<PlaylistDTO> playlistDTOList = playlistService.findPlaylistByUserId(userId);
+        if(playlistDTOList == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(playlistDTOList, HttpStatus.OK);
     }
 
@@ -72,6 +73,29 @@ public class PlaylistController {
             HttpStatus.OK);
     }
 
+    @PostMapping("/getlist/delete")
+    public ResponseEntity<PlaylistMusicDTO> deleteMusics(@RequestBody LinkedHashMap param) {
+        String userId = param.get("userId").toString();
+        String playlistTitle = param.get("playlistTitle").toString();
+        String musicTitles = param.get("music").toString();
+
+        List<String> byTitle = musicService.findByTitle(musicService.divString(musicTitles));
+
+        String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(playlistTitle, userId);
+        if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        boolean b = playlistService.playlistMusicDelete(playlistId, byTitle);
+
+        if(!b) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        List<String> musicsByPlaylistId = playlistService.findMusicsByPlaylistId(playlistId);
+        List<MusicDTO> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
+
+        return new ResponseEntity<>(
+            PlaylistMusicDTO.from(playlistService.getPlaylistDTOByPlaylistId(playlistId), musicInfosByPlaylist), HttpStatus.OK);
+
+    }
+
     /**
      * 플레이리스트 생성
      * @param param
@@ -81,11 +105,11 @@ public class PlaylistController {
     public ResponseEntity<String> createPlaylist(@RequestBody LinkedHashMap param) {
         String userId = param.get("userId").toString();
         String title = param.get("title").toString();
-        Optional<String> songTitle = Optional.ofNullable(param.get("songsTitle").toString());
+        Optional songTitle = Optional.ofNullable(param.get("songsTitle"));
         String playlistId = playlistService.savePlaylist(userId, title);
 
-        if(songTitle != null) {
-            List<String> musicIds = musicService.findByTitle(musicService.divString(songTitle.get()));
+        if(songTitle.isPresent()) {
+            List<String> musicIds = musicService.findByTitle(musicService.divString(songTitle.get().toString()));
             String result = playlistService.addPlaylist(userId, playlistId, musicIds);
 
             if(result == null )
@@ -128,10 +152,15 @@ public class PlaylistController {
     @PostMapping("/delete")
     public ResponseEntity<String> deletePlaylist(@RequestBody LinkedHashMap param) {
         String userId = param.get("userId").toString();
-        String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(param.get("title").toString(), userId);
-        if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        String title = param.get("title").toString();
+        List<String> playlistIds = playlistService.findPlaylistIdsByPlaylistTitleAndUserId(title, userId);
+        if(playlistIds == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        playlistService.deletePlaylist(playlistId);
+        playlistService.deletePlaylist(playlistIds);
+
+//        for(int i = 0; i < playlistIds.size(); i++) {
+//            playlistService.deletePlaylist(playlistIds.get(i));
+//        }
 
         return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
     }

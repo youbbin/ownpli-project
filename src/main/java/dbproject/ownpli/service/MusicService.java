@@ -186,10 +186,6 @@ public class MusicService {
         if(g.isEmpty()) genre = null;
         else genre = genreRepository.findGenreNumsByGenre(divString(g.get().toString()));
 
-        for(int i = 0; i < genre.size(); i++) {
-            log.info("genre={}",genre.get(i));
-        }
-
         Optional m = Optional.ofNullable(param.get("mood"));
         if(m.isEmpty()) mood = null;
         else mood = findMoodEntitiesByMood(divString(m.get().toString()));
