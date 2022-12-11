@@ -77,7 +77,7 @@ public class PlaylistController {
         String playlistTitle = param.get("playlistTitle").toString();
         String musicTitles = param.get("music").toString();
 
-        List<String> byTitle = musicService.findByTitle(musicService.divString(musicTitles));
+        List<String> byTitle = musicService.findByTitle(List.of(musicTitles.split("@")));
 
         String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(playlistTitle, userId);
         if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -107,7 +107,7 @@ public class PlaylistController {
         String playlistId = playlistService.savePlaylist(userId, title);
 
         if(songTitle.isPresent()) {
-            List<String> musicIds = musicService.findByTitle(musicService.divString(songTitle.get().toString()));
+            List<String> musicIds = musicService.findByTitle(List.of(songTitle.get().toString().split("@")));
             String result = playlistService.addPlaylist(userId, playlistId, musicIds);
 
             if(result == null )
@@ -133,7 +133,7 @@ public class PlaylistController {
         if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         String musicTitle = param.get("songsTitle").toString();
-        List<String> musicIds = musicService.findByTitle(musicService.divString(musicTitle));
+        List<String> musicIds = musicService.findByTitle(List.of(musicTitle.split("@")));
         String result = playlistService.addPlaylist(userId, playlistId, musicIds);
 
         if(result == null)

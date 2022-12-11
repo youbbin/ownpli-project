@@ -58,6 +58,7 @@ public class HomeService {
         return musicService.findMusicInfosByPlaylist(musicIds.get()).subList(0, 10);
     }
 
+
     public List<MusicDTO> ageList(String userId) {
         List<String> ageCompare = queryRepository.findAgeCompare(userService.findByUserId(userId));
         List<String> byPlaylistId = playlistMusicRepository.findByPlaylistId(ageCompare);

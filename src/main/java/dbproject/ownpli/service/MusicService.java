@@ -180,13 +180,13 @@ public class MusicService {
         Optional g = Optional.ofNullable(param.get("genre"));
         if(g.isEmpty()) genre = null;
         else {
-            genre = genreRepository.findGenreNumsByGenre(divString(g.get().toString()));
+            genre = genreRepository.findGenreNumsByGenre(List.of(g.get().toString().split("@")));
             for(Long i : genre) log.info("genre={}", i);
         }
 
         Optional m = Optional.ofNullable(param.get("mood"));
         if(m.isEmpty()) mood = null;
-        else mood = findMoodEntitiesByMood(divString(m.get().toString()));
+        else mood = findMoodEntitiesByMood(List.of(m.get().toString().split("@")));
 
         return musicEntitiesToMusicDTO(filteringMusics(param, genre, mood));
     }
@@ -210,37 +210,27 @@ public class MusicService {
             likes = null;
             log.info("likes=null");
         }
-        else likes = divString(l.get().toString());
+        else likes = List.of(l.get().toString().split("@"));
 
         if(h.isEmpty()) {
             hates = null;
             log.info("hates=null");
         }
-        else hates = divString(h.get().toString());
+        else hates = List.of(h.get().toString().split("@"));
 
         if(c.isEmpty()) {
             crty = null;
             log.info("langs=null");
         }
-        else crty = divString(c.get().toString());
+        else crty = List.of(c.get().toString().split("@"));
 
         if(y.isEmpty()) {
             year = null;
             log.info("year=null");
         }
-        else year = divString(y.get().toString());
+        else year = List.of(y.get().toString().split("@"));
 
         return queryRepository.findDynamicQueryAdvance(likes, hates, genre, crty, year, mood);
-    }
-
-    public List<String> divString(String s) {
-        StringTokenizer st = new StringTokenizer(s, "@");
-
-        List<String> list = new ArrayList<>();
-        for(int i = 0; i < st.countTokens() + 1; i++) {
-            list.add(st.nextToken());
-        }
-        return list;
     }
 
     /**
