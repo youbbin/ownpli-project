@@ -22,11 +22,11 @@ public class HomeController {
 
 //    로그인 전: 신곡, top10, 좋아요 순
 //    로그인 후: 신곡, top10, 좋아요 순, 연령별 추천(플레이리스트 담은 순), 분위기1 별 노래5?(랜덤으로)
-//    한번에
 
     @PostMapping
     public ResponseEntity<LinkedHashMap<String, List<MusicDTO>>> homeController(@RequestBody(required = false) LinkedHashMap param) {
         LinkedHashMap<String, List<MusicDTO>> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put("newSongs", homeService.findNewSongs());
         linkedHashMap.put("top10", homeService.findTop10Musics());
         linkedHashMap.put("likes", homeService.findTop10LikeList());
         Optional userId = Optional.ofNullable(param.get("userId"));

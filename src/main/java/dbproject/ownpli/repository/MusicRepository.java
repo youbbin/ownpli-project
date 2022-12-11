@@ -32,6 +32,9 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      */
     List<MusicEntity> findBySinger(@Param("singer") String singer);
 
+    @Query("SELECT m.musicId FROM MusicEntity m ORDER BY m.date DESC ")
+    List<String> findMusicIdsOrderByYear();
+
     /**
      * [select] 음악 아이디로 mp3파일 위치 가져오기
      * @param musicId
@@ -75,22 +78,5 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      */
     @Query(value = "SELECT m FROM MusicEntity m WHERE m.musicId in :musicId")
     List<MusicEntity> findByMusicId(@Param("musicId") List<String> musicId);
-
-//    /**
-//     * [select] 단일 음악 장르 출력
-//     * @param musicId
-//     * @return Long
-//     * @CRUD read
-//     */
-//    @Query(value = "SELECT m.genre FROM MusicEntity m WHERE m.musicId = :musicId")
-//    Long findGenreByMusicId(@Param("musicId") String musicId);
-//
-//    /**
-//     * genreNum으로 musicEntity들 찾기
-//     * @param genreNum
-//     * @return
-//     */
-//    @Query("SELECT m FROM MusicEntity m WHERE m.genreNum in :genreNum")
-//    List<MusicEntity> findMusicEntitiesByGenreNum(@Param("genreNum") List<Long> genreNum);
 
 }

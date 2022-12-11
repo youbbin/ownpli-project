@@ -70,7 +70,6 @@ public class QueryRepository {
             log.info("singerLike = {}", like);
             booleanBuilder.or(musicEntity.singer.contains(like));
         }
-//        return musicEntity.singer.in(likes);
         return booleanBuilder;
     }
 
@@ -97,7 +96,7 @@ public class QueryRepository {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
         int i = 0;
-        
+
         for (Long g : genre){
             log.info("genre={}", g);
             booleanBuilder.or(musicEntity.genreNum.eq(g));

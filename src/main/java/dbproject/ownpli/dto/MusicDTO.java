@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.File;
+import java.util.regex.Matcher;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +31,9 @@ public class MusicDTO {
             musicEntity.getSinger(),
             genre,
             likes,
-            musicEntity.getImageFile().replaceFirst("D", "F").replaceAll("//", "/"),
+            musicEntity.getImageFile()
+                .replaceFirst("D", "F")
+                .replaceAll("/", Matcher.quoteReplacement(File.separator)),
             musicEntity.getAlbum(),
             musicEntity.getDate().toString().substring(0, 4),
             musicEntity.getCountry());

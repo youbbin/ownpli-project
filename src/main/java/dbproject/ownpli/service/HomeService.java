@@ -22,6 +22,11 @@ public class HomeService {
     private final UserService userService;
     private final QueryRepository queryRepository;
 
+    public List<MusicDTO> findNewSongs() {
+        List<String> musicIdsOrderByYear = musicRepository.findMusicIdsOrderByYear();
+        return musicService.findMusicInfosByPlaylist(musicIdsOrderByYear).subList(0, 10);
+    }
+
     /**
      * playlist 많이 담은 순으로 음악 보내기
      * @return
@@ -37,7 +42,7 @@ public class HomeService {
             return musicDTOList;
         }
 
-        return musicService.findMusicInfosByPlaylist(distinctMusicIdOptional.get());
+        return musicService.findMusicInfosByPlaylist(distinctMusicIdOptional.get()).subList(0, 10);
     }
 
     /**
