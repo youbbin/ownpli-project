@@ -30,6 +30,17 @@ public class PlaylistService {
     private final MusicRepository musicRepository;
     private final UserRepository userRepository;
 
+    public PlaylistDTO updatePlaylistTitle(String oldTitle, String newTitle, String userId) {
+        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(oldTitle, userId);
+        if(!byPlaylistTitleAndUserId.isEmpty())
+            return null;
+
+        int i = playlistRepository.updatePlaylistTitle(oldTitle, newTitle, userId);
+
+        String playlistIdByPlaylistTitleAndUserId = findPlaylistIdByPlaylistTitleAndUserId(newTitle, userId);
+        return getPlaylistDTOByPlaylistId(playlistIdByPlaylistTitleAndUserId);
+    }
+
     /**
      * 유저이메일로 플레이리스트 목록 찾기
      * @param userId
@@ -76,7 +87,6 @@ public class PlaylistService {
      * 새 플레이리스트 저장
      * @param userId
      * @param title
-     * @param musicIds
      */
     public String savePlaylist(String userId, String title) {
 

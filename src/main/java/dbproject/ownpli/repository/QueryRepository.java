@@ -35,6 +35,7 @@ public class QueryRepository {
                                                      List<Long> mood) throws ParseException {
         return jpaQueryFactory
             .selectFrom(musicEntity)
+            .select(musicEntity)
             .from(musicEntity, musicMoodEntity)
             .where(musicMoodEntity.musicId.eq(musicEntity.musicId),
                 inSingers(likes),
@@ -67,7 +68,7 @@ public class QueryRepository {
 
         for (String like : likes){
             log.info("singerLike = {}", like);
-            booleanBuilder.or(musicEntity.singer.eq(like));
+            booleanBuilder.or(musicEntity.singer.contains(like));
         }
 
         return booleanBuilder;
@@ -82,7 +83,7 @@ public class QueryRepository {
 
         for (String hate : hates){
             log.info("singerHate={}", hate);
-            booleanBuilder.or(musicEntity.singer.eq(hate));
+            booleanBuilder.or(musicEntity.singer.contains(hate));
         }
 
         return booleanBuilder;

@@ -1,7 +1,9 @@
 package dbproject.ownpli.repository;
 
 import dbproject.ownpli.domain.playlist.PlaylistEntity;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -35,12 +37,15 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
      */
     Optional<PlaylistEntity> findByPlaylistTitleAndUserId(String playlistTitle, String userId);
 
-//    오류!
-//    /**
-//     * [select] fk(musicId)값으로 플레이리스트 조회하기
-//     * @param musicId
-//     * @return
-//     */
-//    List<MusicEntity> findByMusic_MusicId(String musicId);
+    /**
+     * 플레이리스트 타이틀 변경
+     * @param oldTitle
+     * @param newTitle
+     * @param userId
+     * @return
+     */
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE playlist p SET p.playlistTitle = :newTitle where p.userId = :userId and p.playlistTitle = :oldTitle")
+    int updatePlaylistTitle(@Param("oldTitle") String oldTitle, @Param("newTitle") String newTitle, @Param("userId") String userId);
 
 }

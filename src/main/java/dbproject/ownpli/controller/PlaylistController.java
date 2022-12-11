@@ -39,17 +39,29 @@ public class PlaylistController {
     }
 
     /**
+     * 플레이리스트 타이틀 바꾸기
+     * @param param
+     * @return
+     */
+    @PostMapping("/getlist/update")
+    public ResponseEntity<PlaylistDTO> updateTitle(@RequestBody LinkedHashMap param) {
+        String userId = param.get("userId").toString();
+        String oldTitle = param.get("oldTitle").toString();
+        String newTitle = param.get("newTitle").toString();
+
+        PlaylistDTO playlistDTO = playlistService.updatePlaylistTitle(oldTitle, newTitle, userId);
+        return new ResponseEntity<>(playlistDTO, HttpStatus.OK);
+    }
+
+    /**
      * playlistId로 playlist에 포함된 음악 list 정보 조회
      * @param param
      * @return
-     * @address
-     * /playlist/getlist/title?q=~~~~
-     * @container
-     *  `@PathVariable` 어노테이션 뒤에 {} 안에 적은 변수 명을 name 속성의 값으로 넣는다.
      */
-    @PostMapping("/getlist/title")
-    public ResponseEntity<PlaylistMusicDTO> findMusicList(@RequestParam(name = "q") String playlistTitle, @RequestBody LinkedHashMap param) {
+    @PostMapping("/getlist/musics")
+    public ResponseEntity<PlaylistMusicDTO> findMusicList(@RequestBody LinkedHashMap param) {
         String userId = param.get("userId").toString();
+        String playlistTitle = param.get("playlistTitle").toString();
         String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(playlistTitle, userId);
         if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
