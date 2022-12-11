@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,13 +12,12 @@ public class PlaylistDTO {
     private String playlistId;
     private String title;
     private String userId;
-    private Date date;
+//    private Date date;
 
-    public static PlaylistDTO from(PlaylistEntity playlist, Date date) {
+    public static PlaylistDTO from(PlaylistEntity playlist) {
         return new PlaylistDTO(
             playlist.getPlaylistId(),
             playlist.getPlaylistTitle(),
-            playlist.getUserId(),
-            date);
+            playlist.getUserId());
     }
 }

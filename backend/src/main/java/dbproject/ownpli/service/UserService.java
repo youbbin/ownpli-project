@@ -2,6 +2,7 @@ package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.dto.UserDTO;
+import dbproject.ownpli.repository.PlaylistMusicRepository;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PlaylistMusicRepository playlistMusicRepository;
 
     /**
      * 회원가입
@@ -93,6 +95,5 @@ public class UserService {
 
         return UserDTO.from(byUserId);
     }
-
 
 }

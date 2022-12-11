@@ -186,14 +186,11 @@ public class MusicService {
         if(g.isEmpty()) genre = null;
         else genre = genreRepository.findGenreNumsByGenre(divString(g.get().toString()));
 
-        List<MusicEntity> musicEntities = filteringMusics(param, genre);
-
         Optional m = Optional.ofNullable(param.get("mood"));
         if(m.isEmpty()) mood = null;
         else mood = findMoodEntitiesByMood(divString(m.get().toString()));
 
-        if(mood == null) return musicEntitiesToMusicDTO(musicEntities);
-        else return findMusicsByMoodIds(mood, musicEntities);
+        return musicEntitiesToMusicDTO(filteringMusics(param, genre, mood));
     }
 
     /**
@@ -203,7 +200,7 @@ public class MusicService {
      * @return MusicEntity List
      * @throws ParseException
      */
-    private List<MusicEntity> filteringMusics(LinkedHashMap param, List<Long> genre) throws ParseException {
+    private List<MusicEntity> filteringMusics(LinkedHashMap param, List<Long> genre, List<Long> mood) throws ParseException {
         List<String> likes, hates, crty, year;
 
         Optional l = Optional.ofNullable(param.get("likedSinger"));
@@ -235,7 +232,7 @@ public class MusicService {
         }
         else year = divString(y.get().toString());
 
-        return queryRepository.findDynamicQueryAdvance(likes, hates, genre, crty, year);
+        return queryRepository.findDynamicQueryAdvance(likes, hates, genre, crty, year, mood);
     }
 
     public List<String> divString(String s) {
@@ -270,37 +267,6 @@ public class MusicService {
      */
     public String findByGenreId(Long genreId) {
         return genreRepository.findById(genreId).get().getGenre();
-    }
-
-    /**
-     * 무드아이디 리스트와 음악 엔티티들을 이용해 최종 정보 출력
-     * @param moods
-     * @param musicEntities
-     * @return
-     */
-    public List<MusicDTO> findMusicsByMoodIds(List<Long> moods, List<MusicEntity> musicEntities) {
-        if(moods.isEmpty() && musicEntities.isEmpty())
-            return findAllMusics();
-        else if(moods.isEmpty() && !musicEntities.isEmpty())
-            return musicEntitiesToMusicDTO(musicEntities);
-        else if(musicEntities.isEmpty()) musicEntities = findAll();
-
-        List<String> byMoodNum = musicMoodRepository.findByMoodNum(moods);
-        Set<String> set = new HashSet<>(byMoodNum);     //중복제거
-        List<String> musicIds = new ArrayList<>();       //musicId를 담을 리스트
-        List<MusicDTO> musics = new ArrayList<>();      //음악 정보 리스트
-
-        for(int i = 0; i < byMoodNum.size(); i++)
-            if(Collections.frequency(byMoodNum, set.toArray()[i].toString()) == moods.size()) {
-                musicIds.add(set.toArray()[i].toString());
-            }
-
-        for(int i = 0; i < musicEntities.size(); i++)
-            for(int j = 0; j < musicIds.size(); j++)
-                if(musicEntities.get(i).getMusicId().equals(musicIds))
-                    musics.add(findMusicInfo(musicEntities.get(i).getMusicId()));
-
-        return musics;
     }
 
     /**

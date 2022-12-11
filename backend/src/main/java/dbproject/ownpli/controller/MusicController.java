@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -40,22 +43,24 @@ public class MusicController {
      * 가수 리스트 가져오기
      * @return
      */
-    @GetMapping("/add")
+    @PostMapping("/singer")
     public ResponseEntity<LinkedHashMap> getMusicAboutCondition() {
         LinkedHashMap<String, List> res = new LinkedHashMap<>();
+//        String join = StringUtils.join(musicService.findSingerList(), '@');
         res.put("singerName", musicService.findSingerList());
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     /**
      * 제목과 가수 이름으로 음악을 검색하는 기능
-     * @param musicSearch
+     * @param param
      * @return
      * @Container
      * /music/search?q=!
      */
-    @GetMapping("/search")
-    public ResponseEntity<SearchDTO> searchMusics(@RequestParam(name = "q") String musicSearch) {
+    @PostMapping("/search")
+    public ResponseEntity<SearchDTO> searchMusics(@RequestBody LinkedHashMap param) {
+        String musicSearch = param.get("musicSearch").toString();
 
         List<MusicDTO> searchTitle = musicService.musicEntitiesToMusicDTO(musicService.findByTitleContain(musicSearch));
         List<MusicDTO> searchSinger = musicService.musicEntitiesToMusicDTO(musicService.findBySingerContain(musicSearch));
@@ -65,13 +70,12 @@ public class MusicController {
 
     /**
      * 단일 음악 정보 보내기
-     * @param musicTitle
      * @return
      * @url /music/title?q=~
      */
-    @GetMapping("/title")
-    public ResponseEntity<MusicDTO> getMusics(@RequestParam(name = "q") String musicTitle) {
-        String musicId = musicService.findOneMusicIdByTitle(musicTitle).getMusicId();
+    @PostMapping("/title")
+    public ResponseEntity<MusicDTO> getMusics(@RequestBody LinkedHashMap param) {
+        String musicId = musicService.findOneMusicIdByTitle(param.get("title").toString()).getMusicId();
         MusicDTO musicInfo = musicService.findMusicInfo(musicId);
 
         return new ResponseEntity<>(musicInfo, HttpStatus.OK);
@@ -80,12 +84,11 @@ public class MusicController {
     /**
      * 음악 정보에서 좋아요 눌렀을 때
      * @param param
-     * @param musicTitle
      * @return
      */
-    @PostMapping("/title")
-    public ResponseEntity<MusicDTO> musicLikes(@RequestBody LinkedHashMap param, @RequestParam(name = "q") String musicTitle) {
-        String musicId = musicService.findOneMusicIdByTitle(musicTitle).getMusicId();
+    @PostMapping("/title/like")
+    public ResponseEntity<MusicDTO> musicLikes(@RequestBody LinkedHashMap param) {
+        String musicId = musicService.findOneMusicIdByTitle(param.get("title").toString()).getMusicId();
         String userId = musicService.musicLikeSetting(param.get("userId").toString(), musicId);
 
         if(userId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -96,15 +99,15 @@ public class MusicController {
 
     /**
      * 가사 보내기
-     * @param title
+     * @param param
      * @return
      * @throws IOException
      * @url /play/lyrics?q=~
      */
 
-    @GetMapping("/title/lyrics")
-    public ResponseEntity<String> getLyrics(@RequestParam(name = "q") String title) throws IOException {
-        String musicId = musicService.findOneMusicIdByTitle(title).getMusicId();
+    @PostMapping("/title/lyrics")
+    public ResponseEntity<String> getLyrics(@RequestBody LinkedHashMap param) throws IOException {
+        String musicId = musicService.findOneMusicIdByTitle(param.get("title").toString()).getMusicId();
         return new ResponseEntity<>(musicService.readLyrics(musicId), HttpStatus.OK);
     }
 
@@ -112,20 +115,19 @@ public class MusicController {
      * mp3파일을 보내기 위해 클라이언트와 통신
      * @return
      * @throws Exception
-     * @url /play?q=
+     * @url /music/play
      * @container
      * JSon 포맷으로 전송된 request parameter 데이터를 받을 액션 메서드의 파라미터 변수에는 @RequestBody 어노테이션을 붙여주어야 한다.
      */
     @PostMapping("/play")
-    public ResponseEntity<LinkedHashMap> getAudio(@RequestParam(name = "q") String title,
-                                                  @RequestBody LinkedHashMap param) throws Exception{
-        MusicEntity musicEntity = musicService.findOneMusicIdByTitle(title);
+    public ResponseEntity<LinkedHashMap> getAudio(@RequestBody LinkedHashMap param) throws Exception{
+        MusicEntity musicEntity = musicService.findOneMusicIdByTitle(param.get("title").toString());
         LinkedHashMap linkedHashMap = mp3Service.playAudio(musicEntity.getMusicId());
         String userId = param.get("userId").toString();
 
         Optional likes = (Optional) param.get("likes");
 
-        if(!likes.isEmpty()) {
+        if(likes != null) {
             String s = musicService.musicLikeSetting(param.get("userId").toString(), musicEntity.getMusicId());
 
             if(!userId.equals(s)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

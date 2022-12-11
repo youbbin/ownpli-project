@@ -1,7 +1,9 @@
 package dbproject.ownpli.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +14,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import static dbproject.ownpli.domain.QUserEntity.userEntity;
 import static dbproject.ownpli.domain.music.QMusicEntity.musicEntity;
+import static dbproject.ownpli.domain.music.QMusicMoodEntity.musicMoodEntity;
+import static dbproject.ownpli.domain.playlist.QPlaylistEntity.playlistEntity;
+
 
 @Slf4j
 @Repository
@@ -25,14 +31,29 @@ public class QueryRepository {
                                                      List<String> hates,
                                                      List<Long> genre,
                                                      List<String> country,
-                                                     List<String> year) throws ParseException {
+                                                     List<String> year,
+                                                     List<Long> mood) throws ParseException {
         return jpaQueryFactory
             .selectFrom(musicEntity)
-            .where(inSingers(likes),
+            .select(musicEntity)
+            .from(musicEntity, musicMoodEntity).distinct()
+            .where(musicMoodEntity.musicId.eq(musicEntity.musicId),
+                inSingers(likes),
                 notInSingers(hates),
                 inGenre(genre),
                 inCountry(country),
-                betweenDate(year)
+                betweenDate(year),
+                inMood(mood)
+            ).fetch();
+    }
+
+    public List<String> findAgeCompare(UserEntity user) {
+        return jpaQueryFactory
+            .selectFrom(playlistEntity)
+            .select(playlistEntity.playlistId)
+            .from(playlistEntity, userEntity)
+            .where(playlistEntity.userId.eq(userEntity.userId),
+                betweenAge(user.getAge())
             ).fetch();
     }
 
@@ -62,10 +83,10 @@ public class QueryRepository {
 
         for (String hate : hates){
             log.info("singerHate={}", hate);
-            booleanBuilder.or(musicEntity.singer.eq(hate).not());
+            booleanBuilder.or(musicEntity.singer.contains(hate));
         }
 
-        return booleanBuilder;
+        return booleanBuilder.not();
     }
 
     private BooleanBuilder inGenre(List<Long> genre) {
@@ -116,6 +137,26 @@ public class QueryRepository {
         }
 
         return booleanBuilder;
+    }
+
+    private BooleanBuilder inMood(List<Long> mood) {
+        if (mood == null) {
+            return null;
+        }
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+        for (Long m : mood){
+            log.info("mood={}", m);
+            booleanBuilder.or(musicMoodEntity.moodNum.eq(m));
+        }
+
+        return booleanBuilder;
+    }
+
+    private BooleanExpression betweenAge(int age) {
+        int age1 = age / 10 * 10;
+        int age2 = age1 + 9;
+        return userEntity.age.between(age1, age2);
     }
 
 }

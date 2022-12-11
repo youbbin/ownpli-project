@@ -6,7 +6,6 @@ import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -73,7 +72,7 @@ public class UserController {
      * @param param
      * @return
      */
-    @GetMapping("/mypage")
+    @PostMapping("/mypage")
     public ResponseEntity<UserDTO> homeLogin(@RequestBody LinkedHashMap param) {
         String userId = param.get("userId").toString();
         if (userId == null) {
