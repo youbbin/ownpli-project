@@ -24,14 +24,6 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
     @Query("SELECT distinct m.singer FROM MusicEntity m")
     List<String> findSingers();
 
-    /**
-     * [select] singerName으로 음악 정보 출력
-     * @param singer
-     * @return List[MusicEntity]
-     * @CRUD read
-     */
-    List<MusicEntity> findBySinger(@Param("singer") String singer);
-
     @Query("SELECT m.musicId FROM MusicEntity m ORDER BY m.date DESC ")
     List<String> findMusicIdsOrderByYear();
 

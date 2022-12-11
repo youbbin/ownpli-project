@@ -24,9 +24,6 @@ public interface MusicLikeRepository extends JpaRepository<MusicLikeEntity, Long
     @Query("SELECT DISTINCT ml.musicId FROM music_like ml GROUP BY ml.musicId ORDER BY count(ml.musicId) DESC")
     Optional<List<String>> findMusicIds();
 
-//    @Query("SELECT ml.musicId, count(ml.musicId) FROM music_like ml")
-//    Optional<List<Long>> countByMusicIdList();
-
     Optional<MusicLikeEntity> findByUserIdAndMusicId(String userId, String musicId);
 
     /**

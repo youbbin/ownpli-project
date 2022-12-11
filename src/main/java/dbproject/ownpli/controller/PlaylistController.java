@@ -156,10 +156,6 @@ public class PlaylistController {
 
         playlistService.deletePlaylist(playlistIds);
 
-//        for(int i = 0; i < playlistIds.size(); i++) {
-//            playlistService.deletePlaylist(playlistIds.get(i));
-//        }
-
         return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
     }
 

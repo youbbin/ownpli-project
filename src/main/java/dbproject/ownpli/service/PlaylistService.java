@@ -54,7 +54,6 @@ public class PlaylistService {
 
         for(int i = 0; i < byUserId.size(); i++) {
             playlistDTOList.add(PlaylistDTO.from(byUserId.get(i)));
-//            , playlistMusicRepository.findAllByPlaylistId(byUserId.get(i).getPlaylistId()).getDate()
         }
         return playlistDTOList;
 
@@ -63,7 +62,6 @@ public class PlaylistService {
     public PlaylistDTO getPlaylistDTOByPlaylistId(String playlistId) {
         return PlaylistDTO.from(
             playlistRepository.findById(playlistId).get());
-//            playlistMusicRepository.findAllByPlaylistId(playlistId).get(0).getDate()
     }
 
     /**
@@ -73,7 +71,6 @@ public class PlaylistService {
      */
     public List<String> findMusicsByPlaylistId(String playlistId) {
         List<String> musicIds = playlistMusicRepository.findMusicIdsByPlaylistId(playlistId);
-        //List<MusicEntity> musics = musicRepository.findByMusicId(musicIds);
 
         return musicIds;
     }
@@ -115,7 +112,7 @@ public class PlaylistService {
         else {
             id = idOptional.get().getPlaylistId();
             log.info("id={}", id);
-//            String[] ps = id.split("p");
+
             StringTokenizer st = new StringTokenizer(id, "p");
             Long idLong = Long.parseLong(st.nextToken());
 
@@ -165,8 +162,6 @@ public class PlaylistService {
         return playlistId;
     }
 
-
-
     /**
      * 플레이리스트 삭제
      * @param playlistId
@@ -178,7 +173,6 @@ public class PlaylistService {
             playlistMusicRepository.delete(allByPlaylistId.get(i));
 
         playlistRepository.deleteAll(playlistRepository.findAllByPlaylistId(playlistId));
-//        playlistRepository.deleteById(playlistId);
     }
 
 }

@@ -2,14 +2,12 @@ package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.dto.UserDTO;
-import dbproject.ownpli.repository.PlaylistMusicRepository;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -19,7 +17,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PlaylistMusicRepository playlistMusicRepository;
 
     /**
      * 회원가입
@@ -56,15 +53,6 @@ public class UserService {
         return userRepository.findById(loginId)
             .filter(m -> m.getPassword().equals(password))
             .orElse(null);
-    }
-
-    /**
-     * 회원 전체 조회
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public List<UserEntity> findUsers() {
-        return userRepository.findAll();
     }
 
     /**
