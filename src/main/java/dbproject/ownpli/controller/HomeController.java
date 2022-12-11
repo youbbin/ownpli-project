@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -28,9 +29,10 @@ public class HomeController {
         LinkedHashMap<String, List<MusicDTO>> linkedHashMap = new LinkedHashMap<>();
         linkedHashMap.put("top10", homeService.findTop10Musics());
         linkedHashMap.put("likes", homeService.findTop10LikeList());
+        Optional userId = Optional.ofNullable(param.get("userId"));
 
-        if(param != null) {
-            linkedHashMap.put("age", homeService.ageList(param.get("userId").toString()));
+        if(userId.isPresent()) {
+            linkedHashMap.put("age", homeService.ageList(userId.get().toString()));
             linkedHashMap.put("mood", homeService.mood5List());
         }
 

@@ -22,8 +22,6 @@ public class PlaylistController {
     private final PlaylistService playlistService;
     private final MusicService musicService;
 
-    //쿠키 없애기
-
     /**
      * 회원의 모든 Playlist 조회
      * @param param
@@ -35,7 +33,7 @@ public class PlaylistController {
     public ResponseEntity<List<PlaylistDTO>> findAllPlaylists(@RequestBody LinkedHashMap param) {
         String userId = param.get("userId").toString();
         List<PlaylistDTO> playlistDTOList = playlistService.findPlaylistByUserId(userId);
-        if(playlistDTOList == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(playlistDTOList == null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(playlistDTOList, HttpStatus.OK);
     }
 

@@ -6,15 +6,12 @@ import dbproject.ownpli.dto.MusicDTO;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.*;
 
@@ -57,10 +54,16 @@ public class MusicService {
         return true;
     }
 
+    /**
+     * 좋아요 클릭
+     * @param userId
+     * @param musicId
+     * @return
+     */
     public String musicLikeSetting(String userId, String musicId) {
 
         boolean flag = validateDuplicateLikes(userId, musicId);
-        if(!flag) return null;
+        if(!flag) musicLikeRepository.deleteById(musicLikeRepository.findByUserIdAndMusicId(userId, musicId).get().getKey());
 
         musicLikeRepository.save(MusicLikeEntity.builder().musicId(musicId).userId(userId).build());
         log.info("회원가입 완료");
@@ -161,17 +164,9 @@ public class MusicService {
         Long likes = Long.valueOf(0);
         if (!aLong.isEmpty()) likes = aLong.get();
 
-        String inputFile = byMusicId.getImageFile();
-
-        //D to C
-        inputFile = inputFile.replaceFirst("D", "C");
-
-        Path path = new File(inputFile).toPath();
-        FileSystemResource resource = new FileSystemResource(path);
-
         log.info("byMusicId.getMusicId = " + byMusicId.getMusicId());
 
-        return MusicDTO.from(byMusicId, byGenreId, likes, resource);
+        return MusicDTO.from(byMusicId, byGenreId, likes);
     }
 
     /**
@@ -184,7 +179,10 @@ public class MusicService {
         List<Long> genre, mood;
         Optional g = Optional.ofNullable(param.get("genre"));
         if(g.isEmpty()) genre = null;
-        else genre = genreRepository.findGenreNumsByGenre(divString(g.get().toString()));
+        else {
+            genre = genreRepository.findGenreNumsByGenre(divString(g.get().toString()));
+            for(Long i : genre) log.info("genre={}", i);
+        }
 
         Optional m = Optional.ofNullable(param.get("mood"));
         if(m.isEmpty()) mood = null;

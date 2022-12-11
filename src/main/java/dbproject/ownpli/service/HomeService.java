@@ -47,15 +47,15 @@ public class HomeService {
     public List<MusicDTO> findTop10LikeList() {
         Optional<List<String>> musicIds = musicLikeRepository.findMusicIds();
 
-//        if(musicIds == null || musicIds.get().size() < 10) {
-//            List<MusicDTO> musicDTOList = new ArrayList<>();
-//            for (int i = 0; i < 10; i++) {
-//                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
-//            }
-//            return musicDTOList;
-//        }
+        if(musicIds == null || musicIds.get().size() < 10) {
+            List<MusicDTO> musicDTOList = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
+            }
+            return musicDTOList;
+        }
 
-        return musicService.findMusicInfosByPlaylist(musicIds.get());
+        return musicService.findMusicInfosByPlaylist(musicIds.get()).subList(0, 10);
     }
 
     public List<MusicDTO> ageList(String userId) {
@@ -78,14 +78,14 @@ public class HomeService {
     public List<MusicDTO> mood5List() {
         Long moodId;
         if(LocalDate.now().getMonthValue() == 12) {
-            moodId = moodRepository.findMoodEntityByMood("캐롤");
+            moodId = moodRepository.findMoodEntityByMood("캐롤").getMoodNum();
         }
         else
             moodId = moodRepository.findById((long) ((Math.random() * 10000) % 22)).get().getMoodNum();
 
         List<String> oneByMoodNum = musicMoodRepository.findOneByMoodNum(moodId);
 
-        return musicService.musicEntitiesToMusicDTO(musicRepository.findByMusicId(oneByMoodNum).subList(0, 6));
+        return musicService.musicEntitiesToMusicDTO(musicRepository.findByMusicId(oneByMoodNum));
     }
 
 }

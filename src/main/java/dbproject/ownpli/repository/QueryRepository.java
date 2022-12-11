@@ -70,7 +70,7 @@ public class QueryRepository {
             log.info("singerLike = {}", like);
             booleanBuilder.or(musicEntity.singer.contains(like));
         }
-
+//        return musicEntity.singer.in(likes);
         return booleanBuilder;
     }
 
@@ -86,7 +86,8 @@ public class QueryRepository {
             booleanBuilder.or(musicEntity.singer.contains(hate));
         }
 
-        return booleanBuilder.not();
+//        return musicEntity.singer.notIn(hates);
+        return booleanBuilder;
     }
 
     private BooleanBuilder inGenre(List<Long> genre) {
