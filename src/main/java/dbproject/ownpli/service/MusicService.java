@@ -13,7 +13,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,19 +31,19 @@ public class MusicService {
     private final MoodRepository moodRepository;
     private final QueryRepository queryRepository;
 
-    /**
-     * 모든 음악리스트 찾기(DTO)
-     * @return
-     */
-    public List<MusicDTO> findAllMusics() {
-        List<MusicEntity> all = musicRepository.findAll();
-        List<MusicDTO> models = new ArrayList<>();
-
-        for(int i = 0; i < all.size(); i++) {
-            models.add(findMusicInfo(all.get(i).getMusicId()));
-        }
-        return models;
-    }
+//    /**
+//     * 모든 음악리스트 찾기(DTO)
+//     * @return
+//     */
+//    public List<MusicDTO> findAllMusics() {
+//        List<MusicEntity> all = musicRepository.findAll();
+//        List<MusicDTO> models = new ArrayList<>();
+//
+//        for(int i = 0; i < all.size(); i++) {
+//            models.add(findMusicInfo(all.get(i).getMusicId()));
+//        }
+//        return models;
+//    }
 
     public List<String> findSingerList() {
         return musicRepository.findSingers();

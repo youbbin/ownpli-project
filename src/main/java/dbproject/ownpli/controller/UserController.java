@@ -108,22 +108,5 @@ public class UserController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
 
     }
-//
-//    /**
-//     * 로그아웃
-//     * @param response
-//     * @return
-//     */
-//    @PostMapping("/logout")
-//    public ResponseEntity<HttpServletResponse> logout(HttpServletResponse response) {
-//        expiredCookie(response, "userId");
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
-//
-//    private void expiredCookie(HttpServletResponse response, String cookieName) {
-//        Cookie cookie = new Cookie(cookieName, null);
-//        cookie.setMaxAge(0);
-//        response.addCookie(cookie);
-//    }
 
 }

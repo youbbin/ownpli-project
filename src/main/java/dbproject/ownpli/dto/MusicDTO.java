@@ -32,8 +32,7 @@ public class MusicDTO {
             genre,
             likes,
             musicEntity.getImageFile()
-                .replaceFirst("D", "F")
-                .replaceAll("/", Matcher.quoteReplacement(File.separator)),
+                .replaceFirst("D", "F").replaceAll("/", Matcher.quoteReplacement(File.separator)),
             musicEntity.getAlbum(),
             musicEntity.getDate().toString().substring(0, 4),
             musicEntity.getCountry());

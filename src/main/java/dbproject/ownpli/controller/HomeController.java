@@ -29,11 +29,12 @@ public class HomeController {
         linkedHashMap.put("newSongs", homeService.findNewSongs());
         linkedHashMap.put("top10", homeService.findTop10Musics());
         linkedHashMap.put("likes", homeService.findTop10LikeList());
+        linkedHashMap.put("mood", homeService.mood5List());
+
         Optional userId = Optional.ofNullable(param.get("userId"));
 
         if(userId.isPresent()) {
             linkedHashMap.put("age", homeService.ageList(userId.get().toString()));
-            linkedHashMap.put("mood", homeService.mood5List());
         }
 
         return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);

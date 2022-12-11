@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -28,6 +25,11 @@ public class MusicController {
 
     private final MusicService musicService;
     private final Mp3Service mp3Service;
+
+//    @GetMapping("/getAllMusic")
+//    public ResponseEntity<List<MusicDTO>> getAllMusics() {
+//        return new ResponseEntity<>(musicService.musicEntitiesToMusicDTO(musicService.findAll()), HttpStatus.OK);
+//    }
 
     /**
      * 조건에 따라 음악 검색하기
@@ -96,6 +98,18 @@ public class MusicController {
 
         return new ResponseEntity<>(musicInfo, HttpStatus.OK);
     }
+//
+//    @GetMapping("/get-image-dynamic-type")
+//    @ResponseBody
+//    public ResponseEntity<InputStreamResource> getImageDynamicType(@RequestParam("jpg") boolean jpg) {
+//        MediaType contentType = jpg ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG;
+//        InputStream in = jpg ?
+//            getClass().getResourceAsStream("/com/baeldung/produceimage/image.jpg") :
+//            getClass().getResourceAsStream("/com/baeldung/produceimage/image.png");
+//        return ResponseEntity.ok()
+//            .contentType(contentType)
+//            .body(new InputStreamResource(in));
+//    }
 
     /**
      * 가사 보내기
