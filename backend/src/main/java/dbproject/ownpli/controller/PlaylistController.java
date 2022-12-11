@@ -22,8 +22,6 @@ public class PlaylistController {
     private final PlaylistService playlistService;
     private final MusicService musicService;
 
-    //쿠키 없애기
-
     /**
      * 회원의 모든 Playlist 조회
      * @param param
@@ -35,7 +33,7 @@ public class PlaylistController {
     public ResponseEntity<List<PlaylistDTO>> findAllPlaylists(@RequestBody LinkedHashMap param) {
         String userId = param.get("userId").toString();
         List<PlaylistDTO> playlistDTOList = playlistService.findPlaylistByUserId(userId);
-        if(playlistDTOList == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if(playlistDTOList == null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(playlistDTOList, HttpStatus.OK);
     }
 
@@ -79,7 +77,7 @@ public class PlaylistController {
         String playlistTitle = param.get("playlistTitle").toString();
         String musicTitles = param.get("music").toString();
 
-        List<String> byTitle = musicService.findByTitle(musicService.divString(musicTitles));
+        List<String> byTitle = musicService.findByTitle(List.of(musicTitles.split("@")));
 
         String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(playlistTitle, userId);
         if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -109,7 +107,7 @@ public class PlaylistController {
         String playlistId = playlistService.savePlaylist(userId, title);
 
         if(songTitle.isPresent()) {
-            List<String> musicIds = musicService.findByTitle(musicService.divString(songTitle.get().toString()));
+            List<String> musicIds = musicService.findByTitle(List.of(songTitle.get().toString().split("@")));
             String result = playlistService.addPlaylist(userId, playlistId, musicIds);
 
             if(result == null )
@@ -135,7 +133,7 @@ public class PlaylistController {
         if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         String musicTitle = param.get("songsTitle").toString();
-        List<String> musicIds = musicService.findByTitle(musicService.divString(musicTitle));
+        List<String> musicIds = musicService.findByTitle(List.of(musicTitle.split("@")));
         String result = playlistService.addPlaylist(userId, playlistId, musicIds);
 
         if(result == null)

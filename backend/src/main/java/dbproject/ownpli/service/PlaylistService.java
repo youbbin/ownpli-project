@@ -29,7 +29,6 @@ public class PlaylistService {
     private final PlaylistMusicRepository playlistMusicRepository;
     private final MusicRepository musicRepository;
     private final UserRepository userRepository;
-    private final MusicService musicService;
 
     public PlaylistDTO updatePlaylistTitle(String oldTitle, String newTitle, String userId) {
         Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(newTitle, userId);
@@ -92,7 +91,7 @@ public class PlaylistService {
     }
 
     public List<String> findPlaylistIdsByPlaylistTitleAndUserId(String title, String userId) {
-        List<String> list = musicService.divString(title);
+        List<String> list = List.of(title.split("@"));
         Optional<List<String>> byPlaylistTitleAndUserId = playlistRepository.findPlaylistIdsByPlaylistTitleAndUserId(list, userId);
         if(byPlaylistTitleAndUserId.isEmpty()) return null;
         else return byPlaylistTitleAndUserId.get();

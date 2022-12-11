@@ -44,7 +44,7 @@ public class QueryRepository {
                 inCountry(country),
                 betweenDate(year),
                 inMood(mood)
-            ).fetch();
+            ).orderBy(musicEntity.musicId.asc()).fetch();
     }
 
     public List<String> findAgeCompare(UserEntity user) {
@@ -70,7 +70,6 @@ public class QueryRepository {
             log.info("singerLike = {}", like);
             booleanBuilder.or(musicEntity.singer.contains(like));
         }
-
         return booleanBuilder;
     }
 
@@ -86,6 +85,7 @@ public class QueryRepository {
             booleanBuilder.or(musicEntity.singer.contains(hate));
         }
 
+//        return musicEntity.singer.notIn(hates);
         return booleanBuilder.not();
     }
 
@@ -94,6 +94,8 @@ public class QueryRepository {
             return null;
         }
         BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+        int i = 0;
 
         for (Long g : genre){
             log.info("genre={}", g);

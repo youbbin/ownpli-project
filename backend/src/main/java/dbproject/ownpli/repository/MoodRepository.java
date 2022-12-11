@@ -23,5 +23,5 @@ public interface MoodRepository extends JpaRepository<MoodEntity, Long> {
     @Query("SELECT m.moodNum from mood m WHERE m.mood in :mood")
     List<Long> findMoodEntitiesByMood(List<String> mood);
 
-    Long findMoodEntityByMood(String mood);
+    MoodEntity findMoodEntityByMood(String mood);
 }
