@@ -54,7 +54,6 @@ public class PlaylistService {
 
         for(int i = 0; i < byUserId.size(); i++) {
             playlistDTOList.add(PlaylistDTO.from(byUserId.get(i)));
-//            , playlistMusicRepository.findAllByPlaylistId(byUserId.get(i).getPlaylistId()).getDate()
         }
         return playlistDTOList;
 
@@ -63,7 +62,6 @@ public class PlaylistService {
     public PlaylistDTO getPlaylistDTOByPlaylistId(String playlistId) {
         return PlaylistDTO.from(
             playlistRepository.findById(playlistId).get());
-//            playlistMusicRepository.findAllByPlaylistId(playlistId).get(0).getDate()
     }
 
     /**
@@ -73,7 +71,6 @@ public class PlaylistService {
      */
     public List<String> findMusicsByPlaylistId(String playlistId) {
         List<String> musicIds = playlistMusicRepository.findMusicIdsByPlaylistId(playlistId);
-        //List<MusicEntity> musics = musicRepository.findByMusicId(musicIds);
 
         return musicIds;
     }
@@ -108,13 +105,14 @@ public class PlaylistService {
         if(byPlaylistTitleAndUserId.isPresent())
             return null;
 
-        Optional<PlaylistEntity> idOptional = playlistRepository.findTop1ByUserIdOrderByPlaylistIdDesc(userId);
+        Optional<PlaylistEntity> idOptional = playlistRepository.findFirstByOrderByPlaylistIdDesc();
         String id = "";
         if(idOptional.isEmpty())
             id = "p1";
         else {
             id = idOptional.get().getPlaylistId();
             log.info("id={}", id);
+
             StringTokenizer st = new StringTokenizer(id, "p");
             Long idLong = Long.parseLong(st.nextToken());
 
@@ -164,8 +162,6 @@ public class PlaylistService {
         return playlistId;
     }
 
-
-
     /**
      * 플레이리스트 삭제
      * @param playlistId
@@ -177,7 +173,6 @@ public class PlaylistService {
             playlistMusicRepository.delete(allByPlaylistId.get(i));
 
         playlistRepository.deleteAll(playlistRepository.findAllByPlaylistId(playlistId));
-//        playlistRepository.deleteById(playlistId);
     }
 
 }
