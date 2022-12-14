@@ -1,0 +1,36 @@
+.slider{
+    width: 100%;
+}
+
+
+.slider_header{
+    display: block;
+    line-height: 24px;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 1% 0% 0.5% 0%;
+    /* background-color: bisque; */
+}
+
+.songs{
+    text-align: center;
+}
+
+.rank{
+    font-size: 16px;
+    margin-bottom: 2%;
+}
+
+.img{
+    width: 95%;
+}
+
+.title{
+    font-size: 16px;
+    margin-top: 2%;
+}
+
+.singer{
+    font-size: 14px;
+    margin-top: 2%;
+}

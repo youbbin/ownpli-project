@@ -1,0 +1,143 @@
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 99;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+  .modal button {
+    outline: none;
+    cursor: pointer;
+    border: 0;
+  }
+  .modal > section {
+    width: 90%;
+    max-width: 450px;
+    margin: 0 auto;
+    border-radius: 0.3rem;
+    background-color: #fff;
+    /* 팝업이 열릴때 스르륵 열리는 효과 */
+    animation: modal-show 0.3s;
+    overflow: hidden;
+  }
+  .modal > section > header {
+    position: relative;
+    padding: 16px 64px 16px 16px;
+    background-color: #d2e6df;
+    font-weight: 700;
+    font-size: 16px;
+    color: #51a380;
+  }
+  .modal > section > header button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    font-size: 21px;
+    font-weight: 700;
+    text-align: center;
+    color: #999;
+    background-color: transparent;
+  }
+  .modal > section > main {
+    padding: 16px;
+    border-bottom: 1px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
+  }
+
+  .add_playlist_songs{
+    /* background-color: #51a380; */
+    display: flex;
+    padding-bottom: 2%;
+  }
+
+  .add_playlist_songs > .checkbox{
+    /* background-color: #9900ff; */
+    width: 10%;
+  }
+
+  .add_playlist_songs > .title{
+    /* background-color: #ff0000; */
+    font-family: 'MonoplexKR-Regular';
+    font-size: 16px;
+    width: 60%;
+
+  }
+
+  .add_playlist_songs > .date{
+    /* background-color: #9900ff; */
+    font-family: 'MonoplexKR-Regular';
+    font-size: 16px;
+    width: 30%;
+  }
+
+  .modal > section > footer {
+    padding: 12px 16px;
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+  }
+
+
+  /* .modal > section > .create_playlist {
+    padding: 12px 16px;
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+  } */
+
+  .modal > section > footer button {
+    padding: 6px 12px;
+    color: #e6f1ed;
+    background-color: #51a380;
+    border-radius: 5px;
+    font-size: 13px;
+  }
+
+
+  /* create Playlist modal */
+  .create_playlist_modal{
+    /* background-color: #51a380; */
+  }
+
+  .create_playlist_modal > input, .modify_playlist_modal > input{
+    border: #dddddd 1px solid;
+    border-radius: 10%;
+    font-family: 'MonoplexKR-Regular';
+    font-size: 16px;
+    padding: 2.5%;
+    width: 100%;
+  }
+
+  /* .modify_playlist{
+    display: flex;
+    justify-content: flex-end;
+  } */
+
+  .modal.openModal {
+    display: flex;
+    align-items: center;
+    /* 팝업이 열릴때 스르륵 열리는 효과 */
+    animation: modal-bg-show 0.3s;
+  }
+  @keyframes modal-show {
+    from {
+      opacity: 0;
+      margin-top: -50px;
+    }
+    to {
+      opacity: 1;
+      margin-top: 0;
+    }
+  }
+  @keyframes modal-bg-show {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
