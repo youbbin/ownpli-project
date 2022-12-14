@@ -1,4 +1,0 @@
-Export 시 하나의 파일에 모든 테이블 백업함. (Export to Self-Contained File)
-스키마 생성 문장까지 삽입했으므로 새로 스키마 생성하지 않아도 됨. (Include Create Schema)
-
-mysql data import할 때 참고하세용 -> https://goodteacher.tistory.com/131
