@@ -28,8 +28,8 @@
 ## 👥Team
 |                  Team leader                   |                   Frontend                    |                  Backend                   |
 | :-----------------------------------------: | :-------------------------------------------: | :----------------------------------------: |
-| <img src="https://avatars.githubusercontent.com/u/91596873?v=4" width="100px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/78577019?v=4" width="100px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/84761609?v=4?s=100" width="100px;" alt=""/> |
-|     [🌿이유빈](https://github.com/youbbin)     |     [✨이지영](https://github.com/easy1814)     |     [🍪안나영](https://github.com/NadudAn)     |
+| <img src="https://avatars.githubusercontent.com/u/91596873?v=4" width="100px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/99225571?v=4" width="100px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/84761609?v=4?s=100" width="100px;" alt=""/> |
+|     [🌿이유빈](https://github.com/youbbin)     |     [✨이지영](https://github.com/jiyoung1814)     |     [🍪안나영](https://github.com/NadudAn)     |
 | DB 설계 및 구축 <br> 데이터 전처리 <br> UI 디자인 <br> 발표 | UI디자인 <br> 웹페이지 개발 <br> 데이터 수집 | 서버구축 <br> 로고 디자인 <br> 데이터 전처리
 
 <br>
