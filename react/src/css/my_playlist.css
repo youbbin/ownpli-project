@@ -1,0 +1,139 @@
+.my_playlist_box{
+    /* background-color: black; */
+    width: 100%;
+    height: 100%;
+}
+
+.playlist_remove_btn_box{
+    /* background-color: rgb(255, 0, 0); */
+    width: 100%;
+    height: 8%;
+    padding: 1%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+    .playlist_remove_btn {
+        color: #51a380;
+        background-color: #e6f1ed;
+        font-family: 'MonoplexKR-Regular';
+        font-size: 16px;
+        background-image: url('../images/remove.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: left center;
+        background-size: 25%;
+        background-position-x: 8%;
+        padding-left: 30px;
+        margin-right: 20px;
+    }
+    .playlist_remove_btn:hover {
+        background-color: #d2e6df;
+    }
+
+    .playlist_add_btn {
+        color: #e6f1ed;
+        background-color: #51a380;
+        font-family: 'MonoplexKR-Regular';
+        font-size: 16px;
+        background-image: url('../images/remove.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: left center;
+        background-size: 25%;
+        background-position-x: 8%;
+        padding-left: 30px;
+        margin-right: 20px;
+    }
+    .playlist_add_btn:hover {
+        background-color: #62b18f;
+    }
+
+.song_list_box{
+    /* background-color: rgb(98, 0, 255); */
+    width: 100%;
+    height: 95%;
+    padding: 1%;
+}
+
+.list_box{
+    /* background-color: aqua; */
+    display: flex;
+    height: 7%;
+    align-items: center;
+    
+}
+
+.list_box_text{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0% 2% 0% 0%;
+    border-bottom: #dddddd 1px solid;
+    padding: 1%
+    /* background-color: #51a380; */
+}
+
+.listTitle, .listDate{
+    font-size: 14px;
+}
+
+
+.songsBox{
+    height: 10%;
+    padding: 1%;
+
+}
+
+.buttons{
+    /* background-color: #51a380; */
+    margin-top: 1%;
+    display: flex;
+    justify-content: space-between;
+    padding: 1%;
+}
+
+.modify{
+    color: #51a380;
+    font-size: 14px;
+    background-color: #e6f1ed;
+    padding: 1%;
+    border-radius: 5%;
+}
+
+.remove{
+    color: #e6f1ed;
+    font-size: 14px;
+    background-color: #51a380;
+    padding: 1%;
+    border-radius: 5%;
+}
+
+.list_box_text{
+    /* background-color: #51a380; */
+    width: 100%;
+    font-size: 16px;
+    /* margin-top: 2%; */
+}
+
+.Songtitle{
+    width: 50%;
+    /* background-color: aqua; */
+}
+.Songsinger{
+    width: 40%;
+}
+.Songlikes{
+    width: 10%;
+}
+
+
+.link{
+    width: 100%;
+}
+
+.list_box_text{
+    width: 1200px;
+    /* background-color: #51a380; */
+}
+
