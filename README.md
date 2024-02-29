@@ -14,20 +14,27 @@
 
 ## Info
 
-| Classification | Date       |
-|----------------|------------|
-| Start Date     | 2022-09-01 |
-| End Date       | 2022-12-12 |
+| Classification  |     Date     |
+|-----------------|:------------:|
+| Start Date      |  2022-09-01  |
+| End Date        |  2022-12-12  |
 
-| Stack             | Info                                                                      |
-|-------------------|---------------------------------------------------------------------------|
-| Backend Language  | JAVA                                                                      |
-| Idea              | IntelliJ                                                                  |
-| Build             | Gradle                                                                    |
-| Framework         | Spring, JPA                                                               |
-| Repositories      | subtree                                                                   |
-| Parent Repository | [youbbin/DB_Project_OwnPli](https://github.com/youbbin/DB_Project_OwnPli) | <!--포함하는-->
-| Child Repository  | [NadudAn/OwnPli_BackEnd](https://github.com/NadudAn/OwnPli_BackEnd)       |  <!--포함되는-->
+### Refactoring
+
+| Classification  |     Date      |
+|-----------------|:-------------:|
+| Start Date      |  2024-02-29   |
+| End Date        |    PRESENT    |
+
+| Stack             |                                    Info                                     |
+|-------------------|:---------------------------------------------------------------------------:|
+| Backend Language  |                                    JAVA                                     |
+| Idea              |                                  IntelliJ                                   |
+| Build             |                                   Gradle                                    |
+| Framework         |                                 Spring, JPA                                 |
+| Repositories      |                                   subtree                                   |
+| Parent Repository |  [youbbin/DB_Project_OwnPli](https://github.com/youbbin/DB_Project_OwnPli)  | <!--포함하는-->
+| Child Repository  |       [ahma0/OwnPli_BackEnd](https://github.com/ahma0/OwnPli_BackEnd)       |  <!--포함되는-->
 
 ### 간단한 구조도
 
