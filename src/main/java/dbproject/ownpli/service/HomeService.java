@@ -4,7 +4,6 @@ import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.domain.music.MoodEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.music.MusicLikeEntity;
-import dbproject.ownpli.domain.music.MusicMoodEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import dbproject.ownpli.dto.HomeMusicListResponse;
 import dbproject.ownpli.dto.MusicResponse;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 public class HomeService {
     private final PlaylistMusicRepository playlistMusicRepository;
     private final MusicRepository musicRepository;
-    private final MusicService musicService;
     private final MusicLikeRepository musicLikeRepository;
     private final MoodRepository moodRepository;
     private final MusicMoodRepository musicMoodRepository;
@@ -84,6 +82,7 @@ public class HomeService {
                     .orElseThrow(() -> new NullPointerException("id 없음"));
 
         return musicMoodRepository.findByMoodEntity(moodEntity).stream()
+                .limit(5)
                 .map(musicMoodEntity -> MusicResponse.ofMusicMood(
                         musicMoodEntity,
                         musicLikeRepository.countByMusicEntity(musicMoodEntity.getMusicEntity())

@@ -24,14 +24,6 @@ public class HomeController {
 //    로그인 전: 신곡, top10, 좋아요 순
 //    로그인 후: 신곡, top10, 좋아요 순, 연령별 추천(플레이리스트 담은 순), 분위기1 별 노래5?(랜덤으로)
 
-    @PostMapping
-    public ResponseEntity<LinkedHashMap<String, List<MusicResponse>>> homeController(@RequestBody(required = false) LinkedHashMap param) {
-        LinkedHashMap<String, List<MusicResponse>> linkedHashMap = new LinkedHashMap<>();
-        linkedHashMap.put("mood", homeService.mood5List());
-
-        return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
-    }
-
     @GetMapping("/new")
     public ResponseEntity<List<HomeMusicListResponse>> getNewSong() {
         return ResponseEntity.ok(homeService.findNewSongs());
@@ -45,6 +37,11 @@ public class HomeController {
     @GetMapping("/likes")
     public ResponseEntity<List<HomeMusicListResponse>> getTop10Likes() {
         return ResponseEntity.ok(homeService.findTop10LikeList());
+    }
+
+    @GetMapping("/mood")
+    public ResponseEntity<List<HomeMusicListResponse>> getMoods() {
+        return ResponseEntity.ok(homeService.mood5List());
     }
 
     @GetMapping("/age")
