@@ -47,7 +47,7 @@ public class QueryRepository {
                 .selectFrom(playlistEntity)
                 .select(playlistEntity.playlistId)
                 .from(playlistEntity, userEntity)
-                .where(playlistEntity.userId.eq(userEntity.userId),
+                .where(playlistEntity.userEntity.eq(userEntity),
                         betweenAge(user.getAge())
                 ).fetch();
     }
