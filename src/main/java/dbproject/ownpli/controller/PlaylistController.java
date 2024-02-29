@@ -1,9 +1,6 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.dto.MusicResponse;
-import dbproject.ownpli.dto.PlaylistCreateRequest;
-import dbproject.ownpli.dto.PlaylistDTO;
-import dbproject.ownpli.dto.PlaylistMusicDTO;
+import dbproject.ownpli.dto.*;
 import dbproject.ownpli.service.MusicService;
 import dbproject.ownpli.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
@@ -29,18 +26,9 @@ public class PlaylistController {
         return new ResponseEntity<>(playlistDTOList, HttpStatus.OK);
     }
 
-    /**
-     * 플레이리스트 타이틀 바꾸기
-     * @param param
-     * @return
-     */
     @PostMapping("/getlist/update")
-    public ResponseEntity<PlaylistDTO> updateTitle(@RequestBody LinkedHashMap param) {
-        String userId = param.get("userId").toString();
-        String oldTitle = param.get("oldTitle").toString();
-        String newTitle = param.get("newTitle").toString();
-
-        PlaylistDTO playlistDTO = playlistService.updatePlaylistTitle(oldTitle, newTitle, userId);
+    public ResponseEntity<PlaylistDTO> updateTitle(@RequestBody PlaylistUpdateRequest request) {
+        PlaylistDTO playlistDTO = playlistService.updatePlaylistTitle(request);
         return new ResponseEntity<>(playlistDTO, HttpStatus.OK);
     }
 

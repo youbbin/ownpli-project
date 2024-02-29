@@ -23,6 +23,7 @@ public class PlaylistEntity {
     @Column(name = "playlist id", nullable = false, length = 50)
     private String playlistId;
 
+    @Setter
     @Column(name = "playlist title", nullable = false, length = 50)
     private String playlistTitle;
 

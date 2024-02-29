@@ -36,7 +36,7 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
     @Query("SELECT p.playlistId FROM playlist p WHERE p.userId = :userId AND p.playlistTitle in :playlistTitle")
     Optional<List<String>> findPlaylistIdsByPlaylistTitleAndUserId(List<String> playlistTitle, String userId);
 
-    Optional<PlaylistEntity> findByPlaylistTitleAndUserId(String title, String userId);
+    Optional<PlaylistEntity> findByPlaylistTitleAndUserEntity(String title, UserEntity userEntity);
 
     Boolean existsByPlaylistTitleAndUserEntity(String title, UserEntity userEntity);
 

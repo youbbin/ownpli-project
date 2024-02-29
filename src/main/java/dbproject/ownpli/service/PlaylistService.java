@@ -5,6 +5,7 @@ import dbproject.ownpli.domain.playlist.PlaylistEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import dbproject.ownpli.dto.PlaylistCreateRequest;
 import dbproject.ownpli.dto.PlaylistDTO;
+import dbproject.ownpli.dto.PlaylistUpdateRequest;
 import dbproject.ownpli.repository.MusicRepository;
 import dbproject.ownpli.repository.PlaylistMusicRepository;
 import dbproject.ownpli.repository.PlaylistRepository;
@@ -33,15 +34,20 @@ public class PlaylistService {
     private final MusicRepository musicRepository;
     private final UserRepository userRepository;
 
-    public PlaylistDTO updatePlaylistTitle(String oldTitle, String newTitle, String userId) {
-        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(newTitle, userId);
-        if (!byPlaylistTitleAndUserId.isEmpty())
-            return null;
+    public PlaylistDTO updatePlaylistTitle(PlaylistUpdateRequest request) {
+        UserEntity userEntity = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        int i = playlistRepository.updatePlaylistTitle(oldTitle, newTitle, userId);
+        if (playlistRepository.existsByPlaylistTitleAndUserEntity(request.getOldTitle(), userEntity)) {
+            throw new NullPointerException("존재하지 않는 제목입니다.");
+        }
 
-        String playlistIdByPlaylistTitleAndUserId = findPlaylistIdByPlaylistTitleAndUserId(newTitle, userId);
-        return getPlaylistDTOByPlaylistId(playlistIdByPlaylistTitleAndUserId);
+        PlaylistEntity playlistEntity = playlistRepository.findByPlaylistTitleAndUserEntity(request.getOldTitle(), userEntity)
+                .orElseThrow(() -> new NullPointerException("존재하지 않는 제목입니다."));
+        playlistEntity.setPlaylistTitle(request.getNewTitle());
+        playlistRepository.save(playlistEntity);
+
+        return PlaylistDTO.from(playlistEntity);
     }
 
     public List<PlaylistDTO> findPlaylistByUserId(String userId) {
@@ -77,7 +83,10 @@ public class PlaylistService {
     }
 
     public String findPlaylistIdByPlaylistTitleAndUserId(String title, String userId) {
-        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(title, userId);
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
+
+        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserEntity(title, userEntity);
         if (byPlaylistTitleAndUserId.isEmpty()) return null;
         else return byPlaylistTitleAndUserId.get().getPlaylistId();
     }
