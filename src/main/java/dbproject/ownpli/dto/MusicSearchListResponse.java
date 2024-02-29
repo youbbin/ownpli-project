@@ -6,7 +6,7 @@ import lombok.Builder;
 @Builder
 public class MusicSearchListResponse {
 
-    private String musicId;
+    private Long musicId;
     private String title;
     private String singer;
     private String genre;

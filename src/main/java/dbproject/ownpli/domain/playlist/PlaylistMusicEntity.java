@@ -17,7 +17,7 @@ import java.sql.Date;
 public class PlaylistMusicEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long key;
 
     @ManyToOne
