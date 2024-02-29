@@ -20,7 +20,7 @@ public class PlaylistController {
     private final PlaylistService playlistService;
     private final MusicService musicService;
 
-    @PostMapping("/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<PlaylistDTO>> getAllPlaylists(@PathVariable String userId) {
         return ResponseEntity.ok(playlistService.findPlaylistByUserId(userId));
     }
@@ -30,23 +30,9 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.updatePlaylistTitle(request));
     }
 
-    /**
-     * playlistId로 playlist에 포함된 음악 list 정보 조회
-     * @param param
-     * @return
-     */
-    @PostMapping("/getlist/musics")
-    public ResponseEntity<PlaylistMusicDTO> findMusicList(@RequestBody LinkedHashMap param) {
-        String userId = param.get("userId").toString();
-        String playlistTitle = param.get("playlistTitle").toString();
-        String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(playlistTitle, userId);
-        if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        List<String> musicsByPlaylistId = playlistService.findMusicsByPlaylistId(playlistId);
-        List<MusicResponse> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
-        return new ResponseEntity<>(
-            PlaylistMusicDTO.from(playlistService.getPlaylistDTOByPlaylistId(playlistId), musicInfosByPlaylist),
-            HttpStatus.OK);
+    @GetMapping("/{playlistId}")
+    public ResponseEntity<PlaylistMusicDTO> findMusicList(@PathVariable String playlistId) {
+        return ResponseEntity.ok(playlistService.findMusicsByPlaylistId(playlistId));
     }
 
     @PostMapping("/getlist/delete")

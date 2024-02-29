@@ -3,13 +3,8 @@ package dbproject.ownpli.service;
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.domain.playlist.PlaylistEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
-import dbproject.ownpli.dto.PlaylistCreateRequest;
-import dbproject.ownpli.dto.PlaylistDTO;
-import dbproject.ownpli.dto.PlaylistUpdateRequest;
-import dbproject.ownpli.repository.MusicRepository;
-import dbproject.ownpli.repository.PlaylistMusicRepository;
-import dbproject.ownpli.repository.PlaylistRepository;
-import dbproject.ownpli.repository.UserRepository;
+import dbproject.ownpli.dto.*;
+import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +27,7 @@ public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistMusicRepository playlistMusicRepository;
     private final MusicRepository musicRepository;
+    private final MusicLikeRepository musicLikeRepository;
     private final UserRepository userRepository;
 
     public PlaylistDTO updatePlaylistTitle(PlaylistUpdateRequest request) {
@@ -64,16 +60,23 @@ public class PlaylistService {
                 playlistRepository.findById(playlistId).get());
     }
 
-    /**
-     * playlistID로 음악 아이디들 찾기
-     *
-     * @param playlistId
-     * @return
-     */
-    public List<String> findMusicsByPlaylistId(String playlistId) {
+    public PlaylistMusicDTO findMusicsByPlaylistId(String playlistId) {
+        PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
+
+        PlaylistDTO playlistDTO = PlaylistDTO.from(playlistEntity);
+
+        List<MusicResponse> collect = playlistEntity.getPlaylistMusicEntities().stream()
+                .map(playlistMusicEntity -> MusicResponse.ofPlaylistMusic(
+                        playlistMusicEntity,
+                        musicLikeRepository.countByMusicEntity(playlistMusicEntity.getMusicEntity())
+                ))
+                .collect(Collectors.toList());
+
+
         List<String> musicIds = playlistMusicRepository.findMusicIdsByPlaylistId(playlistId);
 
-        return musicIds;
+        return PlaylistMusicDTO.from(playlistDTO, collect);
     }
 
     public boolean playlistMusicDelete(String playlistId, List<String> musicIds) {

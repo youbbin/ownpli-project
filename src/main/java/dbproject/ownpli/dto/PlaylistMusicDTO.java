@@ -11,9 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 public class PlaylistMusicDTO {
     private PlaylistDTO playlistDTO;
-    private List<MusicDTO> musicDTOList;
+    private List<MusicResponse> musicDTOList;
 
-    public static PlaylistMusicDTO from(PlaylistDTO playlistDTO, List<MusicDTO> musicDTOList) {
+    public static PlaylistMusicDTO from(PlaylistDTO playlistDTO, List<MusicResponse> musicDTOList) {
         return new PlaylistMusicDTO(playlistDTO, musicDTOList);
     }
 }
