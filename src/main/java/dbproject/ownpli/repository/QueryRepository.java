@@ -1,6 +1,5 @@
 package dbproject.ownpli.repository;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dbproject.ownpli.domain.UserEntity;
@@ -9,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static dbproject.ownpli.domain.QUserEntity.userEntity;
+import static dbproject.ownpli.domain.music.QMoodEntity.moodEntity;
 import static dbproject.ownpli.domain.music.QMusicEntity.musicEntity;
 import static dbproject.ownpli.domain.music.QMusicMoodEntity.musicMoodEntity;
 import static dbproject.ownpli.domain.playlist.QPlaylistEntity.playlistEntity;
@@ -34,125 +33,50 @@ public class QueryRepository {
                                                      List<String> year,
                                                      List<Long> mood) throws ParseException {
         return jpaQueryFactory
-            .selectFrom(musicEntity)
-            .select(musicEntity)
-            .from(musicEntity, musicMoodEntity).distinct()
-            .where(musicMoodEntity.musicId.eq(musicEntity.musicId),
-                inSingers(likes),
-                notInSingers(hates),
-                inGenre(genre),
-                inCountry(country),
-                betweenDate(year),
-                inMood(mood)
-            ).orderBy(musicEntity.musicId.asc()).fetch();
+                .select(musicEntity)
+                .from(musicEntity, musicMoodEntity).distinct()
+                .where(musicMoodEntity.musicEntity.eq(musicEntity),
+                        inSingers(likes),
+                        notInSingers(hates),
+                        inGenre(genre),
+                        inCountry(country),
+                        betweenDate(year),
+                        inMood(mood)
+                ).orderBy(musicEntity.musicId.asc()).fetch();
     }
 
     public List<String> findAgeCompare(UserEntity user) {
         return jpaQueryFactory
-            .selectFrom(playlistEntity)
-            .select(playlistEntity.playlistId)
-            .from(playlistEntity, userEntity)
-            .where(playlistEntity.userId.eq(userEntity.userId),
-                betweenAge(user.getAge())
-            ).fetch();
+                .selectFrom(playlistEntity)
+                .select(playlistEntity.playlistId)
+                .from(playlistEntity, userEntity)
+                .where(playlistEntity.userId.eq(userEntity.userId),
+                        betweenAge(user.getAge())
+                ).fetch();
     }
 
-    private BooleanBuilder inSingers(List<String> likes) {
-        if (likes == null) {
-            return null;
-        }
-
-        log.info("singerLikeCount={}",likes.size());
-
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-
-        for (String like : likes){
-            log.info("singerLike = {}", like);
-            booleanBuilder.or(musicEntity.singer.contains(like));
-        }
-        return booleanBuilder;
+    private BooleanExpression inSingers(List<String> likes) {
+        return likes != null ? musicEntity.singer.in(likes) : null;
     }
 
-    private BooleanBuilder notInSingers(List<String> hates) {
-        if (hates == null) {
-            return null;
-        }
-
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-
-        for (String hate : hates){
-            log.info("singerHate={}", hate);
-            booleanBuilder.or(musicEntity.singer.contains(hate));
-        }
-
-//        return musicEntity.singer.notIn(hates);
-        return booleanBuilder.not();
+    private BooleanExpression notInSingers(List<String> hates) {
+        return hates != null ? musicEntity.singer.notIn(hates) : null;
     }
 
-    private BooleanBuilder inGenre(List<Long> genre) {
-        if (genre == null) {
-            return null;
-        }
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-
-        int i = 0;
-
-        for (Long g : genre){
-            log.info("genre={}", g);
-            booleanBuilder.or(musicEntity.genreNum.eq(g));
-        }
-
-        return booleanBuilder;
+    private BooleanExpression inGenre(List<Long> genre) {
+        return genre != null ? musicEntity.genreNum.in(genre) : null;
     }
 
-    private BooleanBuilder inCountry(List<String> ctry) {
-        if (ctry == null) {
-            return null;
-        }
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-
-        for (String c : ctry){
-            log.info("country={}", c);
-            booleanBuilder.or(musicEntity.country.eq(c));
-        }
-
-        return booleanBuilder;
+    private BooleanExpression inCountry(List<String> countries) {
+        return countries != null ? musicEntity.country.in(countries) : null;
     }
 
-    private BooleanBuilder betweenDate(List<String> year) throws ParseException {
-        if(year == null) {
-            return null;
-        }
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date date1, date2;
-
-
-        for (String y : year){
-            log.info("year={}",y);
-            String a = y.replace("'s", "");
-            log.info("year={}",a);
-            date1 = new Date(format.parse(a + "-01-01").getTime());
-            date2 = new Date(format.parse((Integer.parseInt(a) + 9) + "-12-31").getTime());
-
-            booleanBuilder.or(musicEntity.date.between(date1, date2));
-        }
-
-        return booleanBuilder;
+    private BooleanExpression betweenDate(List<String> year) {
+        return year != null ? musicEntity.date.year().in(year.stream().map(y -> Integer.parseInt(y.replace("'s", ""))).collect(Collectors.toList())) : null;
     }
 
-    private BooleanBuilder inMood(List<Long> mood) {
-        if (mood == null) {
-            return null;
-        }
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-
-        for (Long m : mood){
-            log.info("mood={}", m);
-            booleanBuilder.or(musicMoodEntity.moodNum.eq(m));
-        }
-
-        return booleanBuilder;
+    private BooleanExpression inMood(List<Long> mood) {
+        return mood != null ? moodEntity.moodNum.in(mood) : null;
     }
 
     private BooleanExpression betweenAge(int age) {
