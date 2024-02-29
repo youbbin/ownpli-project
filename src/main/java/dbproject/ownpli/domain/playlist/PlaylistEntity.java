@@ -1,18 +1,15 @@
 package dbproject.ownpli.domain.playlist;
 
+import dbproject.ownpli.domain.UserEntity;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * 조인으로 연동하기
  */
-@Data
-@Builder
-@AllArgsConstructor
+@Getter
 @Entity(name = "playlist")
 @Table(name = "playlist")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,6 +26,17 @@ public class PlaylistEntity {
     @Column(name = "playlist title", nullable = false, length = 50)
     private String playlistTitle;
 
-    @Column(name = "user id", nullable = false)
-    private String userId;
+    @ManyToOne
+    @JoinColumn(name = "user id", referencedColumnName = "user id")
+    private UserEntity userEntity;
+
+    @OneToMany(mappedBy = "playlistEntity")
+    private List<PlaylistMusicEntity> playlistMusicEntities;
+
+    @Builder
+    public PlaylistEntity(String playlistId, String playlistTitle, UserEntity userEntity) {
+        this.playlistId = playlistId;
+        this.playlistTitle = playlistTitle;
+        this.userEntity = userEntity;
+    }
 }

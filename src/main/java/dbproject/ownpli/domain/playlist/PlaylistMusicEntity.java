@@ -1,5 +1,6 @@
 package dbproject.ownpli.domain.playlist;
 
+import dbproject.ownpli.domain.music.MusicEntity;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -21,11 +22,13 @@ public class PlaylistMusicEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long key;
 
-    @Column(name = "playlist id")
-    private String playlistId;
+    @ManyToOne
+    @JoinColumn(name = "playlist id", referencedColumnName = "playlist id")
+    private PlaylistEntity playlistEntity;
 
-    @Column(name = "music id")
-    private String musicId;
+    @ManyToOne
+    @JoinColumn(name = "music id", referencedColumnName = "music id")
+    private MusicEntity musicEntity;
 
     @CreatedDate
     @Column(nullable = false)
