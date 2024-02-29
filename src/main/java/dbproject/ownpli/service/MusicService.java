@@ -1,8 +1,13 @@
 package dbproject.ownpli.service;
 
+import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.domain.music.GenreEntity;
+import dbproject.ownpli.domain.music.MoodEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.music.MusicLikeEntity;
-import dbproject.ownpli.dto.MusicDTO;
+import dbproject.ownpli.dto.MusicListRequest;
+import dbproject.ownpli.dto.MusicResponse;
+import dbproject.ownpli.dto.MusicSearchListResponse;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,75 +31,56 @@ import java.util.Optional;
 public class MusicService {
 
     private final MusicRepository musicRepository;
-    private final MusicMoodRepository musicMoodRepository;
     private final MusicLikeRepository musicLikeRepository;
     private final GenreRepository genreRepository;
     private final MoodRepository moodRepository;
+    private final UserRepository userRepository;
     private final QueryRepository queryRepository;
 
     public List<String> findSingerList() {
         return musicRepository.findSingers();
     }
 
-    public boolean validateDuplicateLikes(String userId, String musicId) {
-        Optional<MusicLikeEntity> findLikes = musicLikeRepository.findByUserIdAndMusicId(userId, musicId);
-
-        if(!findLikes.isEmpty())
-            return false;
-        return true;
+    private boolean validateDuplicateLikes(UserEntity user, MusicEntity music) {
+        return musicLikeRepository.existsByMusicEntityAndUserEntity(music, user);
     }
 
-    /**
-     * 좋아요 클릭
-     * @param userId
-     * @param musicId
-     * @return
-     */
     public String musicLikeSetting(String userId, String musicId) {
 
-        boolean flag = validateDuplicateLikes(userId, musicId);
-        if(!flag) musicLikeRepository.deleteById(musicLikeRepository.findByUserIdAndMusicId(userId, musicId).get().getKey());
+        MusicEntity musicEntity = musicRepository.findById(musicId)
+                .orElseThrow(() -> new NullPointerException("id 없음"));
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new NullPointerException("id 없음"));
 
-        musicLikeRepository.save(MusicLikeEntity.builder().musicId(musicId).userId(userId).build());
-        log.info("회원가입 완료");
+        if (validateDuplicateLikes(userEntity, musicEntity)) {
+            musicLikeRepository.deleteByMusicEntityAndUserEntity(musicEntity, userEntity);
+        }
+        else {
+            musicLikeRepository.save(MusicLikeEntity.of(userEntity, musicEntity));
+        }
+
         return musicId;
     }
 
     /**
      * MusicEntity 리스트를 MusicDTO로 변환
+     *
      * @param musicEntities
      * @return
      */
-    public List<MusicDTO> musicEntitiesToMusicDTO(List<MusicEntity> musicEntities) {
-        List<MusicDTO> models = new ArrayList<>();
+    public List<MusicResponse> musicEntitiesToMusicDTO(List<MusicEntity> musicEntities) {
+        List<MusicResponse> models = new ArrayList<>();
 
-        for(int i = 0; i < musicEntities.size(); i++) {
+        for (int i = 0; i < musicEntities.size(); i++) {
             models.add(findMusicInfo(musicEntities.get(i).getMusicId()));
         }
         return models;
     }
 
-    /**
-     * 모든 음악리스트 찾기(DTO)
-     * @return
-     */
-    public List<MusicEntity> findAll() {
-        List<MusicEntity> all = musicRepository.findAll();
-
-        return all;
-    }
-
-    /**
-     * 음악 아이디로 음악 엔티티 찾기
-     * @param musicId
-     * @return
-     */
-    public MusicEntity findByMusicId(String musicId) {
-        return musicRepository.findById(musicId).get();
-    }
 
     /**
      * 음악 이름으로 음악 아이디들 찾기
+     *
      * @param title
      * @return
      */
@@ -103,6 +90,7 @@ public class MusicService {
 
     /**
      * 음악 이름으로 음악 아이디들 찾기
+     *
      * @param title
      * @return
      */
@@ -112,6 +100,7 @@ public class MusicService {
 
     /**
      * 음악 이름으로 음악 리스트 검색
+     *
      * @param title
      * @return
      */
@@ -121,6 +110,7 @@ public class MusicService {
 
     /**
      * 가수 이름으로 음악 리스트 검색
+     *
      * @param singer
      * @return
      */
@@ -129,108 +119,41 @@ public class MusicService {
     }
 
     /**
-     * 사용자가 좋아요한 음악 리스트 출력
-     * @param userId
-     * @return
-     */
-    public List<MusicEntity> findMusicListByUserId(String userId) {
-        List<String> musicIds = musicLikeRepository.findByUserId(userId);
-        return musicRepository.findByMusicId(musicIds);
-    }
-
-    /**
      * 단일 음악 정보 보내기
+     *
      * @param musicId
-     * @return MusicDTO
+     * @return MusicResponse
      * @throws IOException
      */
-    public MusicDTO findMusicInfo(String musicId) {
+    public MusicResponse findMusicInfo(String musicId) {
         log.info("musicId = " + musicId);
-        MusicEntity byMusicId = findByMusicId(musicId);
-        String byGenreId = findByGenreId(byMusicId.getGenreNum());
+        MusicEntity musicEntity = musicRepository.findById(musicId).orElseThrow(() -> new NullPointerException("없음"));
 
-        Optional<Long> aLong = musicLikeRepository.countByMusicId(musicId);
-        Long likes = Long.valueOf(0);
-        if (!aLong.isEmpty()) likes = aLong.get();
+        Long likes = musicLikeRepository.countByMusicEntity(musicEntity);
 
-        log.info("byMusicId.getMusicId = " + byMusicId.getMusicId());
 
-        return MusicDTO.from(byMusicId, byGenreId, likes);
+        return MusicResponse.ofMusic(musicEntity, likes);
     }
 
-    /**
-     * 음악 필터링해서 추가
-     * @param param
-     * @return
-     * @throws ParseException
-     */
-    public List<MusicDTO> addMusics(LinkedHashMap param) throws ParseException {
-        List<Long> genre, mood;
-        Optional g = Optional.ofNullable(param.get("genre"));
-        if(g.isEmpty()) genre = null;
-        else {
-            genre = genreRepository.findGenreNumsByGenre(List.of(g.get().toString().split("@")));
-            for(Long i : genre) log.info("genre={}", i);
-        }
+    public List<MusicSearchListResponse> searchByCondition(MusicListRequest request) {
+        List<GenreEntity> genreEntities = genreRepository.findAllById(request.getGenre());
 
-        Optional m = Optional.ofNullable(param.get("mood"));
-        if(m.isEmpty()) mood = null;
-        else mood = findMoodEntitiesByMood(List.of(m.get().toString().split("@")));
-
-        return musicEntitiesToMusicDTO(filteringMusics(param, genre, mood));
+        return queryRepository.findDynamicQueryAdvance(request, genreEntities).stream()
+                .map(MusicSearchListResponse::of)
+                .collect(Collectors.toList());
     }
 
-    /**
-     * 동적 query QueryDSL 검색 필터링
-     * @param param
-     * @param genre
-     * @return MusicEntity List
-     * @throws ParseException
-     */
-    private List<MusicEntity> filteringMusics(LinkedHashMap param, List<Long> genre, List<Long> mood) throws ParseException {
-        List<String> likes, hates, crty, year;
-
-        Optional l = Optional.ofNullable(param.get("likedSinger"));
-        Optional h = Optional.ofNullable(param.get("dislikedSinger"));
-        Optional c = Optional.ofNullable(param.get("country"));
-        Optional y = Optional.ofNullable(param.get("year"));
-
-        if(l.isEmpty()) {
-            likes = null;
-            log.info("likes=null");
-        }
-        else likes = List.of(l.get().toString().split("@"));
-
-        if(h.isEmpty()) {
-            hates = null;
-            log.info("hates=null");
-        }
-        else hates = List.of(h.get().toString().split("@"));
-
-        if(c.isEmpty()) {
-            crty = null;
-            log.info("langs=null");
-        }
-        else crty = List.of(c.get().toString().split("@"));
-
-        if(y.isEmpty()) {
-            year = null;
-            log.info("year=null");
-        }
-        else year = List.of(y.get().toString().split("@"));
-
-        return queryRepository.findDynamicQueryAdvance(likes, hates, genre, crty, year, mood);
-    }
 
     /**
      * 플레이리스트에서 뮤직 정보 가져오기
+     *
      * @param musicIds
      * @return
      */
-    public List<MusicDTO> findMusicInfosByPlaylist(List<String> musicIds) {
-        List<MusicDTO> arr = new ArrayList<>();
+    public List<MusicResponse> findMusicInfosByPlaylist(List<String> musicIds) {
+        List<MusicResponse> arr = new ArrayList<>();
 
-        for(int i = 0; i < musicIds.size(); i++) {
+        for (int i = 0; i < musicIds.size(); i++) {
             arr.add(findMusicInfo(musicIds.get(i)));
         }
 
@@ -238,16 +161,8 @@ public class MusicService {
     }
 
     /**
-     * 장르 아이디로 장르 이름 출력
-     * @param genreId
-     * @return String
-     */
-    public String findByGenreId(Long genreId) {
-        return genreRepository.findById(genreId).get().getGenre();
-    }
-
-    /**
      * musicId로 txt파일에서 가사 불러오기
+     *
      * @param musicId
      * @return Model
      * @throws IOException
@@ -258,10 +173,10 @@ public class MusicService {
         path = path.replaceFirst("D", "C");
         //파일 읽기
         BufferedReader br = new BufferedReader(new FileReader(path));
-        String line ="", result = "";
+        String line = "", result = "";
 
         //한 줄 씩 읽은 내용 쓰기
-        while( (line=br.readLine()) != null ) {
+        while ((line = br.readLine()) != null) {
             result += line;
             result += "\n";
         }
@@ -271,6 +186,7 @@ public class MusicService {
 
     /**
      * 장르 이름 리스트로 장르 아이디 리스트 찾기
+     *
      * @param genre
      * @return
      */
@@ -280,21 +196,12 @@ public class MusicService {
 
     /**
      * mood 이름 리스트로 mood 아이디 리스트 찾기
+     *
      * @param mood
      * @return
      */
-    public List<Long> findMoodEntitiesByMood(List<String> mood) {
-        return moodRepository.findMoodEntitiesByMood(mood);
-    }
-
-    /**
-     * 음악 아이디로 mood 조회
-     * @param musicId
-     * @return List[String]
-     */
-    public List<String> findMoodByMusicId(String musicId) {
-        List<Long> byMusicId = musicMoodRepository.findByMusicId(musicId);
-        return moodRepository.findByIds(byMusicId);
+    public List<MoodEntity> findMoodEntitiesByMood(List<String> mood) {
+        return moodRepository.findByMoodIn(mood);
     }
 
 }

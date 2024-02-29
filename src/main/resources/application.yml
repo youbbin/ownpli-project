@@ -1,0 +1,40 @@
+
+#spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+#spring.datasource.url=jdbc:mysql://localhost:3306/teybat_guide?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#spring.datasource.username=root
+#spring.datasource.password=dsd1211
+#
+#spring.jpa.open-in-view=true
+#spring.jpa.hibernate.ddl-auto=update
+#spring.jpa.show-sql=true
+#spring.jpa.generate-ddl=true
+#
+#spring.jpa.properties.hibernate.format_sql=true
+#spring.jpa.properties.hibernate.show_sql=true
+#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+#
+#logging.level.org.hibernate.SQL=debug
+spring:
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ownpli?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: test_user
+    password: adminaccount1234
+
+
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    generate-ddl: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug

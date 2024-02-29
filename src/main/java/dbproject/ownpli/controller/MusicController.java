@@ -1,7 +1,9 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.domain.music.MusicEntity;
-import dbproject.ownpli.dto.MusicDTO;
+import dbproject.ownpli.dto.MusicListRequest;
+import dbproject.ownpli.dto.MusicResponse;
+import dbproject.ownpli.dto.MusicSearchListResponse;
 import dbproject.ownpli.dto.SearchDTO;
 import dbproject.ownpli.service.Mp3Service;
 import dbproject.ownpli.service.MusicService;
@@ -27,18 +29,14 @@ public class MusicController {
     private final Mp3Service mp3Service;
 
 //    @GetMapping("/getAllMusic")
-//    public ResponseEntity<List<MusicDTO>> getAllMusics() {
+//    public ResponseEntity<List<MusicResponse>> getAllMusics() {
 //        return new ResponseEntity<>(musicService.musicEntitiesToMusicDTO(musicService.findAll()), HttpStatus.OK);
 //    }
 
-    /**
-     * 조건에 따라 음악 검색하기
-     * @param param
-     * @return MusicDTO List
-     */
+
     @PostMapping("/add")
-    public ResponseEntity<List<MusicDTO>> getMusicAboutCondition(@RequestBody LinkedHashMap param) throws ParseException {
-        return new ResponseEntity<>(musicService.addMusics(param), HttpStatus.OK);
+    public ResponseEntity<List<MusicSearchListResponse>> getMusicByCondition(@RequestBody MusicListRequest request) throws ParseException {
+        return ResponseEntity.ok(musicService.searchByCondition(request));
     }
 
     /**
@@ -64,8 +62,8 @@ public class MusicController {
     public ResponseEntity<SearchDTO> searchMusics(@RequestBody LinkedHashMap param) {
         String musicSearch = param.get("musicSearch").toString();
 
-        List<MusicDTO> searchTitle = musicService.musicEntitiesToMusicDTO(musicService.findByTitleContain(musicSearch));
-        List<MusicDTO> searchSinger = musicService.musicEntitiesToMusicDTO(musicService.findBySingerContain(musicSearch));
+        List<MusicResponse> searchTitle = musicService.musicEntitiesToMusicDTO(musicService.findByTitleContain(musicSearch));
+        List<MusicResponse> searchSinger = musicService.musicEntitiesToMusicDTO(musicService.findBySingerContain(musicSearch));
 
         return new ResponseEntity<>(SearchDTO.from(searchTitle, searchSinger), HttpStatus.OK);
     }
@@ -78,7 +76,7 @@ public class MusicController {
     @PostMapping("/title")
     public ResponseEntity<LinkedHashMap> getMusics(@RequestBody LinkedHashMap param) throws IOException {
         String musicId = musicService.findOneMusicIdByTitle(param.get("title").toString()).getMusicId();
-        MusicDTO musicInfo = musicService.findMusicInfo(musicId);
+        MusicResponse musicInfo = musicService.findMusicInfo(musicId);
 
         LinkedHashMap hashMap = new LinkedHashMap();
         hashMap.put("musicInfo", musicInfo);
@@ -93,12 +91,12 @@ public class MusicController {
      * @return
      */
     @PostMapping("/title/like")
-    public ResponseEntity<MusicDTO> musicLikes(@RequestBody LinkedHashMap param) {
+    public ResponseEntity<MusicResponse> musicLikes(@RequestBody LinkedHashMap param) {
         String musicId = musicService.findOneMusicIdByTitle(param.get("title").toString()).getMusicId();
         String userId = musicService.musicLikeSetting(param.get("userId").toString(), musicId);
 
         if(userId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        MusicDTO musicInfo = musicService.findMusicInfo(musicId);
+        MusicResponse musicInfo = musicService.findMusicInfo(musicId);
 
         return new ResponseEntity<>(musicInfo, HttpStatus.OK);
     }
@@ -129,33 +127,33 @@ public class MusicController {
         return new ResponseEntity<>(musicService.readLyrics(musicId), HttpStatus.OK);
     }
 
-    /**
-     * mp3파일을 보내기 위해 클라이언트와 통신
-     * @return
-     * @throws Exception
-     * @url /music/play
-     * @container
-     * JSon 포맷으로 전송된 request parameter 데이터를 받을 액션 메서드의 파라미터 변수에는 @RequestBody 어노테이션을 붙여주어야 한다.
-     */
-    @PostMapping("/play")
-    public ResponseEntity<LinkedHashMap> getAudio(@RequestBody LinkedHashMap param) throws Exception{
-        MusicEntity musicEntity = musicService.findOneMusicIdByTitle(param.get("title").toString());
-        LinkedHashMap linkedHashMap = mp3Service.playAudio(musicEntity.getMusicId());
-        String userId = param.get("userId").toString();
-
-        Optional likes = (Optional) param.get("likes");
-
-        if(likes != null) {
-            String s = musicService.musicLikeSetting(param.get("userId").toString(), musicEntity.getMusicId());
-
-            if(!userId.equals(s)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        linkedHashMap.put("title", musicEntity.getTitle());
-        linkedHashMap.put("singer", musicEntity.getSinger());
-        linkedHashMap.put("likeStatus", !musicService.validateDuplicateLikes(userId, musicEntity.getMusicId()));
-
-        return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
-    }
+//    /**
+//     * mp3파일을 보내기 위해 클라이언트와 통신
+//     * @return
+//     * @throws Exception
+//     * @url /music/play
+//     * @container
+//     * JSon 포맷으로 전송된 request parameter 데이터를 받을 액션 메서드의 파라미터 변수에는 @RequestBody 어노테이션을 붙여주어야 한다.
+//     */
+//    @PostMapping("/play")
+//    public ResponseEntity<LinkedHashMap> getAudio(@RequestBody LinkedHashMap param) throws Exception{
+//        MusicEntity musicEntity = musicService.findOneMusicIdByTitle(param.get("title").toString());
+//        LinkedHashMap linkedHashMap = mp3Service.playAudio(musicEntity.getMusicId());
+//        String userId = param.get("userId").toString();
+//
+//        Optional likes = (Optional) param.get("likes");
+//
+//        if(likes != null) {
+//            String s = musicService.musicLikeSetting(param.get("userId").toString(), musicEntity.getMusicId());
+//
+//            if(!userId.equals(s)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        linkedHashMap.put("title", musicEntity.getTitle());
+//        linkedHashMap.put("singer", musicEntity.getSinger());
+////        linkedHashMap.put("likeStatus", !musicService.validateDuplicateLikes(userId, musicEntity.getMusicId()));
+//
+//        return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
+//    }
 
 }

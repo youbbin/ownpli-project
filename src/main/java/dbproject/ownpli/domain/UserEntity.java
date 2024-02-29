@@ -1,15 +1,13 @@
 package dbproject.ownpli.domain;
 
+import dbproject.ownpli.domain.music.MusicLikeEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
-@Data
-@Builder
+@Getter
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
@@ -33,4 +31,15 @@ public class UserEntity {
     @Column(nullable = false)
     private int sex;
 
+    @OneToMany(mappedBy = "userEntity")
+    private List<MusicLikeEntity> musicLikeEntities;
+
+    @Builder
+    public UserEntity(String userId, String password, String name, int age, int sex) {
+        this.userId = userId;
+        this.password = password;
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+    }
 }

@@ -28,8 +28,9 @@ public class MusicEntity {
     @Column(length = 200)
     private String album;
 
-    @Column(name = "genre num")
-    private Long genreNum;
+    @OneToOne
+    @JoinColumn(name = "genre num", referencedColumnName = "genre num")
+    private GenreEntity genreEntity;
 
     //이미지파일경로
     @Column(name = "image file", nullable = false, length = 50)
@@ -54,12 +55,12 @@ public class MusicEntity {
     List<MusicMoodEntity> musicMoodEntities;
 
     @Builder
-    public MusicEntity(String musicId, String title, String singer, String album, Long genreNum, String imageFile, Date date, String country, String lyricsFile, String mp3File) {
+    public MusicEntity(String musicId, String title, String singer, String album, GenreEntity genreEntity, String imageFile, Date date, String country, String lyricsFile, String mp3File) {
         this.musicId = musicId;
         this.title = title;
         this.singer = singer;
         this.album = album;
-        this.genreNum = genreNum;
+        this.genreEntity = genreEntity;
         this.imageFile = imageFile;
         this.date = date;
         this.country = country;

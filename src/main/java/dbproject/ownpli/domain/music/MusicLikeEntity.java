@@ -1,5 +1,6 @@
 package dbproject.ownpli.domain.music;
 
+import dbproject.ownpli.domain.UserEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,11 +9,9 @@ import javax.persistence.*;
  * 조인으로 연동하기
  */
 
-@Data
+@Getter
 @Entity(name = "music_like")
-@Builder
 @Table(name = "music-like")
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MusicLikeEntity {
 
@@ -20,10 +19,24 @@ public class MusicLikeEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long key;
 
-    @Column(name = "user id")
-    private String userId;
+    @ManyToOne
+    @JoinColumn(name = "user ic", referencedColumnName = "user ic")
+    private UserEntity userEntity;
 
-    @Column(name = "music id")
-    private String musicId;
+    @ManyToOne
+    @JoinColumn(name = "music id", referencedColumnName = "music id")
+    private MusicEntity musicEntity;
 
+    @Builder
+    public MusicLikeEntity(UserEntity userEntity, MusicEntity musicEntity) {
+        this.userEntity = userEntity;
+        this.musicEntity = musicEntity;
+    }
+
+    public static MusicLikeEntity of(UserEntity user, MusicEntity music) {
+        return MusicLikeEntity.builder()
+                .userEntity(user)
+                .musicEntity(music)
+                .build();
+    }
 }

@@ -3,7 +3,9 @@ package dbproject.ownpli.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.domain.music.GenreEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
+import dbproject.ownpli.dto.MusicListRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -26,22 +28,17 @@ public class QueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<MusicEntity> findDynamicQueryAdvance(List<String> likes,
-                                                     List<String> hates,
-                                                     List<Long> genre,
-                                                     List<String> country,
-                                                     List<String> year,
-                                                     List<Long> mood) throws ParseException {
+    public List<MusicEntity> findDynamicQueryAdvance(MusicListRequest request, List<GenreEntity> genre) {
         return jpaQueryFactory
                 .select(musicEntity)
-                .from(musicEntity, musicMoodEntity).distinct()
+                .from(musicEntity, musicMoodEntity, moodEntity).distinct()
                 .where(musicMoodEntity.musicEntity.eq(musicEntity),
-                        inSingers(likes),
-                        notInSingers(hates),
+                        inSingers(request.getLikedSinger()),
+                        notInSingers(request.getDislikedSinger()),
                         inGenre(genre),
-                        inCountry(country),
-                        betweenDate(year),
-                        inMood(mood)
+                        inCountry(request.getCountry()),
+                        betweenDate(request.getYear()),
+                        inMood(request.getMood())
                 ).orderBy(musicEntity.musicId.asc()).fetch();
     }
 
@@ -63,8 +60,8 @@ public class QueryRepository {
         return hates != null ? musicEntity.singer.notIn(hates) : null;
     }
 
-    private BooleanExpression inGenre(List<Long> genre) {
-        return genre != null ? musicEntity.genreNum.in(genre) : null;
+    private BooleanExpression inGenre(List<GenreEntity> genre) {
+        return genre != null ? musicEntity.genreEntity.in(genre) : null;
     }
 
     private BooleanExpression inCountry(List<String> countries) {
@@ -76,7 +73,7 @@ public class QueryRepository {
     }
 
     private BooleanExpression inMood(List<Long> mood) {
-        return mood != null ? moodEntity.moodNum.in(mood) : null;
+        return mood != null ? musicMoodEntity.moodEntity.moodNum.in(mood) : null;
     }
 
     private BooleanExpression betweenAge(int age) {
