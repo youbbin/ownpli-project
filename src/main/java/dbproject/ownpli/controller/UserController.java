@@ -2,6 +2,7 @@ package dbproject.ownpli.controller;
 
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.dto.UserDTO;
+import dbproject.ownpli.dto.UserJoinRequest;
 import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,29 +19,10 @@ public class UserController {
 
     private final UserService userService;
 
-    /**
-     * 회원가입
-     * @param user
-     * @return
-     */
     @PostMapping("/signup")
-    public ResponseEntity<String> signUpUser(@RequestBody UserEntity user) {
-        /**
-         * {
-         *     "userId": "test123@naver.com",
-         *     "password": "1234",
-         *     "name": "test_user",
-         *     "age": 25,
-         *     "sex": 1
-         * }
-         */
-
-        String getUserId = userService.join(user);
-
-        if(getUserId == null)
-            return new ResponseEntity<>("이미 존재하는 아이디입니다.", HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity("회원가입 성공", HttpStatus.OK);
+    public ResponseEntity<String> signUpUser(@RequestBody UserJoinRequest request) {
+        userService.join(request);
+        return ResponseEntity.ok("회원가입 성공");
     }
 
     /**

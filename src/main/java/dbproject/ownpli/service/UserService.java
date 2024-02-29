@@ -2,6 +2,7 @@ package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.dto.UserDTO;
+import dbproject.ownpli.dto.UserJoinRequest;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,52 +19,39 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    /**
-     * 회원가입
-     * @param userEntity
-     * @return
-     */
-    public String join(UserEntity userEntity) {
-        boolean flag = validateDuplicateUser(userEntity);
-        if(!flag) return null;
+    public void join(UserJoinRequest request) {
 
-        userRepository.save(userEntity);
+        if (userRepository.existsById(request.getUserId())) {
+            throw new NullPointerException("이미 존재하는 아이디입니다.");
+        }
+
+        userRepository.save(UserEntity.of(request));
         log.info("회원가입 완료");
-        return userEntity.getUserId();
-    }
-
-    /**
-     * 회원 아이디 중복검사
-     * @param user
-     */
-    private boolean validateDuplicateUser(UserEntity user) {
-        Optional<UserEntity> findUser = userRepository.findById(user.getUserId());
-        if(!findUser.isEmpty())
-            return false;
-        return true;
     }
 
     /**
      * 로그인
+     *
      * @param loginId
      * @param password
      * @return
      */
     public UserEntity login(String loginId, String password) {
         return userRepository.findById(loginId)
-            .filter(m -> m.getPassword().equals(password))
-            .orElse(null);
+                .filter(m -> m.getPassword().equals(password))
+                .orElse(null);
     }
 
     /**
      * 회원 단일 조회
+     *
      * @param userId
      * @return
      */
     @Transactional(readOnly = true)
     public UserEntity findByUserId(String userId) {
         Optional<UserEntity> user = userRepository.findById(userId);
-        if(user.isEmpty()) return null;
+        if (user.isEmpty()) return null;
 
         return user.get();
     }
@@ -71,6 +59,7 @@ public class UserService {
 
     /**
      * 회원 닉네임 수정
+     *
      * @param name
      * @param userId
      * @return
@@ -79,7 +68,7 @@ public class UserService {
         int i = userRepository.updateUserName(name, userId);
 
         UserEntity byUserId = findByUserId(userId);
-        if(byUserId == null) return null;
+        if (byUserId == null) return null;
 
         return UserDTO.from(byUserId);
     }

@@ -14,8 +14,4 @@ import java.util.Optional;
 @Repository
 public interface MusicRepository extends JpaRepository<MusicEntity, Long> {
 
-    @Query("SELECT m.musicId FROM MusicEntity m ORDER BY m.date DESC ")
-    List<String> findMusicIdsOrderByYear();
-
-
 }

@@ -1,6 +1,7 @@
 package dbproject.ownpli.domain;
 
 import dbproject.ownpli.domain.music.MusicLikeEntity;
+import dbproject.ownpli.dto.UserJoinRequest;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -40,5 +41,15 @@ public class UserEntity {
         this.name = name;
         this.age = age;
         this.sex = sex;
+    }
+
+    public static UserEntity of(UserJoinRequest request) {
+        return UserEntity.builder()
+                .userId(request.getUserId())
+                .password(request.getPassword())
+                .name(request.getName())
+                .sex(request.getSex())
+                .age(request.getAge())
+                .build();
     }
 }
