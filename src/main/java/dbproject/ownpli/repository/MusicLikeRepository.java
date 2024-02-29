@@ -20,6 +20,4 @@ public interface MusicLikeRepository extends JpaRepository<MusicLikeEntity, Long
 
     void deleteByMusicEntityAndUserEntity(MusicEntity musicEntity, UserEntity userEntity);
 
-
-    List<MusicLikeEntity> findByUserEntity(UserEntity userEntity);
 }

@@ -18,20 +18,13 @@ import java.util.Optional;
 public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEntity, String> {
 
     /**
-     * [select] 플레이리스트 아이디로 playlistMusicEntity 출력
-     * @param playlistId
-     * @return List[PlaylistMusicEntity]
-     * @CRUD read
-     */
-    @Query(value = "SELECT pm FROM playlist_music pm WHERE pm.playlistId in :playlistId")
-    List<PlaylistMusicEntity> findAllByPlaylistId(List<String> playlistId);
-
-    /**
      * playlist에 많이 담긴 순으로
      * @return
      */
     @Query("SELECT DISTINCT pm.musicId FROM playlist_music pm GROUP BY pm.musicId ORDER BY count(pm.musicId) DESC")
     Optional<List<String>> findDistinctMusicId();
+
+    void deleteAllByPlaylistEntityIn(List<PlaylistEntity> playlistEntities);
 
     void deleteAllByPlaylistEntityAndMusicEntityIn(PlaylistEntity playlistEntity, List<MusicEntity> musicEntity);
 }

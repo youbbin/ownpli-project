@@ -16,39 +16,10 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
 
     List<PlaylistEntity> findByUserEntity(UserEntity userEntity);
 
-    @Query(value = "SELECT p FROM playlist p WHERE p.playlistId in :id")
-    List<PlaylistEntity> findAllByPlaylistId(List<String> id);
-
-    /**
-     * [select] 가장 마지막 행 가져오기
-     * @return PlaylistEntity
-     */
     Optional<PlaylistEntity> findFirstByOrderByPlaylistIdDesc();
-
-    Optional<PlaylistEntity> findByPlaylistIdAndUserEntity(String playlistId, UserEntity userEntity);
-
-    /**
-     * userId와 제목을 이용해 플레이리스트 엔티티 찾기
-     * @param playlistTitle
-     * @param userId
-     * @return
-     */
-    @Query("SELECT p.playlistId FROM playlist p WHERE p.userId = :userId AND p.playlistTitle in :playlistTitle")
-    Optional<List<String>> findPlaylistIdsByPlaylistTitleAndUserId(List<String> playlistTitle, String userId);
 
     Optional<PlaylistEntity> findByPlaylistTitleAndUserEntity(String title, UserEntity userEntity);
 
     Boolean existsByPlaylistTitleAndUserEntity(String title, UserEntity userEntity);
-
-    /**
-     * 플레이리스트 타이틀 변경
-     * @param oldTitle
-     * @param newTitle
-     * @param userId
-     * @return
-     */
-    @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE playlist p SET p.playlistTitle = :newTitle where p.userId = :userId and p.playlistTitle = :oldTitle")
-    int updatePlaylistTitle(@Param("oldTitle") String oldTitle, @Param("newTitle") String newTitle, @Param("userId") String userId);
 
 }

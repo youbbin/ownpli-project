@@ -62,21 +62,10 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.findMusicsByPlaylistId(playlistId));
     }
 
-    /**
-     * 플레이리스트 삭제
-     * @param param
-     * @return
-     */
     @PostMapping("/delete")
-    public ResponseEntity<String> deletePlaylist(@RequestBody LinkedHashMap param) {
-        String userId = param.get("userId").toString();
-        String title = param.get("title").toString();
-        List<String> playlistIds = playlistService.findPlaylistIdsByPlaylistTitleAndUserId(title, userId);
-        if(playlistIds == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        playlistService.deletePlaylist(playlistIds);
-
-        return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
+    public ResponseEntity<String> deletePlaylist(@RequestBody PlaylistDropRequest request) {
+        playlistService.deletePlaylist(request.getPlaylistIds());
+        return ResponseEntity.ok("삭제 완료");
     }
 
 }

@@ -11,12 +11,4 @@ import java.util.List;
 @Repository
 public interface GenreRepository extends JpaRepository<GenreEntity, Long> {
 
-    /**
-     * [SELECT] 장르 이름으로 장르 아이디 출력
-     * @param genre
-     * @return List [GenreEntity]
-     * @CRUD SELECT
-     */
-    @Query("SELECT g.genreNum FROM genre g WHERE g.genre in :genre")
-    List<Long> findGenreNumsByGenre(@Param("genre") List<String> genre);
 }

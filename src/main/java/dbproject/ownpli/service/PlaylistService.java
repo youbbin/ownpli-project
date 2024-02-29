@@ -87,12 +87,6 @@ public class PlaylistService {
         return byPlaylistTitleAndUserId.map(PlaylistEntity::getPlaylistId).orElse(null);
     }
 
-    public List<String> findPlaylistIdsByPlaylistTitleAndUserId(String title, String userId) {
-        List<String> list = List.of(title.split("@"));
-        Optional<List<String>> byPlaylistTitleAndUserId = playlistRepository.findPlaylistIdsByPlaylistTitleAndUserId(list, userId);
-        return byPlaylistTitleAndUserId.orElse(null);
-    }
-
     public String savePlaylist(PlaylistCreateRequest request) {
 
         UserEntity user = userRepository.findById(request.getUserId())
@@ -129,18 +123,9 @@ public class PlaylistService {
         log.info("플레이리스트 저장");
     }
 
-    /**
-     * 플레이리스트 삭제
-     *
-     * @param playlistId
-     */
     public void deletePlaylist(List<String> playlistId) {
-        List<PlaylistMusicEntity> allByPlaylistId = playlistMusicRepository.findAllByPlaylistId(playlistId);
-
-        for (int i = 0; i < allByPlaylistId.size(); i++)
-            playlistMusicRepository.delete(allByPlaylistId.get(i));
-
-        playlistRepository.deleteAll(playlistRepository.findAllByPlaylistId(playlistId));
+        playlistMusicRepository.deleteAllByPlaylistEntityIn(playlistRepository.findAllById(playlistId));
+        playlistRepository.deleteAllById(playlistId);
     }
 
 }
