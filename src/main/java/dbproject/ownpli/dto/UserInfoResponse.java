@@ -5,13 +5,13 @@ import lombok.*;
 
 @Getter
 @AllArgsConstructor
-public class UserDTO {
+public class UserInfoResponse {
     private String userId;
     private String name;
     private int age;
     private int sex;
 
-    public static UserDTO from(UserEntity userEntity) {
-        return new UserDTO(userEntity.getUserId(), userEntity.getName(), userEntity.getAge(), userEntity.getSex());
+    public static UserInfoResponse from(UserEntity userEntity) {
+        return new UserInfoResponse(userEntity.getUserId(), userEntity.getName(), userEntity.getAge(), userEntity.getSex());
     }
 }

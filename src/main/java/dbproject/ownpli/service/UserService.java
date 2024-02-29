@@ -1,7 +1,7 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.dto.UserDTO;
+import dbproject.ownpli.dto.UserInfoResponse;
 import dbproject.ownpli.dto.UserJoinRequest;
 import dbproject.ownpli.dto.UserSignInRequest;
 import dbproject.ownpli.dto.UserSignInResponse;
@@ -16,11 +16,12 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
 
+    @Transactional
     public void join(UserJoinRequest request) {
 
         if (userRepository.existsById(request.getUserId())) {
@@ -30,6 +31,7 @@ public class UserService {
         userRepository.save(UserEntity.of(request));
         log.info("회원가입 완료");
     }
+
 
     public UserSignInResponse login(UserSignInRequest request) {
         UserEntity userEntity = userRepository.findById(request.getUserId())
@@ -42,20 +44,6 @@ public class UserService {
         return UserSignInResponse.of(userEntity);
     }
 
-    /**
-     * 회원 단일 조회
-     *
-     * @param userId
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public UserEntity findByUserId(String userId) {
-        Optional<UserEntity> user = userRepository.findById(userId);
-        if (user.isEmpty()) return null;
-
-        return user.get();
-    }
-
 
     /**
      * 회원 닉네임 수정
@@ -64,13 +52,14 @@ public class UserService {
      * @param userId
      * @return
      */
-    public UserDTO updateNicknameByUserId(String name, String userId) {
+    @Transactional
+    public UserInfoResponse updateNicknameByUserId(String name, String userId) {
         int i = userRepository.updateUserName(name, userId);
 
         UserEntity byUserId = findByUserId(userId);
         if (byUserId == null) return null;
 
-        return UserDTO.from(byUserId);
+        return UserInfoResponse.from(byUserId);
     }
 
 }
