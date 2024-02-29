@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -43,23 +44,13 @@ public class PlaylistService {
         return getPlaylistDTOByPlaylistId(playlistIdByPlaylistTitleAndUserId);
     }
 
-    /**
-     * 유저이메일로 플레이리스트 목록 찾기
-     *
-     * @param userId
-     * @return
-     */
     public List<PlaylistDTO> findPlaylistByUserId(String userId) {
-        List<PlaylistEntity> byUserId = playlistRepository.findByUserId(userId);
-        if (byUserId.size() == 0) return null;
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        List<PlaylistDTO> playlistDTOList = new ArrayList<>();
-
-        for (int i = 0; i < byUserId.size(); i++) {
-            playlistDTOList.add(PlaylistDTO.from(byUserId.get(i)));
-        }
-        return playlistDTOList;
-
+        return playlistRepository.findByUserEntity(userEntity).stream()
+                .map(PlaylistDTO::from)
+                .collect(Collectors.toList());
     }
 
     public PlaylistDTO getPlaylistDTOByPlaylistId(String playlistId) {

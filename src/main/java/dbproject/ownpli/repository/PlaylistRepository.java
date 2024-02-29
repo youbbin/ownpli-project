@@ -14,14 +14,7 @@ import java.util.Optional;
 @Repository
 public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String> {
 
-    /**
-     * [select] userId로 플레이리스트 조회
-     * @param id
-     * @return PlaylistEntity
-     * @CRUD read
-     */
-    @Query(value = "SELECT p FROM playlist p WHERE p.userId = :id")
-    List<PlaylistEntity> findByUserId(String id);
+    List<PlaylistEntity> findByUserEntity(UserEntity userEntity);
 
     @Query(value = "SELECT p FROM playlist p WHERE p.playlistId in :id")
     List<PlaylistEntity> findAllByPlaylistId(List<String> id);

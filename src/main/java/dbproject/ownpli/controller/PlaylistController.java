@@ -23,18 +23,9 @@ public class PlaylistController {
     private final PlaylistService playlistService;
     private final MusicService musicService;
 
-    /**
-     * 회원의 모든 Playlist 조회
-     * @param param
-     * @return
-     * @address
-     * /playlist/getlist
-     */
-    @PostMapping("/getlist")
-    public ResponseEntity<List<PlaylistDTO>> findAllPlaylists(@RequestBody LinkedHashMap param) {
-        String userId = param.get("userId").toString();
+    @PostMapping("/getlist/{userId}")
+    public ResponseEntity<List<PlaylistDTO>> getAllPlaylists(@PathVariable String userId) {
         List<PlaylistDTO> playlistDTOList = playlistService.findPlaylistByUserId(userId);
-        if(playlistDTOList == null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(playlistDTOList, HttpStatus.OK);
     }
 
