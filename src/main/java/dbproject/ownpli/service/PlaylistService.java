@@ -1,6 +1,7 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.playlist.PlaylistEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import dbproject.ownpli.dto.*;
@@ -55,34 +56,30 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
-    public PlaylistDTO getPlaylistDTOByPlaylistId(String playlistId) {
-        return PlaylistDTO.from(
-                playlistRepository.findById(playlistId).get());
-    }
-
     public PlaylistMusicDTO findMusicsByPlaylistId(String playlistId) {
         PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        PlaylistDTO playlistDTO = PlaylistDTO.from(playlistEntity);
+        return PlaylistMusicDTO.from(PlaylistDTO.from(playlistEntity), collectMusicResponses(playlistEntity));
+    }
 
-        List<MusicResponse> collect = playlistEntity.getPlaylistMusicEntities().stream()
+    public PlaylistMusicDTO deletePlaylistMusics(String playlistId, PlaylistMusicDeleteRequest request) {
+        PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
+
+        List<MusicEntity> musicEntities = musicRepository.findAllById(request.getMusicIds());
+        playlistMusicRepository.deleteAllByPlaylistEntityAndMusicEntityIn(playlistEntity, musicEntities);
+
+        return PlaylistMusicDTO.from(PlaylistDTO.from(playlistEntity), collectMusicResponses(playlistEntity));
+    }
+
+    private List<MusicResponse> collectMusicResponses(PlaylistEntity playlistEntity) {
+        return playlistEntity.getPlaylistMusicEntities().stream()
                 .map(playlistMusicEntity -> MusicResponse.ofPlaylistMusic(
                         playlistMusicEntity,
                         musicLikeRepository.countByMusicEntity(playlistMusicEntity.getMusicEntity())
                 ))
                 .collect(Collectors.toList());
-
-
-        List<String> musicIds = playlistMusicRepository.findMusicIdsByPlaylistId(playlistId);
-
-        return PlaylistMusicDTO.from(playlistDTO, collect);
-    }
-
-    public boolean playlistMusicDelete(String playlistId, List<String> musicIds) {
-        List<Long> playlistMusicIdsByTitleAndMusicId = playlistMusicRepository.findPlaylistMusicIdsByTitleAndMusicId(playlistId, musicIds);
-        playlistMusicRepository.deleteAllById(playlistMusicIdsByTitleAndMusicId);
-        return true;
     }
 
     public String findPlaylistIdByPlaylistTitleAndUserId(String title, String userId) {
@@ -138,7 +135,7 @@ public class PlaylistService {
         return id;
     }
 
-    public String addSongsInPlaylist(String userId, String playlistId, List<String> musicIds) {
+    public String addSongsInPlaylist(String userId, String playlistId, List<Long> musicIds) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 

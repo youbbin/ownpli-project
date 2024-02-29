@@ -10,6 +10,6 @@ public class PlaylistCreateRequest {
 
     private String userId;
     private String title;
-    private List<String> songIds;
+    private List<Long> songIds;
 
 }

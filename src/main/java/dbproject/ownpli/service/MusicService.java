@@ -33,7 +33,6 @@ public class MusicService {
     private final MusicRepository musicRepository;
     private final MusicLikeRepository musicLikeRepository;
     private final GenreRepository genreRepository;
-    private final MoodRepository moodRepository;
     private final UserRepository userRepository;
     private final QueryRepository queryRepository;
 
@@ -95,7 +94,8 @@ public class MusicService {
      * @return
      */
     public MusicEntity findOneMusicIdByTitle(String title) {
-        return musicRepository.findMusicEntityByTitleContainingIgnoreCase(title);
+        return musicRepository.findMusicEntityByTitleContainingIgnoreCase(title)
+                .orElseThrow(() -> new NullPointerException("일치하는 제목이 없습니다."));
     }
 
     /**
@@ -182,26 +182,6 @@ public class MusicService {
         }
 
         return result;
-    }
-
-    /**
-     * 장르 이름 리스트로 장르 아이디 리스트 찾기
-     *
-     * @param genre
-     * @return
-     */
-    public Optional<List<Long>> findGenresByGenre(List<String> genre) {
-        return Optional.ofNullable(genreRepository.findGenreNumsByGenre(genre));
-    }
-
-    /**
-     * mood 이름 리스트로 mood 아이디 리스트 찾기
-     *
-     * @param mood
-     * @return
-     */
-    public List<MoodEntity> findMoodEntitiesByMood(List<String> mood) {
-        return moodRepository.findByMoodIn(mood);
     }
 
 }

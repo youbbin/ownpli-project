@@ -14,7 +14,7 @@ public class MusicEntity {
 
     @Id
     @Column(name = "music id", nullable = false, length = 50)
-    private String musicId;
+    private Long musicId;
 
     //제목
     @Column(nullable = false, length = 200)
@@ -55,7 +55,7 @@ public class MusicEntity {
     List<MusicMoodEntity> musicMoodEntities;
 
     @Builder
-    public MusicEntity(String musicId, String title, String singer, String album, GenreEntity genreEntity, String imageFile, Date date, String country, String lyricsFile, String mp3File) {
+    public MusicEntity(Long musicId, String title, String singer, String album, GenreEntity genreEntity, String imageFile, Date date, String country, String lyricsFile, String mp3File) {
         this.musicId = musicId;
         this.title = title;
         this.singer = singer;

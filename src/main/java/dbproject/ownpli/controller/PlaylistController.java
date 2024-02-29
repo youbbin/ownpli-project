@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,27 +34,12 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.findMusicsByPlaylistId(playlistId));
     }
 
-    @PostMapping("/getlist/delete")
-    public ResponseEntity<PlaylistMusicDTO> deleteMusics(@RequestBody LinkedHashMap param) {
-        String userId = param.get("userId").toString();
-        String playlistTitle = param.get("playlistTitle").toString();
-        String musicTitles = param.get("music").toString();
-
-        List<String> byTitle = musicService.findByTitle(List.of(musicTitles.split("@")));
-
-        String playlistId = playlistService.findPlaylistIdByPlaylistTitleAndUserId(playlistTitle, userId);
-        if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        boolean b = playlistService.playlistMusicDelete(playlistId, byTitle);
-
-        if(!b) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        List<String> musicsByPlaylistId = playlistService.findMusicsByPlaylistId(playlistId);
-        List<MusicResponse> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
-
-        return new ResponseEntity<>(
-            PlaylistMusicDTO.from(playlistService.getPlaylistDTOByPlaylistId(playlistId), musicInfosByPlaylist), HttpStatus.OK);
-
+    @PostMapping("/{playlistId}/delete")
+    public ResponseEntity<PlaylistMusicDTO> deleteMusics(
+            @PathVariable String playlistId,
+            @RequestBody PlaylistMusicDeleteRequest request
+    ) {
+        return ResponseEntity.ok(playlistService.deletePlaylistMusics(playlistId, request));
     }
 
     @PostMapping("/create")
@@ -84,10 +68,10 @@ public class PlaylistController {
 
         String musicTitle = param.get("songsTitle").toString();
         List<String> musicIds = musicService.findByTitle(List.of(musicTitle.split("@")));
-        String result = playlistService.addSongsInPlaylist(userId, playlistId, musicIds);
+//        String result = playlistService.addSongsInPlaylist(userId, playlistId, musicIds);
 
-        if(result == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        if(result == null)
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(HttpStatus.OK);
     }

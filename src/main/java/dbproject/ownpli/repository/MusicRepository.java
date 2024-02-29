@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface MusicRepository extends JpaRepository<MusicEntity, String> {
+public interface MusicRepository extends JpaRepository<MusicEntity, Long> {
 
     /**
      * 제목으로 음악 엔티티 찾기
@@ -21,7 +22,8 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
     @Query("SELECT m.musicId FROM MusicEntity m WHERE m.title in :title")
     List<String> findMusicIdsByTitle(@Param("title") List<String> title);
 
-    MusicEntity findMusicEntityByTitleContainingIgnoreCase(@Param("title") String title);
+
+    Optional<MusicEntity> findMusicEntityByTitleContainingIgnoreCase(String title);
 
     @Query("SELECT distinct m.singer FROM MusicEntity m")
     List<String> findSingers();
@@ -63,14 +65,5 @@ public interface MusicRepository extends JpaRepository<MusicEntity, String> {
      * - `IgnoreCase` 키워드는 대소문자 구별을 하지 않는다는 의미입니다. 이것이 없다면 대소문자가 구별됩니다.
      */
     List<MusicEntity> findBySingerContainingIgnoreCase(String singer);
-
-    /**
-     * [select] musicId 리스트로 해당하는 음악 출력
-     * @param musicId
-     * @return List[MusicEntity]
-     * @CRUD read
-     */
-    @Query(value = "SELECT m FROM MusicEntity m WHERE m.musicId in :musicId")
-    List<MusicEntity> findByMusicId(@Param("musicId") List<String> musicId);
 
 }
