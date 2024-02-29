@@ -1,6 +1,7 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.dto.MusicDTO;
+import dbproject.ownpli.dto.MusicResponse;
+import dbproject.ownpli.dto.PlaylistCreateRequest;
 import dbproject.ownpli.dto.PlaylistDTO;
 import dbproject.ownpli.dto.PlaylistMusicDTO;
 import dbproject.ownpli.service.MusicService;
@@ -65,7 +66,7 @@ public class PlaylistController {
         if(playlistId == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         List<String> musicsByPlaylistId = playlistService.findMusicsByPlaylistId(playlistId);
-        List<MusicDTO> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
+        List<MusicResponse> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
         return new ResponseEntity<>(
             PlaylistMusicDTO.from(playlistService.getPlaylistDTOByPlaylistId(playlistId), musicInfosByPlaylist),
             HttpStatus.OK);
@@ -87,38 +88,24 @@ public class PlaylistController {
         if(!b) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         List<String> musicsByPlaylistId = playlistService.findMusicsByPlaylistId(playlistId);
-        List<MusicDTO> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
+        List<MusicResponse> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(musicsByPlaylistId);
 
         return new ResponseEntity<>(
             PlaylistMusicDTO.from(playlistService.getPlaylistDTOByPlaylistId(playlistId), musicInfosByPlaylist), HttpStatus.OK);
 
     }
 
-    /**
-     * 플레이리스트 생성
-     * @param param
-     * @return
-     */
     @PostMapping("/create")
-    public ResponseEntity<String> createPlaylist(@RequestBody LinkedHashMap param) {
-        String userId = param.get("userId").toString();
-        String title = param.get("title").toString();
-        Optional songTitle = Optional.ofNullable(param.get("songsTitle"));
-        String playlistId = playlistService.savePlaylist(userId, title);
+    public ResponseEntity<String> createPlaylist(@RequestBody PlaylistCreateRequest request) {
+        String playlistId = playlistService.savePlaylist(request);
 
-        if(playlistId == null)
+        if(playlistId == null) {
             return new ResponseEntity<>("이미 존재하는 제목입니다.", HttpStatus.BAD_REQUEST);
-
-        if(songTitle.isPresent()) {
-            List<String> musicIds = musicService.findByTitle(List.of(songTitle.get().toString().split("@")));
-            String result = playlistService.addPlaylist(userId, playlistId, musicIds);
-
-            if(result == null )
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            return new ResponseEntity("생성 성공", HttpStatus.OK);
         }
 
-        return new ResponseEntity("생성 성공", HttpStatus.OK);
+        playlistService.addSongsInPlaylist(request.getUserId(), playlistId, request.getSongIds());
+
+        return ResponseEntity.ok("생성 성공");
     }
 
     /**
@@ -134,7 +121,7 @@ public class PlaylistController {
 
         String musicTitle = param.get("songsTitle").toString();
         List<String> musicIds = musicService.findByTitle(List.of(musicTitle.split("@")));
-        String result = playlistService.addPlaylist(userId, playlistId, musicIds);
+        String result = playlistService.addSongsInPlaylist(userId, playlistId, musicIds);
 
         if(result == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

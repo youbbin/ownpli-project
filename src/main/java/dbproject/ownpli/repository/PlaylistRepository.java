@@ -1,5 +1,6 @@
 package dbproject.ownpli.repository;
 
+import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.domain.playlist.PlaylistEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,13 +26,13 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
     @Query(value = "SELECT p FROM playlist p WHERE p.playlistId in :id")
     List<PlaylistEntity> findAllByPlaylistId(List<String> id);
 
-
-
     /**
      * [select] 가장 마지막 행 가져오기
      * @return PlaylistEntity
      */
     Optional<PlaylistEntity> findFirstByOrderByPlaylistIdDesc();
+
+    Optional<PlaylistEntity> findByPlaylistIdAndUserEntity(String playlistId, UserEntity userEntity);
 
     /**
      * userId와 제목을 이용해 플레이리스트 엔티티 찾기
@@ -43,6 +44,8 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String
     Optional<List<String>> findPlaylistIdsByPlaylistTitleAndUserId(List<String> playlistTitle, String userId);
 
     Optional<PlaylistEntity> findByPlaylistTitleAndUserId(String title, String userId);
+
+    Boolean existsByPlaylistTitleAndUserEntity(String title, UserEntity userEntity);
 
     /**
      * 플레이리스트 타이틀 변경

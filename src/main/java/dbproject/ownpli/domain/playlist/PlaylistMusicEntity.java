@@ -10,9 +10,7 @@ import java.sql.Date;
 /**
  * 조인으로 연동하기
  */
-@Data
-@Builder
-@AllArgsConstructor
+@Getter
 @Entity(name = "playlist_music")
 @Table(name = "playlist-music")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,4 +32,16 @@ public class PlaylistMusicEntity {
     @Column(nullable = false)
     private Date date;
 
+    @Builder
+    public PlaylistMusicEntity(PlaylistEntity playlistEntity, MusicEntity musicEntity) {
+        this.playlistEntity = playlistEntity;
+        this.musicEntity = musicEntity;
+    }
+
+    public static PlaylistMusicEntity of(PlaylistEntity playlistEntity, MusicEntity musicEntity) {
+        return PlaylistMusicEntity.builder()
+                .playlistEntity(playlistEntity)
+                .musicEntity(musicEntity)
+                .build();
+    }
 }

@@ -1,7 +1,9 @@
 package dbproject.ownpli.service;
 
+import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.domain.playlist.PlaylistEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
+import dbproject.ownpli.dto.PlaylistCreateRequest;
 import dbproject.ownpli.dto.PlaylistDTO;
 import dbproject.ownpli.repository.MusicRepository;
 import dbproject.ownpli.repository.PlaylistMusicRepository;
@@ -32,7 +34,7 @@ public class PlaylistService {
 
     public PlaylistDTO updatePlaylistTitle(String oldTitle, String newTitle, String userId) {
         Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(newTitle, userId);
-        if(!byPlaylistTitleAndUserId.isEmpty())
+        if (!byPlaylistTitleAndUserId.isEmpty())
             return null;
 
         int i = playlistRepository.updatePlaylistTitle(oldTitle, newTitle, userId);
@@ -43,16 +45,17 @@ public class PlaylistService {
 
     /**
      * 유저이메일로 플레이리스트 목록 찾기
+     *
      * @param userId
      * @return
      */
     public List<PlaylistDTO> findPlaylistByUserId(String userId) {
         List<PlaylistEntity> byUserId = playlistRepository.findByUserId(userId);
-        if(byUserId.size() == 0) return  null;
+        if (byUserId.size() == 0) return null;
 
         List<PlaylistDTO> playlistDTOList = new ArrayList<>();
 
-        for(int i = 0; i < byUserId.size(); i++) {
+        for (int i = 0; i < byUserId.size(); i++) {
             playlistDTOList.add(PlaylistDTO.from(byUserId.get(i)));
         }
         return playlistDTOList;
@@ -61,11 +64,12 @@ public class PlaylistService {
 
     public PlaylistDTO getPlaylistDTOByPlaylistId(String playlistId) {
         return PlaylistDTO.from(
-            playlistRepository.findById(playlistId).get());
+                playlistRepository.findById(playlistId).get());
     }
 
     /**
      * playlistID로 음악 아이디들 찾기
+     *
      * @param playlistId
      * @return
      */
@@ -83,31 +87,29 @@ public class PlaylistService {
 
     public String findPlaylistIdByPlaylistTitleAndUserId(String title, String userId) {
         Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(title, userId);
-        if(byPlaylistTitleAndUserId.isEmpty()) return null;
+        if (byPlaylistTitleAndUserId.isEmpty()) return null;
         else return byPlaylistTitleAndUserId.get().getPlaylistId();
     }
 
     public List<String> findPlaylistIdsByPlaylistTitleAndUserId(String title, String userId) {
         List<String> list = List.of(title.split("@"));
         Optional<List<String>> byPlaylistTitleAndUserId = playlistRepository.findPlaylistIdsByPlaylistTitleAndUserId(list, userId);
-        if(byPlaylistTitleAndUserId.isEmpty()) return null;
+        if (byPlaylistTitleAndUserId.isEmpty()) return null;
         else return byPlaylistTitleAndUserId.get();
     }
 
-    /**
-     * 새 플레이리스트 저장
-     * @param userId
-     * @param title
-     */
-    public String savePlaylist(String userId, String title) {
+    public String savePlaylist(PlaylistCreateRequest request) {
 
-        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(title, userId);
-        if(byPlaylistTitleAndUserId.isPresent())
+        UserEntity user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
+
+        if (playlistRepository.existsByPlaylistTitleAndUserEntity(request.getTitle(), user)) {
             return null;
+        }
 
         Optional<PlaylistEntity> idOptional = playlistRepository.findFirstByOrderByPlaylistIdDesc();
         String id = "";
-        if(idOptional.isEmpty())
+        if (idOptional.isEmpty())
             id = "p1";
         else {
             id = idOptional.get().getPlaylistId();
@@ -122,41 +124,26 @@ public class PlaylistService {
         }
 
         playlistRepository.save(
-            PlaylistEntity.builder()
-                .playlistId(id)
-                .playlistTitle(title)
-                .userId(userRepository.findById(userId).get().getUserId())
-                .build()
+                PlaylistEntity.builder()
+                        .playlistId(id)
+                        .playlistTitle(request.getTitle())
+                        .userEntity(user)
+                        .build()
         );
 
         log.info("플레이리스트 생성");
         return id;
     }
 
-    /**
-     * 플레이리스트에 음악 추가
-     * @Param userId
-     * @param playlistId
-     * @param musicIds
-     * @return
-     */
-    public String addPlaylist(String userId, String playlistId, List<String> musicIds) {
-        boolean flag = false;
-        List<PlaylistEntity> byUserId = playlistRepository.findByUserId(userId);
-        for(int i = 0; i < byUserId.size(); i++) {
-            if(byUserId.get(i).getPlaylistId().equals(playlistId)) flag = true;
-        }
+    public String addSongsInPlaylist(String userId, String playlistId, List<String> musicIds) {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        if(!flag) return null;
+        PlaylistEntity playlistEntity = playlistRepository.findByPlaylistIdAndUserEntity(playlistId, userEntity)
+                .orElseThrow(() -> new NullPointerException("플레이리스트가 존재하지 않습니다."));
 
-        for(int i = 0; i < musicIds.size(); i++) {
-            playlistMusicRepository.save(
-                PlaylistMusicEntity.builder()
-                    .playlistId(playlistRepository.findById(playlistId).get().getPlaylistId())
-                    .musicId(musicRepository.findById(musicIds.get(i)).get().getMusicId())
-                    .date(Date.valueOf(LocalDate.now()))
-                    .build());
-        }
+        musicRepository.findAllById(musicIds)
+                .forEach(music -> playlistMusicRepository.save(PlaylistMusicEntity.of(playlistEntity, music)));
 
         log.info("플레이리스트 저장");
         return playlistId;
@@ -164,12 +151,13 @@ public class PlaylistService {
 
     /**
      * 플레이리스트 삭제
+     *
      * @param playlistId
      */
     public void deletePlaylist(List<String> playlistId) {
         List<PlaylistMusicEntity> allByPlaylistId = playlistMusicRepository.findAllByPlaylistId(playlistId);
 
-        for(int i = 0; i < allByPlaylistId.size(); i++)
+        for (int i = 0; i < allByPlaylistId.size(); i++)
             playlistMusicRepository.delete(allByPlaylistId.get(i));
 
         playlistRepository.deleteAll(playlistRepository.findAllByPlaylistId(playlistId));
