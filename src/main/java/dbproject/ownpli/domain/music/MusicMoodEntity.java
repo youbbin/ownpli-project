@@ -17,7 +17,7 @@ public class MusicMoodEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long key;
+    private Long musicMoodId;
 
     @ManyToOne
     @JoinColumn(name = "music id", referencedColumnName = "music id")

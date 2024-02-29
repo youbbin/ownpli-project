@@ -18,7 +18,7 @@ public class PlaylistMusicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long key;
+    private Long playlistMusicId;
 
     @ManyToOne
     @JoinColumn(name = "playlist id", referencedColumnName = "playlist id")
