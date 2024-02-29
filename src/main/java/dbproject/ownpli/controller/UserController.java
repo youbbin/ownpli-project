@@ -3,6 +3,8 @@ package dbproject.ownpli.controller;
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.dto.UserDTO;
 import dbproject.ownpli.dto.UserJoinRequest;
+import dbproject.ownpli.dto.UserSignInRequest;
+import dbproject.ownpli.dto.UserSignInResponse;
 import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,28 +27,9 @@ public class UserController {
         return ResponseEntity.ok("회원가입 성공");
     }
 
-    /**
-     * 로그인
-     * @param param
-     * @return ResponseEntity [Coolie]
-     */
     @PostMapping("/login")
-    public ResponseEntity<LinkedHashMap> login(@RequestBody LinkedHashMap<String, String> param) {
-        String loginId = param.get("userId");
-        String password = param.get("password");
-
-        UserEntity loginUser = userService.login(loginId, password);
-
-        //로그인 실패
-        if (loginUser == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
-        linkedHashMap.put("userId", loginId);
-
-        return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
-
+    public ResponseEntity<UserSignInResponse> login(@RequestBody UserSignInRequest request) {
+        return ResponseEntity.ok(userService.login(request));
     }
 
     /**

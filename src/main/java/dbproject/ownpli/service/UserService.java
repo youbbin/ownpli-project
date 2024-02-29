@@ -3,6 +3,8 @@ package dbproject.ownpli.service;
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.dto.UserDTO;
 import dbproject.ownpli.dto.UserJoinRequest;
+import dbproject.ownpli.dto.UserSignInRequest;
+import dbproject.ownpli.dto.UserSignInResponse;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,17 +31,15 @@ public class UserService {
         log.info("회원가입 완료");
     }
 
-    /**
-     * 로그인
-     *
-     * @param loginId
-     * @param password
-     * @return
-     */
-    public UserEntity login(String loginId, String password) {
-        return userRepository.findById(loginId)
-                .filter(m -> m.getPassword().equals(password))
-                .orElse(null);
+    public UserSignInResponse login(UserSignInRequest request) {
+        UserEntity userEntity = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
+
+        if (!userEntity.getPassword().equals(request.getPassword())) {
+            throw new NullPointerException("잘못된 비밀번호 입니다.");
+        }
+
+        return UserSignInResponse.of(userEntity);
     }
 
     /**
