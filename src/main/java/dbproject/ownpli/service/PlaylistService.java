@@ -79,14 +79,6 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
-    public String findPlaylistIdByPlaylistTitleAndUserId(String title, String userId) {
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
-
-        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserEntity(title, userEntity);
-        return byPlaylistTitleAndUserId.map(PlaylistEntity::getPlaylistId).orElse(null);
-    }
-
     public String savePlaylist(PlaylistCreateRequest request) {
 
         UserEntity user = userRepository.findById(request.getUserId())

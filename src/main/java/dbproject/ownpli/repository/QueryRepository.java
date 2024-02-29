@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,19 @@ public class QueryRepository {
                         playlistMusicEntity.playlistEntity.eq(playlistEntity),
                         betweenAge(user.getAge())
                 ).fetch();
+    }
+
+    public List<MusicEntity> searchTitleAndSinger(String search) {
+        List<String> searches = Arrays.stream(search.split(" ")).toList();
+
+        return jpaQueryFactory
+                .selectFrom(musicEntity)
+                .where(inSingers(searches), inTitles(searches))
+                .fetch();
+    }
+
+    private BooleanExpression inTitles(List<String> titles) {
+        return titles != null? musicEntity.title.in(titles) : null;
     }
 
     private BooleanExpression inSingers(List<String> likes) {

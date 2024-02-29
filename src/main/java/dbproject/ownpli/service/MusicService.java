@@ -47,7 +47,7 @@ public class MusicService {
         return musicLikeRepository.existsByMusicEntityAndUserEntity(music, user);
     }
 
-    public String musicLikeSetting(String userId, Long musicId) {
+    public Long musicLikeSetting(String userId, Long musicId) {
 
         MusicEntity musicEntity = musicRepository.findById(musicId)
                 .orElseThrow(() -> new NullPointerException("id 없음"));
@@ -64,42 +64,15 @@ public class MusicService {
         return musicId;
     }
 
-    /**
-     * MusicEntity 리스트를 MusicDTO로 변환
-     *
-     * @param musicEntities
-     * @return
-     */
-    public List<MusicResponse> musicEntitiesToMusicDTO(List<MusicEntity> musicEntities) {
-        List<MusicResponse> models = new ArrayList<>();
-
-        for (int i = 0; i < musicEntities.size(); i++) {
-            models.add(findMusicInfo(musicEntities.get(i).getMusicId()));
-        }
-        return models;
+    public List<MusicResponse> searchSingerAndTitle(String search) {
+        return queryRepository.searchTitleAndSinger(search).stream()
+                .map(musicEntity -> MusicResponse.ofMusic(
+                        musicEntity,
+                        musicLikeRepository.countByMusicEntity(musicEntity)
+                ))
+                .collect(Collectors.toList());
     }
 
-
-    /**
-     * 음악 이름으로 음악 아이디들 찾기
-     *
-     * @param title
-     * @return
-     */
-    public MusicEntity findOneMusicIdByTitle(String title) {
-        return musicRepository.findMusicEntityByTitleContainingIgnoreCase(title)
-                .orElseThrow(() -> new NullPointerException("일치하는 제목이 없습니다."));
-    }
-
-    /**
-     * 음악 이름으로 음악 리스트 검색
-     *
-     * @param title
-     * @return
-     */
-    public List<MusicEntity> findByTitleContain(String title) {
-        return musicRepository.findByTitleContainingIgnoreCase(title);
-    }
 
     /**
      * 가수 이름으로 음악 리스트 검색
@@ -118,12 +91,12 @@ public class MusicService {
      * @return MusicResponse
      * @throws IOException
      */
-    public MusicResponse findMusicInfo(String musicId) {
+    public MusicResponse findMusicInfo(Long musicId) {
         log.info("musicId = " + musicId);
-        MusicEntity musicEntity = musicRepository.findById(musicId).orElseThrow(() -> new NullPointerException("없음"));
+        MusicEntity musicEntity = musicRepository.findById(musicId)
+                .orElseThrow(() -> new NullPointerException("없음"));
 
         Long likes = musicLikeRepository.countByMusicEntity(musicEntity);
-
 
         return MusicResponse.ofMusic(musicEntity, likes);
     }

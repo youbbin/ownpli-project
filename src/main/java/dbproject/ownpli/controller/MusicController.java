@@ -24,41 +24,19 @@ public class MusicController {
 
     private final MusicService musicService;
 
-//    @GetMapping("/getAllMusic")
-//    public ResponseEntity<List<MusicResponse>> getAllMusics() {
-//        return new ResponseEntity<>(musicService.musicEntitiesToMusicDTO(musicService.findAll()), HttpStatus.OK);
-//    }
-
-
     @PostMapping("/add")
     public ResponseEntity<List<MusicSearchListResponse>> getMusicByCondition(@RequestBody MusicListRequest request) throws ParseException {
         return ResponseEntity.ok(musicService.searchByCondition(request));
     }
 
-    /**
-     * 가수 리스트 가져오기
-     * @return
-     */
     @PostMapping("/singer")
     public ResponseEntity<SingerListResponse> getMusicAboutCondition() {
         return ResponseEntity.ok(musicService.findSingerList());
     }
 
-    /**
-     * 제목과 가수 이름으로 음악을 검색하는 기능
-     * @param param
-     * @return
-     * @Container
-     * /music/search?q=!
-     */
-    @PostMapping("/search")
-    public ResponseEntity<SearchDTO> searchMusics(@RequestBody LinkedHashMap param) {
-        String musicSearch = param.get("musicSearch").toString();
-
-        List<MusicResponse> searchTitle = musicService.musicEntitiesToMusicDTO(musicService.findByTitleContain(musicSearch));
-        List<MusicResponse> searchSinger = musicService.musicEntitiesToMusicDTO(musicService.findBySingerContain(musicSearch));
-
-        return new ResponseEntity<>(SearchDTO.from(searchTitle, searchSinger), HttpStatus.OK);
+    @GetMapping("/search")
+    public ResponseEntity<List<MusicResponse>> searchMusics(@RequestParam String q) {
+        return ResponseEntity.ok(musicService.searchSingerAndTitle(q));
     }
 
     /**

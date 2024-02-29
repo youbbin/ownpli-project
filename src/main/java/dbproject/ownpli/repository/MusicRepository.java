@@ -49,7 +49,7 @@ public interface MusicRepository extends JpaRepository<MusicEntity, Long> {
      * - `Containing`이 없다면 해당 키워드와 일치하는 결과만 찾고, 이 키워드가 있는 경우는 포함하는 결과를 찾습니다. 즉, SQL문의 like %xx% 와 비슷합니다.
      * - `IgnoreCase` 키워드는 대소문자 구별을 하지 않는다는 의미입니다. 이것이 없다면 대소문자가 구별됩니다.
      */
-    List<MusicEntity> findByTitleContainingIgnoreCase(String title);
+    List<MusicEntity> findByTitleContainingIgnoreCase(List<String> title);
 
     /**
      * [select] 가수 이름으로 음악 리스트 검색
