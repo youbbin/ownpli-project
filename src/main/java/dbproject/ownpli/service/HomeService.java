@@ -31,28 +31,18 @@ public class HomeService {
     public List<HomeMusicListResponse> findNewSongs() {
 
         return musicRepository.findAll().stream()
-                .limit(10)
                 .sorted(Comparator.comparing(MusicEntity::getDate, Comparator.reverseOrder()))
+                .limit(10)
                 .map(HomeMusicListResponse::ofMusic)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * playlist 많이 담은 순으로 음악 보내기
-     * @return
-     */
-    public List<MusicResponse> findTop10Musics() {
-        Optional<List<String>> distinctMusicIdOptional = playlistMusicRepository.findDistinctMusicId();
+    public List<HomeMusicListResponse> findTop10Musics() {
 
-//        if(distinctMusicIdOptional.isEmpty() || distinctMusicIdOptional.get().size() < 10) {
-//            List<MusicResponse> musicDTOList = new ArrayList<>();
-//            for (int i = 0; i < 10; i++) {
-//                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
-//            }
-//            return musicDTOList;
-//        }
+        Map<MusicEntity, Long> musicEntityLongMap = playlistMusicRepository.findAll().stream()
+                .collect(Collectors.groupingBy(PlaylistMusicEntity::getMusicEntity, Collectors.counting()));
 
-        return musicService.findMusicInfosByPlaylist(distinctMusicIdOptional.get()).subList(0, 10);
+        return buildResponse(musicEntityLongMap);
     }
 
     public List<HomeMusicListResponse> findTop10LikeList() {
@@ -60,12 +50,7 @@ public class HomeService {
         Map<MusicEntity, Long> musicEntityLongMap = musicLikeRepository.findAll().stream()
                 .collect(Collectors.groupingBy(MusicLikeEntity::getMusicEntity, Collectors.counting()));
 
-        return musicEntityLongMap
-                .entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(10)
-                .map(entry -> HomeMusicListResponse.ofMusic(entry.getKey()))
-                .collect(Collectors.toList());
+        return buildResponse(musicEntityLongMap);
     }
 
 
@@ -77,9 +62,14 @@ public class HomeService {
         Map<MusicEntity, Long> musicEntityLongMap = queryRepository.findAgeCompare(userEntity).stream()
                 .collect(Collectors.groupingBy(PlaylistMusicEntity::getMusicEntity, Collectors.counting()));
 
-        return musicEntityLongMap
+        return buildResponse(musicEntityLongMap);
+    }
+
+    private List<HomeMusicListResponse> buildResponse(Map<MusicEntity, Long> map) {
+        return map
                 .entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .distinct()
                 .limit(10)
                 .map(entry -> HomeMusicListResponse.ofMusic(entry.getKey()))
                 .collect(Collectors.toList());
@@ -87,10 +77,9 @@ public class HomeService {
 
     public List<MusicResponse> mood5List() {
         MoodEntity moodEntity;
-        if(LocalDate.now().getMonthValue() == 12) {
+        if (LocalDate.now().getMonthValue() == 12) {
             moodEntity = moodRepository.findMoodEntityByMood("캐롤");
-        }
-        else
+        } else
             moodEntity = moodRepository.findById((long) ((Math.random() * 10000) % 22))
                     .orElseThrow(() -> new NullPointerException("id 없음"));
 

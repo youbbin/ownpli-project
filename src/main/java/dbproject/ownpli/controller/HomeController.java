@@ -27,7 +27,6 @@ public class HomeController {
     @PostMapping
     public ResponseEntity<LinkedHashMap<String, List<MusicResponse>>> homeController(@RequestBody(required = false) LinkedHashMap param) {
         LinkedHashMap<String, List<MusicResponse>> linkedHashMap = new LinkedHashMap<>();
-        linkedHashMap.put("top10", homeService.findTop10Musics());
         linkedHashMap.put("mood", homeService.mood5List());
 
         return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
@@ -36,6 +35,11 @@ public class HomeController {
     @GetMapping("/new")
     public ResponseEntity<List<HomeMusicListResponse>> getNewSong() {
         return ResponseEntity.ok(homeService.findNewSongs());
+    }
+
+    @GetMapping("/top")
+    public ResponseEntity<List<HomeMusicListResponse>> findTop10() {
+        return ResponseEntity.ok(homeService.findTop10Musics());
     }
 
     @GetMapping("/likes")
