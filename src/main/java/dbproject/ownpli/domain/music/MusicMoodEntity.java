@@ -19,10 +19,12 @@ public class MusicMoodEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long key;
 
-    @Column(name = "music id")
-    private String musicId;
+    @ManyToOne
+    @JoinColumn(name = "music id", referencedColumnName = "music id")
+    private MusicEntity musicEntity;
 
-    @Column(name = "mood num")
-    private Long moodNum;
+    @ManyToOne
+    @JoinColumn(name = "mood num", referencedColumnName = "mood num")
+    private MoodEntity moodEntity;
 
 }

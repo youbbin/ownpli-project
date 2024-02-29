@@ -4,13 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
-/**
- * 조인으로 연동하기
- */
-@Data
-@Builder
-@AllArgsConstructor
+@Getter
 @Entity
 @Table(name = "music")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -54,8 +50,20 @@ public class MusicEntity {
     @Column(name = "mp3 file", nullable = false, length = 50)
     private String mp3File;
 
+    @OneToMany(mappedBy = "musicEntity")
+    List<MusicMoodEntity> musicMoodEntities;
 
-
-
-
+    @Builder
+    public MusicEntity(String musicId, String title, String singer, String album, Long genreNum, String imageFile, Date date, String country, String lyricsFile, String mp3File) {
+        this.musicId = musicId;
+        this.title = title;
+        this.singer = singer;
+        this.album = album;
+        this.genreNum = genreNum;
+        this.imageFile = imageFile;
+        this.date = date;
+        this.country = country;
+        this.lyricsFile = lyricsFile;
+        this.mp3File = mp3File;
+    }
 }
