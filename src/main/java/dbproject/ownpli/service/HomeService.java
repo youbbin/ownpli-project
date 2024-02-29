@@ -73,7 +73,7 @@ public class HomeService {
                 .collect(Collectors.toList());
     }
 
-    public List<MusicResponse> mood5List() {
+    public List<HomeMusicListResponse> mood5List() {
         MoodEntity moodEntity;
         if (LocalDate.now().getMonthValue() == 12) {
             moodEntity = moodRepository.findMoodEntityByMood("캐롤");
@@ -83,10 +83,7 @@ public class HomeService {
 
         return musicMoodRepository.findByMoodEntity(moodEntity).stream()
                 .limit(5)
-                .map(musicMoodEntity -> MusicResponse.ofMusicMood(
-                        musicMoodEntity,
-                        musicLikeRepository.countByMusicEntity(musicMoodEntity.getMusicEntity())
-                ))
+                .map(HomeMusicListResponse::ofMusicMood)
                 .collect(Collectors.toList());
     }
 
