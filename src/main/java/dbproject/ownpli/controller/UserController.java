@@ -32,8 +32,7 @@ public class UserController {
 
     @GetMapping("/mypage")
     public ResponseEntity<UserInfoResponse> getUserInfo(@RequestParam String userId) {
-        UserEntity loginUser = userService.findByUserId(userId);
-        return new ResponseEntity<>(UserInfoResponse.from(loginUser), HttpStatus.OK);
+        return ResponseEntity.ok(userService.findByUserId(userId));
     }
 
     /**

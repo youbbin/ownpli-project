@@ -44,6 +44,13 @@ public class UserService {
         return UserSignInResponse.of(userEntity);
     }
 
+    public UserInfoResponse findByUserId(String userId) {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
+
+        return UserInfoResponse.from(userEntity);
+    }
+
 
     /**
      * 회원 닉네임 수정
