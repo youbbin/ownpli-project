@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.domain.music.GenreEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
+import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import dbproject.ownpli.dto.MusicListRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import static dbproject.ownpli.domain.music.QMoodEntity.moodEntity;
 import static dbproject.ownpli.domain.music.QMusicEntity.musicEntity;
 import static dbproject.ownpli.domain.music.QMusicMoodEntity.musicMoodEntity;
 import static dbproject.ownpli.domain.playlist.QPlaylistEntity.playlistEntity;
+import static dbproject.ownpli.domain.playlist.QPlaylistMusicEntity.playlistMusicEntity;
 
 
 @Slf4j
@@ -42,12 +44,13 @@ public class QueryRepository {
                 ).orderBy(musicEntity.musicId.asc()).fetch();
     }
 
-    public List<String> findAgeCompare(UserEntity user) {
+    public List<PlaylistMusicEntity> findAgeCompare(UserEntity user) {
         return jpaQueryFactory
-                .selectFrom(playlistEntity)
-                .select(playlistEntity.playlistId)
-                .from(playlistEntity, userEntity)
-                .where(playlistEntity.userEntity.eq(userEntity),
+                .select(playlistMusicEntity)
+                .from(playlistEntity, userEntity, playlistMusicEntity)
+                .where(
+                        playlistEntity.userEntity.eq(userEntity),
+                        playlistMusicEntity.playlistEntity.eq(playlistEntity),
                         betweenAge(user.getAge())
                 ).fetch();
     }

@@ -14,14 +14,6 @@ import java.util.Optional;
 @Repository
 public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEntity, String> {
 
-    /**
-     * [select] 플레이리스트 아이디들로 음악 리스트 출력
-     * @param playlistId
-     * @return List[PlaylistEntity]
-     * @CRUD read
-     */
-    @Query(value = "SELECT distinct pm.musicId FROM playlist_music pm WHERE pm.playlistId in :playlistId")
-    List<String> findByPlaylistId(@Param("playlistId") List<String> playlistId);
 
     /**
      * [select] 플레이리스트 아이디로 음악 id만 출력

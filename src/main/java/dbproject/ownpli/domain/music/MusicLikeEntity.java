@@ -20,7 +20,7 @@ public class MusicLikeEntity {
     private Long key;
 
     @ManyToOne
-    @JoinColumn(name = "user ic", referencedColumnName = "user ic")
+    @JoinColumn(name = "user id", referencedColumnName = "user id")
     private UserEntity userEntity;
 
     @ManyToOne

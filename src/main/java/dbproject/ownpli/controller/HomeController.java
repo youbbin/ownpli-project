@@ -31,18 +31,17 @@ public class HomeController {
         linkedHashMap.put("top10", homeService.findTop10Musics());
         linkedHashMap.put("mood", homeService.mood5List());
 
-        Optional userId = Optional.ofNullable(param.get("userId"));
-
-        if(userId.isPresent()) {
-            linkedHashMap.put("age", homeService.ageList(userId.get().toString()));
-        }
-
         return new ResponseEntity<>(linkedHashMap, HttpStatus.OK);
     }
 
     @GetMapping("/likes")
     public ResponseEntity<List<HomeMusicListResponse>> getTop10Likes() {
         return ResponseEntity.ok(homeService.findTop10LikeList());
+    }
+
+    @GetMapping("/age")
+    public ResponseEntity<List<HomeMusicListResponse>> getAgeList(@RequestParam String userId) {
+        return ResponseEntity.ok(homeService.getAgeList(userId));
     }
 
 }

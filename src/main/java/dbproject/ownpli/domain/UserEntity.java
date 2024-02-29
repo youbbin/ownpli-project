@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
 @Entity
 @Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
