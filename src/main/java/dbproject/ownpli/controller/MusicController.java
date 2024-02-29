@@ -39,21 +39,9 @@ public class MusicController {
         return ResponseEntity.ok(musicService.searchSingerAndTitle(q));
     }
 
-    /**
-     * 단일 음악 정보 보내기
-     * @return
-     * @url /music/title
-     */
-    @PostMapping("/title")
-    public ResponseEntity<LinkedHashMap> getMusics(@RequestBody LinkedHashMap param) throws IOException {
-        String musicId = musicService.findOneMusicIdByTitle(param.get("title").toString()).getMusicId();
-        MusicResponse musicInfo = musicService.findMusicInfo(musicId);
-
-        LinkedHashMap hashMap = new LinkedHashMap();
-        hashMap.put("musicInfo", musicInfo);
-        hashMap.put("lyrics", musicService.readLyrics(musicId));
-
-        return new ResponseEntity<>(hashMap, HttpStatus.OK);
+    @GetMapping("/{musicId}")
+    public ResponseEntity<MusicResponse> getMusicInfo(@PathVariable Long musicId) {
+        return ResponseEntity.ok(musicService.findMusicInfo(musicId));
     }
 
     /**
@@ -84,17 +72,8 @@ public class MusicController {
 //            .body(new InputStreamResource(in));
 //    }
 
-    /**
-     * 가사 보내기
-     * @param param
-     * @return
-     * @throws IOException
-     * @url /play/lyrics?q=~
-     */
-
-    @PostMapping("/title/lyrics")
-    public ResponseEntity<String> getLyrics(@RequestBody LinkedHashMap param) throws IOException {
-        String musicId = musicService.findOneMusicIdByTitle(param.get("title").toString()).getMusicId();
+    @GetMapping("/{musicId}/lyrics")
+    public ResponseEntity<String> getLyrics(@PathVariable Long musicId) throws IOException {
         return new ResponseEntity<>(musicService.readLyrics(musicId), HttpStatus.OK);
     }
 

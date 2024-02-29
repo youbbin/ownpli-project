@@ -133,7 +133,7 @@ public class MusicService {
      * @return Model
      * @throws IOException
      */
-    public String readLyrics(String musicId) throws IOException {
+    public String readLyrics(Long musicId) throws IOException {
         String path = musicRepository.findById(musicId).get().getLyricsFile();
         //D to C
         path = path.replaceFirst("D", "C");
