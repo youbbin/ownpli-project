@@ -2,7 +2,6 @@ package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.domain.music.GenreEntity;
-import dbproject.ownpli.domain.music.MoodEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.music.MusicLikeEntity;
 import dbproject.ownpli.dto.MusicListRequest;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,7 +45,7 @@ public class MusicService {
         return musicLikeRepository.existsByMusicEntityAndUserEntity(music, user);
     }
 
-    public Long musicLikeSetting(String userId, Long musicId) {
+    public void musicLikeSetting(String userId, Long musicId) {
 
         MusicEntity musicEntity = musicRepository.findById(musicId)
                 .orElseThrow(() -> new NullPointerException("id 없음"));
@@ -61,7 +59,6 @@ public class MusicService {
             musicLikeRepository.save(MusicLikeEntity.of(userEntity, musicEntity));
         }
 
-        return musicId;
     }
 
     public List<MusicResponse> searchSingerAndTitle(String search) {
@@ -73,24 +70,6 @@ public class MusicService {
                 .collect(Collectors.toList());
     }
 
-
-    /**
-     * 가수 이름으로 음악 리스트 검색
-     *
-     * @param singer
-     * @return
-     */
-    public List<MusicEntity> findBySingerContain(String singer) {
-        return musicRepository.findBySingerContainingIgnoreCase(singer);
-    }
-
-    /**
-     * 단일 음악 정보 보내기
-     *
-     * @param musicId
-     * @return MusicResponse
-     * @throws IOException
-     */
     public MusicResponse findMusicInfo(Long musicId) {
         log.info("musicId = " + musicId);
         MusicEntity musicEntity = musicRepository.findById(musicId)
@@ -109,34 +88,11 @@ public class MusicService {
                 .collect(Collectors.toList());
     }
 
-
-    /**
-     * 플레이리스트에서 뮤직 정보 가져오기
-     *
-     * @param musicIds
-     * @return
-     */
-    public List<MusicResponse> findMusicInfosByPlaylist(List<String> musicIds) {
-        List<MusicResponse> arr = new ArrayList<>();
-
-        for (int i = 0; i < musicIds.size(); i++) {
-            arr.add(findMusicInfo(musicIds.get(i)));
-        }
-
-        return arr;
-    }
-
-    /**
-     * musicId로 txt파일에서 가사 불러오기
-     *
-     * @param musicId
-     * @return Model
-     * @throws IOException
-     */
     public String readLyrics(Long musicId) throws IOException {
-        String path = musicRepository.findById(musicId).get().getLyricsFile();
-        //D to C
-        path = path.replaceFirst("D", "C");
+        String path = musicRepository.findById(musicId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."))
+                .getLyricsFile();
+
         //파일 읽기
         BufferedReader br = new BufferedReader(new FileReader(path));
         String line = "", result = "";
