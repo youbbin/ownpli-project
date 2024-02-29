@@ -20,16 +20,14 @@ public class PlaylistController {
     private final PlaylistService playlistService;
     private final MusicService musicService;
 
-    @PostMapping("/getlist/{userId}")
+    @PostMapping("/{userId}")
     public ResponseEntity<List<PlaylistDTO>> getAllPlaylists(@PathVariable String userId) {
-        List<PlaylistDTO> playlistDTOList = playlistService.findPlaylistByUserId(userId);
-        return new ResponseEntity<>(playlistDTOList, HttpStatus.OK);
+        return ResponseEntity.ok(playlistService.findPlaylistByUserId(userId));
     }
 
-    @PostMapping("/getlist/update")
+    @PostMapping("/update")
     public ResponseEntity<PlaylistDTO> updateTitle(@RequestBody PlaylistUpdateRequest request) {
-        PlaylistDTO playlistDTO = playlistService.updatePlaylistTitle(request);
-        return new ResponseEntity<>(playlistDTO, HttpStatus.OK);
+        return ResponseEntity.ok(playlistService.updatePlaylistTitle(request));
     }
 
     /**
