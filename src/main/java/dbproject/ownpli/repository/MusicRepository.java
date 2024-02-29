@@ -25,8 +25,6 @@ public interface MusicRepository extends JpaRepository<MusicEntity, Long> {
 
     Optional<MusicEntity> findMusicEntityByTitleContainingIgnoreCase(String title);
 
-    @Query("SELECT distinct m.singer FROM MusicEntity m")
-    List<String> findSingers();
 
     @Query("SELECT m.musicId FROM MusicEntity m ORDER BY m.date DESC ")
     List<String> findMusicIdsOrderByYear();

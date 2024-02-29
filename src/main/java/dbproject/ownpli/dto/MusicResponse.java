@@ -5,12 +5,11 @@ import dbproject.ownpli.domain.music.MusicMoodEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class MusicResponse {
 
-    private String musicId;
+    private Long musicId;
     private String title;
     private String singer;
     private String genre;
@@ -21,7 +20,7 @@ public class MusicResponse {
     private String country;
 
     @Builder
-    public MusicResponse(String musicId, String title, String singer, String genre, Long likes, String imageFile, String album, String year, String country) {
+    public MusicResponse(Long musicId, String title, String singer, String genre, Long likes, String imageFile, String album, String year, String country) {
         this.musicId = musicId;
         this.title = title;
         this.singer = singer;

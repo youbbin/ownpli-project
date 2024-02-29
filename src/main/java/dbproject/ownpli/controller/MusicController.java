@@ -1,10 +1,7 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.domain.music.MusicEntity;
-import dbproject.ownpli.dto.MusicListRequest;
-import dbproject.ownpli.dto.MusicResponse;
-import dbproject.ownpli.dto.MusicSearchListResponse;
-import dbproject.ownpli.dto.SearchDTO;
+import dbproject.ownpli.dto.*;
 import dbproject.ownpli.service.Mp3Service;
 import dbproject.ownpli.service.MusicService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +23,6 @@ import java.util.Optional;
 public class MusicController {
 
     private final MusicService musicService;
-    private final Mp3Service mp3Service;
 
 //    @GetMapping("/getAllMusic")
 //    public ResponseEntity<List<MusicResponse>> getAllMusics() {
@@ -44,11 +40,8 @@ public class MusicController {
      * @return
      */
     @PostMapping("/singer")
-    public ResponseEntity<LinkedHashMap> getMusicAboutCondition() {
-        LinkedHashMap<String, List> res = new LinkedHashMap<>();
-//        String join = StringUtils.join(musicService.findSingerList(), '@');
-        res.put("singerName", musicService.findSingerList());
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    public ResponseEntity<SingerListResponse> getMusicAboutCondition() {
+        return ResponseEntity.ok(musicService.findSingerList());
     }
 
     /**
