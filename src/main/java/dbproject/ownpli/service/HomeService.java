@@ -25,13 +25,16 @@ public class HomeService {
     private final MusicLikeRepository musicLikeRepository;
     private final MoodRepository moodRepository;
     private final MusicMoodRepository musicMoodRepository;
-    private final UserService userService;
     private final QueryRepository queryRepository;
     private final UserRepository userRepository;
 
-    public List<MusicResponse> findNewSongs() {
-        List<String> musicIdsOrderByYear = musicRepository.findMusicIdsOrderByYear();
-        return musicService.findMusicInfosByPlaylist(musicIdsOrderByYear).subList(0, 10);
+    public List<HomeMusicListResponse> findNewSongs() {
+
+        return musicRepository.findAll().stream()
+                .limit(10)
+                .sorted(Comparator.comparing(MusicEntity::getDate, Comparator.reverseOrder()))
+                .map(HomeMusicListResponse::ofMusic)
+                .collect(Collectors.toList());
     }
 
     /**
