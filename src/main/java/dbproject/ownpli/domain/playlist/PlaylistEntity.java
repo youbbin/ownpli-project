@@ -40,4 +40,12 @@ public class PlaylistEntity {
         this.playlistTitle = playlistTitle;
         this.userEntity = userEntity;
     }
+
+    public static PlaylistEntity of(String playlistId, String playlistTitle, UserEntity userEntity) {
+        return PlaylistEntity.builder()
+                .playlistId(playlistId)
+                .playlistTitle(playlistTitle)
+                .userEntity(userEntity)
+                .build();
+    }
 }

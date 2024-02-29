@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class PlaylistMusicDeleteRequest {
+public class PlaylistMusicRequest {
 
     List<Long> musicIds;
 

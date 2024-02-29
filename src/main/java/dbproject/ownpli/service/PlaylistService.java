@@ -11,9 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
@@ -63,7 +60,7 @@ public class PlaylistService {
         return PlaylistMusicDTO.from(PlaylistDTO.from(playlistEntity), collectMusicResponses(playlistEntity));
     }
 
-    public PlaylistMusicDTO deletePlaylistMusics(String playlistId, PlaylistMusicDeleteRequest request) {
+    public PlaylistMusicDTO deletePlaylistMusics(String playlistId, PlaylistMusicRequest request) {
         PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
@@ -87,15 +84,13 @@ public class PlaylistService {
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
         Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserEntity(title, userEntity);
-        if (byPlaylistTitleAndUserId.isEmpty()) return null;
-        else return byPlaylistTitleAndUserId.get().getPlaylistId();
+        return byPlaylistTitleAndUserId.map(PlaylistEntity::getPlaylistId).orElse(null);
     }
 
     public List<String> findPlaylistIdsByPlaylistTitleAndUserId(String title, String userId) {
         List<String> list = List.of(title.split("@"));
         Optional<List<String>> byPlaylistTitleAndUserId = playlistRepository.findPlaylistIdsByPlaylistTitleAndUserId(list, userId);
-        if (byPlaylistTitleAndUserId.isEmpty()) return null;
-        else return byPlaylistTitleAndUserId.get();
+        return byPlaylistTitleAndUserId.orElse(null);
     }
 
     public String savePlaylist(PlaylistCreateRequest request) {
@@ -115,38 +110,23 @@ public class PlaylistService {
             id = idOptional.get().getPlaylistId();
             log.info("id={}", id);
 
-            StringTokenizer st = new StringTokenizer(id, "p");
-            Long idLong = Long.parseLong(st.nextToken());
-
-            idLong++;
-
-            id = "p" + idLong;
+            Long idLong = Long.parseLong(id.replace("p",""));
+            id = "p" + ++idLong;
         }
 
-        playlistRepository.save(
-                PlaylistEntity.builder()
-                        .playlistId(id)
-                        .playlistTitle(request.getTitle())
-                        .userEntity(user)
-                        .build()
-        );
-
+        playlistRepository.save(PlaylistEntity.of(id, request.getTitle(), user));
         log.info("플레이리스트 생성");
         return id;
     }
 
-    public String addSongsInPlaylist(String userId, String playlistId, List<Long> musicIds) {
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
-
-        PlaylistEntity playlistEntity = playlistRepository.findByPlaylistIdAndUserEntity(playlistId, userEntity)
+    public void addSongsInPlaylist(String playlistId, List<Long> musicIds) {
+        PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("플레이리스트가 존재하지 않습니다."));
 
         musicRepository.findAllById(musicIds)
                 .forEach(music -> playlistMusicRepository.save(PlaylistMusicEntity.of(playlistEntity, music)));
 
         log.info("플레이리스트 저장");
-        return playlistId;
     }
 
     /**
