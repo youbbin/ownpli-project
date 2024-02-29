@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
@@ -28,6 +28,7 @@ public class PlaylistService {
     private final MusicLikeRepository musicLikeRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public PlaylistDTO updatePlaylistTitle(PlaylistUpdateRequest request) {
         UserEntity userEntity = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
@@ -60,6 +61,7 @@ public class PlaylistService {
         return PlaylistMusicDTO.from(PlaylistDTO.from(playlistEntity), collectMusicResponses(playlistEntity));
     }
 
+    @Transactional
     public PlaylistMusicDTO deletePlaylistMusics(String playlistId, PlaylistMusicRequest request) {
         PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
@@ -79,6 +81,7 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public String savePlaylist(PlaylistCreateRequest request) {
 
         UserEntity user = userRepository.findById(request.getUserId())
@@ -105,6 +108,7 @@ public class PlaylistService {
         return id;
     }
 
+    @Transactional
     public void addSongsInPlaylist(String playlistId, List<Long> musicIds) {
         PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("플레이리스트가 존재하지 않습니다."));
@@ -115,6 +119,7 @@ public class PlaylistService {
         log.info("플레이리스트 저장");
     }
 
+    @Transactional
     public void deletePlaylist(List<String> playlistId) {
         playlistMusicRepository.deleteAllByPlaylistEntityIn(playlistRepository.findAllById(playlistId));
         playlistRepository.deleteAllById(playlistId);

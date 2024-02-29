@@ -1,17 +1,12 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.dto.UserInfoResponse;
-import dbproject.ownpli.dto.UserJoinRequest;
-import dbproject.ownpli.dto.UserSignInRequest;
-import dbproject.ownpli.dto.UserSignInResponse;
+import dbproject.ownpli.dto.*;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -51,22 +46,14 @@ public class UserService {
         return UserInfoResponse.from(userEntity);
     }
 
-
-    /**
-     * 회원 닉네임 수정
-     *
-     * @param name
-     * @param userId
-     * @return
-     */
     @Transactional
-    public UserInfoResponse updateNicknameByUserId(String name, String userId) {
-        int i = userRepository.updateUserName(name, userId);
+    public UserInfoResponse updateNicknameByUserId(UserNameUpdateRequest request) {
+        UserEntity userEntity = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        UserEntity byUserId = findByUserId(userId);
-        if (byUserId == null) return null;
-
-        return UserInfoResponse.from(byUserId);
+        userEntity.setName(request.getName());
+        userRepository.save(userEntity);
+        return UserInfoResponse.from(userEntity);
     }
 
 }

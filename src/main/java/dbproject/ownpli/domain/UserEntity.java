@@ -22,6 +22,7 @@ public class UserEntity {
     @Column(nullable = false, length = 50)
     private String password;
 
+    @Setter
     @Column(nullable = false, length = 20)
     private String name;
 

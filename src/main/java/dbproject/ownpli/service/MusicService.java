@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class MusicService {
 
     private final MusicRepository musicRepository;
@@ -45,6 +45,7 @@ public class MusicService {
         return musicLikeRepository.existsByMusicEntityAndUserEntity(music, user);
     }
 
+    @Transactional
     public void musicLikeSetting(String userId, Long musicId) {
 
         MusicEntity musicEntity = musicRepository.findById(musicId)

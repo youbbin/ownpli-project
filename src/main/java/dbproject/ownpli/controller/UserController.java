@@ -1,10 +1,7 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.dto.UserInfoResponse;
-import dbproject.ownpli.dto.UserJoinRequest;
-import dbproject.ownpli.dto.UserSignInRequest;
-import dbproject.ownpli.dto.UserSignInResponse;
+import dbproject.ownpli.dto.*;
 import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,26 +32,9 @@ public class UserController {
         return ResponseEntity.ok(userService.findByUserId(userId));
     }
 
-    /**
-     * 유저 닉네임 변경
-     * @param param
-     * @return
-     */
     @PostMapping("/mypage/update")
-    public ResponseEntity<UserInfoResponse> changeName(@RequestBody LinkedHashMap param) {
-        String userId = param.get("userId").toString();
-        if (userId == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        String name = param.get("name").toString();
-
-        UserInfoResponse userDTO = userService.updateNicknameByUserId(name, userId);
-        if(userDTO == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
-
+    public ResponseEntity<UserInfoResponse> changeName(@RequestBody UserNameUpdateRequest request) {
+        return ResponseEntity.ok(userService.updateNicknameByUserId(request));
     }
 
 }

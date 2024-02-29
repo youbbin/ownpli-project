@@ -6,10 +6,10 @@ import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.music.MusicLikeEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import dbproject.ownpli.dto.HomeMusicListResponse;
-import dbproject.ownpli.dto.MusicResponse;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class HomeService {
     private final PlaylistMusicRepository playlistMusicRepository;
     private final MusicRepository musicRepository;
