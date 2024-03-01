@@ -10,6 +10,8 @@ import dbproject.ownpli.controller.dto.music.SingerListResponse;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,10 +82,9 @@ public class MusicService {
         return MusicResponse.ofMusic(musicEntity, likes);
     }
 
-    public List<MusicSearchListResponse> searchByCondition(MusicListRequest request) {
-        return queryRepository.findDynamicQueryAdvance(request).stream()
-                .map(MusicSearchListResponse::of)
-                .collect(Collectors.toList());
+    public Page<MusicSearchListResponse> searchByCondition(MusicListRequest request, Pageable pageable) {
+        return queryRepository.findDynamicQueryAdvance(request, pageable)
+                .map(MusicSearchListResponse::of);
     }
 
     public String readLyrics(String musicId) throws IOException {

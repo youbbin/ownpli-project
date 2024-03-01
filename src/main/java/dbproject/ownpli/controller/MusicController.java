@@ -1,9 +1,14 @@
 package dbproject.ownpli.controller;
 
+import dbproject.ownpli.controller.dto.base.PageDto;
+import dbproject.ownpli.controller.dto.base.PageResponseData;
 import dbproject.ownpli.controller.dto.music.*;
 import dbproject.ownpli.service.MusicService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +23,13 @@ public class MusicController {
 
     private final MusicService musicService;
 
-    @PostMapping("/add")
-    public ResponseEntity<List<MusicSearchListResponse>> getMusicByCondition(@RequestBody MusicListRequest request) {
-        return ResponseEntity.ok(musicService.searchByCondition(request));
+    @PostMapping
+    public PageResponseData<List<MusicSearchListResponse>> getMusicByCondition(
+            @RequestBody MusicListRequest request,
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
+        Page<MusicSearchListResponse> responses = musicService.searchByCondition(request, pageable);
+        return PageResponseData.of(responses.toList(), PageDto.of(responses));
     }
 
     @GetMapping("/singer")

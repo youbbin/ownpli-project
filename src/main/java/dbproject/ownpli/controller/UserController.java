@@ -28,7 +28,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findByUserId(userId));
     }
 
-    @PostMapping("/mypage/update")
+    @PutMapping("/mypage/update")
     public ResponseEntity<UserInfoResponse> changeName(@RequestBody UserNameUpdateRequest request) {
         return ResponseEntity.ok(userService.updateNicknameByUserId(request));
     }

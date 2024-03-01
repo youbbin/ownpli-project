@@ -1,6 +1,7 @@
 package dbproject.ownpli.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.domain.MusicEntity;
@@ -8,19 +9,21 @@ import dbproject.ownpli.domain.PlaylistMusicEntity;
 import dbproject.ownpli.controller.dto.music.MusicListRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static dbproject.ownpli.domain.QMoodEntity.moodEntity;
+import static dbproject.ownpli.domain.QMusicEntity.musicEntity;
+import static dbproject.ownpli.domain.QMusicMoodEntity.musicMoodEntity;
+import static dbproject.ownpli.domain.QPlaylistEntity.playlistEntity;
+import static dbproject.ownpli.domain.QPlaylistMusicEntity.playlistMusicEntity;
 import static dbproject.ownpli.domain.QUserEntity.userEntity;
-import static dbproject.ownpli.domain.music.QMoodEntity.moodEntity;
-import static dbproject.ownpli.domain.music.QMusicEntity.musicEntity;
-import static dbproject.ownpli.domain.music.QMusicMoodEntity.musicMoodEntity;
-import static dbproject.ownpli.domain.playlist.QPlaylistEntity.playlistEntity;
-import static dbproject.ownpli.domain.playlist.QPlaylistMusicEntity.playlistMusicEntity;
-
 
 @Slf4j
 @Repository
@@ -29,8 +32,8 @@ public class QueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<MusicEntity> findDynamicQueryAdvance(MusicListRequest request) {
-        return jpaQueryFactory
+    public Page<MusicEntity> findDynamicQueryAdvance(MusicListRequest request, Pageable pageable) {
+        List<MusicEntity> result = jpaQueryFactory
                 .select(musicEntity)
                 .from(musicEntity, musicMoodEntity, moodEntity).distinct()
                 .where(musicMoodEntity.musicEntity.eq(musicEntity),
@@ -40,7 +43,26 @@ public class QueryRepository {
                         inCountry(request.getCountry()),
                         betweenDate(request.getYear()),
                         inMood(request.getMood())
-                ).orderBy(musicEntity.musicId.asc()).fetch();
+                ).orderBy(musicEntity.musicId.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return PageableExecutionUtils.getPage(result, pageable, getCount(request)::fetchOne);
+    }
+
+    private JPAQuery<Long> getCount(MusicListRequest request) {
+        return jpaQueryFactory
+                .select(musicEntity.count())
+                .from(musicEntity, musicMoodEntity, moodEntity).distinct()
+                .where(musicMoodEntity.musicEntity.eq(musicEntity),
+                        inSingers(request.getLikedSinger()),
+                        notInSingers(request.getDislikedSinger()),
+                        inGenre(request.getGenre()),
+                        inCountry(request.getCountry()),
+                        betweenDate(request.getYear()),
+                        inMood(request.getMood())
+                );
     }
 
     public List<PlaylistMusicEntity> findAgeCompare(UserEntity user) {
