@@ -20,7 +20,7 @@ public class MusicController {
     private final MusicService musicService;
 
     @PostMapping("/add")
-    public ResponseEntity<List<MusicSearchListResponse>> getMusicByCondition(@RequestBody MusicListRequest request) throws ParseException {
+    public ResponseEntity<List<MusicSearchListResponse>> getMusicByCondition(@RequestBody MusicListRequest request) {
         return ResponseEntity.ok(musicService.searchByCondition(request));
     }
 

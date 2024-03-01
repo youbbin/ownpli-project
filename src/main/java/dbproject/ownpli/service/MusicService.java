@@ -82,9 +82,7 @@ public class MusicService {
     }
 
     public List<MusicSearchListResponse> searchByCondition(MusicListRequest request) {
-        List<GenreEntity> genreEntities = genreRepository.findAllById(request.getGenre());
-
-        return queryRepository.findDynamicQueryAdvance(request, genreEntities).stream()
+        return queryRepository.findDynamicQueryAdvance(request).stream()
                 .map(MusicSearchListResponse::of)
                 .collect(Collectors.toList());
     }

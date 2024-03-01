@@ -30,14 +30,14 @@ public class QueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<MusicEntity> findDynamicQueryAdvance(MusicListRequest request, List<GenreEntity> genre) {
+    public List<MusicEntity> findDynamicQueryAdvance(MusicListRequest request) {
         return jpaQueryFactory
                 .select(musicEntity)
                 .from(musicEntity, musicMoodEntity, moodEntity).distinct()
                 .where(musicMoodEntity.musicEntity.eq(musicEntity),
                         inSingers(request.getLikedSinger()),
                         notInSingers(request.getDislikedSinger()),
-                        inGenre(genre),
+                        inGenre(request.getGenre()),
                         inCountry(request.getCountry()),
                         betweenDate(request.getYear()),
                         inMood(request.getMood())
@@ -60,7 +60,7 @@ public class QueryRepository {
 
         return jpaQueryFactory
                 .selectFrom(musicEntity)
-                .where(inSingers(searches), inTitles(searches))
+                .where(inSingers(searches).or(inTitles(searches)))
                 .fetch();
     }
 
@@ -76,8 +76,8 @@ public class QueryRepository {
         return hates != null ? musicEntity.singer.notIn(hates) : null;
     }
 
-    private BooleanExpression inGenre(List<GenreEntity> genre) {
-        return genre != null ? musicEntity.genreEntity.in(genre) : null;
+    private BooleanExpression inGenre(List<Long> genre) {
+        return genre != null ? musicEntity.genreEntity.genreNum.in(genre) : null;
     }
 
     private BooleanExpression inCountry(List<String> countries) {

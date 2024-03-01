@@ -2,8 +2,10 @@ package dbproject.ownpli.dto;
 
 import dbproject.ownpli.domain.music.MusicEntity;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class MusicSearchListResponse {
 
     private String musicId;
