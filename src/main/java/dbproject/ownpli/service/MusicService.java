@@ -1,7 +1,6 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.music.GenreEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.music.MusicLikeEntity;
 import dbproject.ownpli.dto.MusicListRequest;

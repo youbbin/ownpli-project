@@ -3,7 +3,6 @@ package dbproject.ownpli.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.music.GenreEntity;
 import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
 import dbproject.ownpli.dto.MusicListRequest;

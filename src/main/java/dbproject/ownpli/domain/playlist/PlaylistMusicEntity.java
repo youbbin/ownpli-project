@@ -4,15 +4,10 @@ import dbproject.ownpli.domain.music.MusicEntity;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDate;
 
-/**
- * 조인으로 연동하기
- */
 @Getter
 @Entity
 @Table(name = "playlist_music")

@@ -1,14 +1,12 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.dto.*;
-import dbproject.ownpli.service.MusicService;
 import dbproject.ownpli.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController

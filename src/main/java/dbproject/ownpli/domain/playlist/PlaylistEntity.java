@@ -6,9 +6,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 
-/**
- * 조인으로 연동하기
- */
 @Getter
 @Entity
 @Table(name = "playlist")

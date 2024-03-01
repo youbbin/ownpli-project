@@ -1,12 +1,8 @@
 package dbproject.ownpli.dto;
 
 import dbproject.ownpli.domain.playlist.PlaylistEntity;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 @Getter
 @Builder

@@ -7,7 +7,7 @@ import javax.persistence.*;
 /**
  * 조인으로 연동하기
  */
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 @Entity
