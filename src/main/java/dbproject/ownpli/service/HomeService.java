@@ -24,7 +24,6 @@ public class HomeService {
     private final MusicLikeRepository musicLikeRepository;
     private final MoodRepository moodRepository;
     private final MusicMoodRepository musicMoodRepository;
-    private final QueryRepository queryRepository;
     private final UserRepository userRepository;
 
     public List<HomeMusicListResponse> findNewSongs() {
@@ -58,7 +57,7 @@ public class HomeService {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        Map<MusicEntity, Long> musicEntityLongMap = queryRepository.findAgeCompare(userEntity).stream()
+        Map<MusicEntity, Long> musicEntityLongMap = playlistMusicRepository.findAgeCompare(userEntity).stream()
                 .collect(Collectors.groupingBy(PlaylistMusicEntity::getMusicEntity, Collectors.counting()));
 
         return buildResponse(musicEntityLongMap);

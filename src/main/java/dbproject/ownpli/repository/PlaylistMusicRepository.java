@@ -3,13 +3,14 @@ package dbproject.ownpli.repository;
 import dbproject.ownpli.domain.MusicEntity;
 import dbproject.ownpli.domain.PlaylistEntity;
 import dbproject.ownpli.domain.PlaylistMusicEntity;
+import dbproject.ownpli.repository.querydsl.CustomPlaylistMusicRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEntity, String> {
+public interface PlaylistMusicRepository extends JpaRepository<PlaylistMusicEntity, String>, CustomPlaylistMusicRepository {
 
     void deleteAllByPlaylistEntityIn(List<PlaylistEntity> playlistEntities);
 

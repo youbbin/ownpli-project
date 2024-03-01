@@ -29,9 +29,7 @@ public class MusicService {
 
     private final MusicRepository musicRepository;
     private final MusicLikeRepository musicLikeRepository;
-    private final GenreRepository genreRepository;
     private final UserRepository userRepository;
-    private final QueryRepository queryRepository;
 
     public SingerListResponse findSingerList() {
         List<String> collect = musicRepository.findAll().stream()
@@ -64,7 +62,7 @@ public class MusicService {
     }
 
     public List<MusicResponse> searchSingerAndTitle(String search) {
-        return queryRepository.searchTitleAndSinger(search).stream()
+        return musicRepository.searchTitleAndSinger(search).stream()
                 .map(musicEntity -> MusicResponse.ofMusic(
                         musicEntity,
                         musicLikeRepository.countByMusicEntity(musicEntity)
@@ -83,7 +81,7 @@ public class MusicService {
     }
 
     public Page<MusicSearchListResponse> searchByCondition(MusicListRequest request, Pageable pageable) {
-        return queryRepository.findDynamicQueryAdvance(request, pageable)
+        return musicRepository.findDynamicQueryAdvance(request, pageable)
                 .map(MusicSearchListResponse::of);
     }
 

@@ -1,18 +1,14 @@
-package dbproject.ownpli.repository;
+package dbproject.ownpli.repository.querydsl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.MusicEntity;
-import dbproject.ownpli.domain.PlaylistMusicEntity;
 import dbproject.ownpli.controller.dto.music.MusicListRequest;
+import dbproject.ownpli.domain.MusicEntity;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,17 +17,13 @@ import java.util.stream.Collectors;
 import static dbproject.ownpli.domain.QMoodEntity.moodEntity;
 import static dbproject.ownpli.domain.QMusicEntity.musicEntity;
 import static dbproject.ownpli.domain.QMusicMoodEntity.musicMoodEntity;
-import static dbproject.ownpli.domain.QPlaylistEntity.playlistEntity;
-import static dbproject.ownpli.domain.QPlaylistMusicEntity.playlistMusicEntity;
-import static dbproject.ownpli.domain.QUserEntity.userEntity;
 
-@Slf4j
-@Repository
 @RequiredArgsConstructor
-public class QueryRepository {
+public class CustomMusicRepositoryImpl implements CustomMusicRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    @Override
     public Page<MusicEntity> findDynamicQueryAdvance(MusicListRequest request, Pageable pageable) {
         List<MusicEntity> result = jpaQueryFactory
                 .select(musicEntity)
@@ -65,17 +57,7 @@ public class QueryRepository {
                 );
     }
 
-    public List<PlaylistMusicEntity> findAgeCompare(UserEntity user) {
-        return jpaQueryFactory
-                .select(playlistMusicEntity)
-                .from(playlistEntity, userEntity, playlistMusicEntity)
-                .where(
-                        playlistEntity.userEntity.eq(userEntity),
-                        playlistMusicEntity.playlistEntity.eq(playlistEntity),
-                        betweenAge(user.getAge())
-                ).fetch();
-    }
-
+    @Override
     public List<MusicEntity> searchTitleAndSinger(String search) {
         List<String> searches = Arrays.stream(search.split(" ")).toList();
 
@@ -85,16 +67,16 @@ public class QueryRepository {
                 .fetch();
     }
 
-    private BooleanExpression inTitles(List<String> titles) {
-        return titles != null? musicEntity.title.in(titles) : null;
-    }
-
     private BooleanExpression inSingers(List<String> likes) {
         return likes != null ? musicEntity.singer.in(likes) : null;
     }
 
     private BooleanExpression notInSingers(List<String> hates) {
         return hates != null ? musicEntity.singer.notIn(hates) : null;
+    }
+
+    private BooleanExpression inTitles(List<String> titles) {
+        return titles != null? musicEntity.title.in(titles) : null;
     }
 
     private BooleanExpression inGenre(List<Long> genre) {
@@ -111,12 +93,6 @@ public class QueryRepository {
 
     private BooleanExpression inMood(List<Long> mood) {
         return mood != null ? musicMoodEntity.moodEntity.moodNum.in(mood) : null;
-    }
-
-    private BooleanExpression betweenAge(int age) {
-        int age1 = age / 10 * 10;
-        int age2 = age1 + 9;
-        return userEntity.age.between(age1, age2);
     }
 
 }
