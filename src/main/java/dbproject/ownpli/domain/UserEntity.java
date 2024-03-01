@@ -1,7 +1,7 @@
 package dbproject.ownpli.domain;
 
-import dbproject.ownpli.domain.music.MusicLikeEntity;
-import dbproject.ownpli.dto.UserJoinRequest;
+import dbproject.ownpli.controller.dto.user.UserJoinRequest;
+import dbproject.ownpli.domain.value.Sex;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 

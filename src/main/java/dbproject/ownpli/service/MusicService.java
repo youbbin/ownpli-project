@@ -1,12 +1,12 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.music.MusicEntity;
-import dbproject.ownpli.domain.music.MusicLikeEntity;
-import dbproject.ownpli.dto.MusicListRequest;
-import dbproject.ownpli.dto.MusicResponse;
-import dbproject.ownpli.dto.MusicSearchListResponse;
-import dbproject.ownpli.dto.SingerListResponse;
+import dbproject.ownpli.domain.MusicEntity;
+import dbproject.ownpli.domain.MusicLikeEntity;
+import dbproject.ownpli.controller.dto.music.MusicListRequest;
+import dbproject.ownpli.controller.dto.music.MusicResponse;
+import dbproject.ownpli.controller.dto.music.MusicSearchListResponse;
+import dbproject.ownpli.controller.dto.music.SingerListResponse;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

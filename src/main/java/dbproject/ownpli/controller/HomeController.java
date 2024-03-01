@@ -1,6 +1,6 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.dto.HomeMusicListResponse;
+import dbproject.ownpli.controller.dto.home.HomeMusicListResponse;
 import dbproject.ownpli.service.HomeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

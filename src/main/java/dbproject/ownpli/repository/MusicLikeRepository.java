@@ -1,8 +1,8 @@
 package dbproject.ownpli.repository;
 
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.music.MusicEntity;
-import dbproject.ownpli.domain.music.MusicLikeEntity;
+import dbproject.ownpli.domain.MusicEntity;
+import dbproject.ownpli.domain.MusicLikeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

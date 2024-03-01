@@ -1,6 +1,6 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.dto.*;
+import dbproject.ownpli.controller.dto.music.*;
 import dbproject.ownpli.service.MusicService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

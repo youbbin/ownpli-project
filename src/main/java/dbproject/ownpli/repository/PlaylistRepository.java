@@ -1,7 +1,7 @@
 package dbproject.ownpli.repository;
 
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.playlist.PlaylistEntity;
+import dbproject.ownpli.domain.PlaylistEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

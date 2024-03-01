@@ -1,11 +1,11 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.music.MoodEntity;
-import dbproject.ownpli.domain.music.MusicEntity;
-import dbproject.ownpli.domain.music.MusicLikeEntity;
-import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
-import dbproject.ownpli.dto.HomeMusicListResponse;
+import dbproject.ownpli.domain.MoodEntity;
+import dbproject.ownpli.domain.MusicEntity;
+import dbproject.ownpli.domain.MusicLikeEntity;
+import dbproject.ownpli.domain.PlaylistMusicEntity;
+import dbproject.ownpli.controller.dto.home.HomeMusicListResponse;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

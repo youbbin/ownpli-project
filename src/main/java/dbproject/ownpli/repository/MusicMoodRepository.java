@@ -1,7 +1,7 @@
 package dbproject.ownpli.repository;
 
-import dbproject.ownpli.domain.music.MoodEntity;
-import dbproject.ownpli.domain.music.MusicMoodEntity;
+import dbproject.ownpli.domain.MoodEntity;
+import dbproject.ownpli.domain.MusicMoodEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

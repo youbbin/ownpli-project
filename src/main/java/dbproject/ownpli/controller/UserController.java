@@ -1,6 +1,6 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.dto.*;
+import dbproject.ownpli.controller.dto.user.*;
 import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

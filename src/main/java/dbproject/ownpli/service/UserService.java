@@ -1,7 +1,7 @@
 package dbproject.ownpli.service;
 
+import dbproject.ownpli.controller.dto.user.*;
 import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.dto.*;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

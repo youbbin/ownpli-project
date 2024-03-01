@@ -1,6 +1,6 @@
 package dbproject.ownpli.controller;
 
-import dbproject.ownpli.dto.*;
+import dbproject.ownpli.controller.dto.playlist.*;
 import dbproject.ownpli.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
