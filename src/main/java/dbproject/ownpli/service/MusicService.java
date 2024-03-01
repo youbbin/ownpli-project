@@ -46,7 +46,7 @@ public class MusicService {
     }
 
     @Transactional
-    public void musicLikeSetting(String userId, Long musicId) {
+    public void musicLikeSetting(String userId, String musicId) {
 
         MusicEntity musicEntity = musicRepository.findById(musicId)
                 .orElseThrow(() -> new NullPointerException("id 없음"));
@@ -71,7 +71,7 @@ public class MusicService {
                 .collect(Collectors.toList());
     }
 
-    public MusicResponse findMusicInfo(Long musicId) {
+    public MusicResponse findMusicInfo(String musicId) {
         log.info("musicId = " + musicId);
         MusicEntity musicEntity = musicRepository.findById(musicId)
                 .orElseThrow(() -> new NullPointerException("없음"));
@@ -89,7 +89,7 @@ public class MusicService {
                 .collect(Collectors.toList());
     }
 
-    public String readLyrics(Long musicId) throws IOException {
+    public String readLyrics(String musicId) throws IOException {
         String path = musicRepository.findById(musicId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."))
                 .getLyricsFile();

@@ -10,7 +10,7 @@ import java.util.List;
  * 조인으로 연동하기
  */
 @Getter
-@Entity(name = "playlist")
+@Entity
 @Table(name = "playlist")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistEntity {
@@ -20,15 +20,15 @@ public class PlaylistEntity {
      * "pl" + xxxx 형식으로
      */
     @Id
-    @Column(name = "playlist id", nullable = false, length = 50)
+    @Column(name = "playlist_id", nullable = false, length = 50)
     private String playlistId;
 
     @Setter
-    @Column(name = "playlist title", nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String playlistTitle;
 
     @ManyToOne
-    @JoinColumn(name = "user id", referencedColumnName = "user id")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserEntity userEntity;
 
     @OneToMany(mappedBy = "playlistEntity")

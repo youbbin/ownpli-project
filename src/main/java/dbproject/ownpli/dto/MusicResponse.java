@@ -7,9 +7,10 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class MusicResponse {
 
-    private Long musicId;
+    private String musicId;
     private String title;
     private String singer;
     private String genre;
@@ -18,19 +19,6 @@ public class MusicResponse {
     private String album;
     private String year;
     private String country;
-
-    @Builder
-    public MusicResponse(Long musicId, String title, String singer, String genre, Long likes, String imageFile, String album, String year, String country) {
-        this.musicId = musicId;
-        this.title = title;
-        this.singer = singer;
-        this.genre = genre;
-        this.likes = likes;
-        this.imageFile = imageFile;
-        this.album = album;
-        this.year = year;
-        this.country = country;
-    }
 
     public static MusicResponse ofMusic(MusicEntity musicEntity, Long likes) {
 
@@ -41,7 +29,7 @@ public class MusicResponse {
                 .genre(musicEntity.getGenreEntity().getGenre())
                 .likes(likes)
                 .album(musicEntity.getAlbum())
-                .year(String.valueOf(musicEntity.getDate().getYear()))
+                .year(String.valueOf(musicEntity.getReleaseDate().getYear()))
                 .country(musicEntity.getCountry())
                 .build();
     }
@@ -55,7 +43,7 @@ public class MusicResponse {
                 .genre(musicEntity.getGenreEntity().getGenre())
                 .likes(likes)
                 .album(musicEntity.getAlbum())
-                .year(String.valueOf(musicEntity.getDate().getYear()))
+                .year(String.valueOf(musicEntity.getReleaseDate().getYear()))
                 .country(musicEntity.getCountry())
                 .build();
     }
@@ -70,7 +58,7 @@ public class MusicResponse {
                 .genre(musicEntity.getGenreEntity().getGenre())
                 .likes(likes)
                 .album(musicEntity.getAlbum())
-                .year(String.valueOf(musicEntity.getDate().getYear()))
+                .year(String.valueOf(musicEntity.getReleaseDate().getYear()))
                 .country(musicEntity.getCountry())
                 .build();
     }

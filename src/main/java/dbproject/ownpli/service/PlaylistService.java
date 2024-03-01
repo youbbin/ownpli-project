@@ -62,14 +62,12 @@ public class PlaylistService {
     }
 
     @Transactional
-    public PlaylistMusicDTO deletePlaylistMusics(String playlistId, PlaylistMusicRequest request) {
+    public void deletePlaylistMusics(String playlistId, PlaylistMusicRequest request) {
         PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
         List<MusicEntity> musicEntities = musicRepository.findAllById(request.getMusicIds());
         playlistMusicRepository.deleteAllByPlaylistEntityAndMusicEntityIn(playlistEntity, musicEntities);
-
-        return PlaylistMusicDTO.from(PlaylistDTO.from(playlistEntity), collectMusicResponses(playlistEntity));
     }
 
     private List<MusicResponse> collectMusicResponses(PlaylistEntity playlistEntity) {
@@ -109,7 +107,7 @@ public class PlaylistService {
     }
 
     @Transactional
-    public void addSongsInPlaylist(String playlistId, List<Long> musicIds) {
+    public void addSongsInPlaylist(String playlistId, List<String> musicIds) {
         PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("플레이리스트가 존재하지 않습니다."));
 

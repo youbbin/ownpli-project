@@ -24,7 +24,7 @@ public class MusicController {
         return ResponseEntity.ok(musicService.searchByCondition(request));
     }
 
-    @PostMapping("/singer")
+    @GetMapping("/singer")
     public ResponseEntity<SingerListResponse> getMusicAboutCondition() {
         return ResponseEntity.ok(musicService.findSingerList());
     }
@@ -35,18 +35,18 @@ public class MusicController {
     }
 
     @GetMapping("/{musicId}")
-    public ResponseEntity<MusicResponse> getMusicInfo(@PathVariable Long musicId) {
+    public ResponseEntity<MusicResponse> getMusicInfo(@PathVariable String musicId) {
         return ResponseEntity.ok(musicService.findMusicInfo(musicId));
     }
 
     @PostMapping("/{musicId}/like")
-    public ResponseEntity<MusicResponse> musicLikes(@PathVariable Long musicId, @RequestBody MusicLikeRequest request) {
+    public ResponseEntity<MusicResponse> musicLikes(@PathVariable String musicId, @RequestBody MusicLikeRequest request) {
         musicService.musicLikeSetting(request.getUserId(), musicId);
         return ResponseEntity.ok(musicService.findMusicInfo(musicId));
     }
 
     @GetMapping("/{musicId}/lyrics")
-    public ResponseEntity<String> getLyrics(@PathVariable Long musicId) throws IOException {
+    public ResponseEntity<String> getLyrics(@PathVariable String musicId) throws IOException {
         return ResponseEntity.ok(musicService.readLyrics(musicId));
     }
 

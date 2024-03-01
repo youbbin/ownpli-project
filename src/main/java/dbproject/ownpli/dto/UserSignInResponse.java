@@ -2,8 +2,10 @@ package dbproject.ownpli.dto;
 
 import dbproject.ownpli.domain.UserEntity;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class UserSignInResponse {
 
     private String userId;

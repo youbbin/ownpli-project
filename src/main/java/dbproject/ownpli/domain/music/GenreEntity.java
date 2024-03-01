@@ -4,16 +4,16 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@Data
-@Entity(name = "genre")
+@Getter
 @Builder
+@Entity
 @Table(name = "genre")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GenreEntity {
 
     @Id
-    @Column(name = "genre num", nullable = false)
+    @Column(name = "genre_num", nullable = false)
     private Long genreNum;
 
     @Column(length = 20)

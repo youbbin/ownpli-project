@@ -23,22 +23,23 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.findPlaylistByUserId(userId));
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<PlaylistDTO> updateTitle(@RequestBody PlaylistUpdateRequest request) {
         return ResponseEntity.ok(playlistService.updatePlaylistTitle(request));
     }
 
-    @GetMapping("/{playlistId}")
-    public ResponseEntity<PlaylistMusicDTO> findMusicList(@PathVariable String playlistId) {
+    @GetMapping
+    public ResponseEntity<PlaylistMusicDTO> findMusicList(@RequestParam(name = "id") String playlistId) {
         return ResponseEntity.ok(playlistService.findMusicsByPlaylistId(playlistId));
     }
 
-    @PostMapping("/{playlistId}/delete")
+    @DeleteMapping("/{playlistId}/delete")
     public ResponseEntity<PlaylistMusicDTO> deleteMusics(
             @PathVariable String playlistId,
             @RequestBody PlaylistMusicRequest request
     ) {
-        return ResponseEntity.ok(playlistService.deletePlaylistMusics(playlistId, request));
+        playlistService.deletePlaylistMusics(playlistId, request);
+        return ResponseEntity.ok(playlistService.findMusicsByPlaylistId(playlistId));
     }
 
     @PostMapping("/create")
@@ -53,7 +54,7 @@ public class PlaylistController {
         return ResponseEntity.ok("생성 성공");
     }
 
-    @PostMapping("/{playlistId}/add")
+    @PutMapping("/{playlistId}/add")
     public ResponseEntity<PlaylistMusicDTO> addPlaylistMusic(
             @PathVariable String playlistId,
             @RequestBody PlaylistMusicRequest request
@@ -62,7 +63,7 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.findMusicsByPlaylistId(playlistId));
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity<String> deletePlaylist(@RequestBody PlaylistDropRequest request) {
         playlistService.deletePlaylist(request.getPlaylistIds());
         return ResponseEntity.ok("삭제 완료");

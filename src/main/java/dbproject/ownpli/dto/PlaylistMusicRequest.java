@@ -7,6 +7,6 @@ import java.util.List;
 @Getter
 public class PlaylistMusicRequest {
 
-    List<Long> musicIds;
+    List<String> musicIds;
 
 }

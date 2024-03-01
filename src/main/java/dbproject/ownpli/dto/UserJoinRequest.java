@@ -1,5 +1,6 @@
 package dbproject.ownpli.dto;
 
+import dbproject.ownpli.domain.Sex;
 import lombok.Getter;
 
 @Getter
@@ -9,6 +10,6 @@ public class UserJoinRequest {
     private String password;
     private String name;
     private int age;
-    private int sex;
+    private Sex sex;
 
 }

@@ -6,7 +6,7 @@ import lombok.Builder;
 @Builder
 public class MusicSearchListResponse {
 
-    private Long musicId;
+    private String musicId;
     private String title;
     private String singer;
     private String genre;
@@ -20,7 +20,7 @@ public class MusicSearchListResponse {
                 .singer(music.getSinger())
                 .genre(music.getGenreEntity().getGenre())
                 .country(music.getCountry())
-                .year(music.getDate().getYear())
+                .year(music.getReleaseDate().getYear())
                 .build();
     }
 

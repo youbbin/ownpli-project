@@ -5,13 +5,9 @@ import lombok.*;
 
 import javax.persistence.*;
 
-/**
- * 조인으로 연동하기
- */
-
 @Getter
-@Entity(name = "music_like")
-@Table(name = "music-like")
+@Entity
+@Table(name = "music_like")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MusicLikeEntity {
 
@@ -20,11 +16,11 @@ public class MusicLikeEntity {
     private Long musicLikeId;
 
     @ManyToOne
-    @JoinColumn(name = "user id", referencedColumnName = "user id")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserEntity userEntity;
 
     @ManyToOne
-    @JoinColumn(name = "music id", referencedColumnName = "music id")
+    @JoinColumn(name = "music_id", referencedColumnName = "music_id")
     private MusicEntity musicEntity;
 
     @Builder

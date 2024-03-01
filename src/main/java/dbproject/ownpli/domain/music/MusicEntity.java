@@ -3,7 +3,7 @@ package dbproject.ownpli.domain.music;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -13,8 +13,8 @@ import java.util.List;
 public class MusicEntity {
 
     @Id
-    @Column(name = "music id", nullable = false, length = 50)
-    private Long musicId;
+    @Column(name = "music_id", nullable = false, length = 50)
+    private String musicId;
 
     //제목
     @Column(nullable = false, length = 200)
@@ -29,40 +29,40 @@ public class MusicEntity {
     private String album;
 
     @OneToOne
-    @JoinColumn(name = "genre num", referencedColumnName = "genre num")
+    @JoinColumn(name = "genre_num", referencedColumnName = "genre_num")
     private GenreEntity genreEntity;
 
     //이미지파일경로
-    @Column(name = "image file", nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String imageFile;
 
     @Column
-    private Date date;
+    private LocalDate releaseDate;
 
     //나라
     @Column(length = 50)
     private String country;
 
     //가사 파일 경로
-    @Column(name = "lyrics file", length = 50)
+    @Column(length = 50)
     private String lyricsFile;
 
     //mp3 파일 경로
-    @Column(name = "mp3 file", nullable = false, length = 50)
+    @Column(name = "mp3_file", nullable = false, length = 50)
     private String mp3File;
 
     @OneToMany(mappedBy = "musicEntity")
     List<MusicMoodEntity> musicMoodEntities;
 
     @Builder
-    public MusicEntity(Long musicId, String title, String singer, String album, GenreEntity genreEntity, String imageFile, Date date, String country, String lyricsFile, String mp3File) {
+    public MusicEntity(String musicId, String title, String singer, String album, GenreEntity genreEntity, String imageFile, LocalDate releaseDate, String country, String lyricsFile, String mp3File) {
         this.musicId = musicId;
         this.title = title;
         this.singer = singer;
         this.album = album;
         this.genreEntity = genreEntity;
         this.imageFile = imageFile;
-        this.date = date;
+        this.releaseDate = releaseDate;
         this.country = country;
         this.lyricsFile = lyricsFile;
         this.mp3File = mp3File;

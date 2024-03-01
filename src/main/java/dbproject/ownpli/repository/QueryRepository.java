@@ -85,7 +85,7 @@ public class QueryRepository {
     }
 
     private BooleanExpression betweenDate(List<String> year) {
-        return year != null ? musicEntity.date.year().in(year.stream().map(y -> Integer.parseInt(y.replace("'s", ""))).collect(Collectors.toList())) : null;
+        return year != null ? musicEntity.releaseDate.year().in(year.stream().map(y -> Integer.parseInt(y.replace("'s", ""))).collect(Collectors.toList())) : null;
     }
 
     private BooleanExpression inMood(List<Long> mood) {

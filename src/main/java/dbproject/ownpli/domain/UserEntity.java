@@ -10,13 +10,13 @@ import java.util.List;
 
 @Getter
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate //update 할때 실제 값이 변경됨 컬럼으로만 update 쿼리를 만듦
 public class UserEntity {
 
     @Id
-    @Column(name = "user id", nullable = false, length = 50)
+    @Column(name = "user_id", nullable = false, length = 50)
     private String userId;      //email?
 
     @Column(nullable = false, length = 50)
@@ -29,14 +29,14 @@ public class UserEntity {
     @Column(nullable = false)
     private int age;
 
-    @Column(nullable = false)
-    private int sex;
+    @Enumerated(EnumType.STRING)
+    private Sex sex;
 
     @OneToMany(mappedBy = "userEntity")
     private List<MusicLikeEntity> musicLikeEntities;
 
     @Builder
-    public UserEntity(String userId, String password, String name, int age, int sex) {
+    public UserEntity(String userId, String password, String name, int age, Sex sex) {
         this.userId = userId;
         this.password = password;
         this.name = name;

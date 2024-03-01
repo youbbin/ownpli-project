@@ -4,14 +4,20 @@ import dbproject.ownpli.domain.UserEntity;
 import lombok.*;
 
 @Getter
-@AllArgsConstructor
+@Builder
 public class UserInfoResponse {
+
     private String userId;
     private String name;
     private int age;
-    private int sex;
+    private String sex;
 
     public static UserInfoResponse from(UserEntity userEntity) {
-        return new UserInfoResponse(userEntity.getUserId(), userEntity.getName(), userEntity.getAge(), userEntity.getSex());
+        return UserInfoResponse.builder()
+                .userId(userEntity.getUserId())
+                .name(userEntity.getName())
+                .age(userEntity.getAge())
+                .sex(userEntity.getSex().getSexName())
+                .build();
     }
 }

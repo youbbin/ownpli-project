@@ -10,8 +10,8 @@ import javax.persistence.*;
 @Data
 @Builder
 @AllArgsConstructor
-@Entity(name = "music_mood")
-@Table(name = "music-mood")
+@Entity
+@Table(name = "music_mood")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MusicMoodEntity {
 
@@ -20,11 +20,11 @@ public class MusicMoodEntity {
     private Long musicMoodId;
 
     @ManyToOne
-    @JoinColumn(name = "music id", referencedColumnName = "music id")
+    @JoinColumn(name = "music_id", referencedColumnName = "music_id")
     private MusicEntity musicEntity;
 
     @ManyToOne
-    @JoinColumn(name = "mood num", referencedColumnName = "mood num")
+    @JoinColumn(name = "mood_num", referencedColumnName = "mood_num")
     private MoodEntity moodEntity;
 
 }

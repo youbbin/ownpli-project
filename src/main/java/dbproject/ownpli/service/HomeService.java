@@ -30,7 +30,7 @@ public class HomeService {
     public List<HomeMusicListResponse> findNewSongs() {
 
         return musicRepository.findAll().stream()
-                .sorted(Comparator.comparing(MusicEntity::getDate, Comparator.reverseOrder()))
+                .sorted(Comparator.comparing(MusicEntity::getReleaseDate, Comparator.reverseOrder()))
                 .limit(10)
                 .map(HomeMusicListResponse::ofMusic)
                 .collect(Collectors.toList());

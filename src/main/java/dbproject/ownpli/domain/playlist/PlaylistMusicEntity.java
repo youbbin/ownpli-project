@@ -3,16 +3,20 @@ package dbproject.ownpli.domain.playlist;
 import dbproject.ownpli.domain.music.MusicEntity;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDate;
 
 /**
  * 조인으로 연동하기
  */
 @Getter
-@Entity(name = "playlist_music")
-@Table(name = "playlist-music")
+@Entity
+@Table(name = "playlist_music")
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaylistMusicEntity {
 
@@ -21,16 +25,16 @@ public class PlaylistMusicEntity {
     private Long playlistMusicId;
 
     @ManyToOne
-    @JoinColumn(name = "playlist id", referencedColumnName = "playlist id")
+    @JoinColumn(name = "playlist_id", referencedColumnName = "playlist_id")
     private PlaylistEntity playlistEntity;
 
     @ManyToOne
-    @JoinColumn(name = "music id", referencedColumnName = "music id")
+    @JoinColumn(name = "music_id", referencedColumnName = "music_id")
     private MusicEntity musicEntity;
 
     @CreatedDate
     @Column(nullable = false)
-    private Date date;
+    private LocalDate addDate;
 
     @Builder
     public PlaylistMusicEntity(PlaylistEntity playlistEntity, MusicEntity musicEntity) {

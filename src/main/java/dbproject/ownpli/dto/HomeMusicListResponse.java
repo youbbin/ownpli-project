@@ -4,19 +4,15 @@ import dbproject.ownpli.domain.music.MusicEntity;
 import dbproject.ownpli.domain.music.MusicLikeEntity;
 import dbproject.ownpli.domain.music.MusicMoodEntity;
 import lombok.Builder;
+import lombok.Getter;
 
+@Builder
+@Getter
 public class HomeMusicListResponse {
 
-    private Long musicId;
+    private String musicId;
     private String title;
     private String imageFile;
-
-    @Builder
-    public HomeMusicListResponse(Long musicId, String title, String imageFile) {
-        this.musicId = musicId;
-        this.title = title;
-        this.imageFile = imageFile;
-    }
 
     public static HomeMusicListResponse ofMusic(MusicEntity musicEntity) {
         return HomeMusicListResponse.builder()
