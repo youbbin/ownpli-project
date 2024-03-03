@@ -1,8 +1,10 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.controller.dto.user.*;
+import dbproject.ownpli.jwt.properties.JwtProperties;
 import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +15,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUpUser(@RequestBody UserJoinRequest request) {
-        userService.join(request);
-        return ResponseEntity.ok("회원가입 성공");
+    public ResponseEntity<UserInfoResponse> signUpUser(@RequestBody UserJoinRequest request) {
+        return ResponseEntity.ok(userService.join(request));
     }
 
     @PostMapping("/login")

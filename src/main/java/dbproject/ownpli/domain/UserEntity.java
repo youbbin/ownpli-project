@@ -1,6 +1,7 @@
 package dbproject.ownpli.domain;
 
 import dbproject.ownpli.controller.dto.user.UserJoinRequest;
+import dbproject.ownpli.domain.value.Role;
 import dbproject.ownpli.domain.value.Sex;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -32,16 +33,20 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Sex sex;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @OneToMany(mappedBy = "userEntity")
     private List<MusicLikeEntity> musicLikeEntities;
 
     @Builder
-    public UserEntity(String userId, String password, String name, int age, Sex sex) {
+    public UserEntity(String userId, String password, String name, Role role, int age, Sex sex) {
         this.userId = userId;
         this.password = password;
         this.name = name;
         this.age = age;
         this.sex = sex;
+        this.role = role;
     }
 
     public static UserEntity of(UserJoinRequest request) {
@@ -51,6 +56,7 @@ public class UserEntity {
                 .name(request.getName())
                 .sex(request.getSex())
                 .age(request.getAge())
+                .role(Role.USER)
                 .build();
     }
 }

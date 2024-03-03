@@ -5,6 +5,7 @@ import dbproject.ownpli.domain.UserEntity;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,16 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public void join(UserJoinRequest request) {
+    public UserInfoResponse join(UserJoinRequest request) {
 
         if (userRepository.existsById(request.getUserId())) {
             throw new NullPointerException("이미 존재하는 아이디입니다.");
         }
 
-        userRepository.save(UserEntity.of(request));
-        log.info("회원가입 완료");
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        UserEntity user = userRepository.save(UserEntity.of(request));
+        return UserInfoResponse.from(user);
     }
 
 
