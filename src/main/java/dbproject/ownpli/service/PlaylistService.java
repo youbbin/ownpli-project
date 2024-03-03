@@ -9,6 +9,8 @@ import dbproject.ownpli.controller.dto.music.MusicResponse;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +56,7 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", condition = "#playlistId == null", cacheManager = "cacheManager")
     public PlaylistMusicDTO findMusicsByPlaylistId(String playlistId) {
         PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
@@ -62,6 +65,7 @@ public class PlaylistService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", cacheManager = "cacheManager")
     public void deletePlaylistMusics(String playlistId, PlaylistMusicRequest request) {
         PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
@@ -107,6 +111,7 @@ public class PlaylistService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", cacheManager = "cacheManager")
     public void addSongsInPlaylist(String playlistId, List<String> musicIds) {
         PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("플레이리스트가 존재하지 않습니다."));
@@ -118,6 +123,7 @@ public class PlaylistService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", cacheManager = "cacheManager")
     public void deletePlaylist(List<String> playlistId) {
         playlistMusicRepository.deleteAllByPlaylistEntityIn(playlistRepository.findAllById(playlistId));
         playlistRepository.deleteAllById(playlistId);

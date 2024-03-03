@@ -59,7 +59,7 @@ public class CustomMusicRepositoryImpl implements CustomMusicRepository {
 
     @Override
     public List<MusicEntity> searchTitleAndSinger(String search) {
-        List<String> searches = Arrays.stream(search.split(" ")).toList();
+        List<String> searches = Arrays.stream(search.split(" ")).collect(Collectors.toList());
 
         return jpaQueryFactory
                 .selectFrom(musicEntity)
