@@ -36,9 +36,10 @@ public class UserService {
         UserEntity userEntity = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        if (!userEntity.getPassword().equals(request.getPassword())) {
-            throw new NullPointerException("잘못된 비밀번호 입니다.");
-        }
+        boolean matches = passwordEncoder.matches(
+                request.getPassword(),
+                userEntity.getPassword());
+        if (!matches) throw new NullPointerException("아이디 혹은 비밀번호를 확인하세요.");
 
         return UserSignInResponse.of(userEntity);
     }
