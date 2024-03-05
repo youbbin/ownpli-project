@@ -42,9 +42,12 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .addFilter(corsFilter)
 
-                .authorizeRequests((authz) -> authz
+                .authorizeRequests(authz -> authz
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/api/home/age"),
+                                new AntPathRequestMatcher("/api/mypage/**")
+                        ).hasRole(Role.USER.name())
                         .requestMatchers(new AntPathRequestMatcher("/api/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/home/age", "/api/mypage/**")).hasRole(Role.USER.name())
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling((exceptionConfig) ->

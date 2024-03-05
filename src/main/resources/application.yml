@@ -11,6 +11,7 @@ spring:
     header: Authorization
     secret: dGhpcyBpcyBqd3Qgc2VjcmV0IGtleSBnb29vb2cgZ2Vuc2hpbiBzY2FyYW1vdWNoZSBpIGxvdmUgeW91
     token-validity-in-seconds: 86400
+    token-regenerate-seconds: 300000
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

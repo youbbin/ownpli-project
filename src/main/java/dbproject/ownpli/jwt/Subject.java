@@ -1,5 +1,6 @@
 package dbproject.ownpli.jwt;
 
+import dbproject.ownpli.controller.dto.user.UserResponse;
 import dbproject.ownpli.domain.value.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,18 +15,18 @@ public class Subject {
     private final String name;
     private final Type type;
 
-    public static Subject atk(String userId, String name) {
+    public static Subject atk(UserResponse userResponse) {
         return Subject.builder()
-                .userId(userId)
-                .name(name)
+                .userId(userResponse.getUserId())
+                .name(userResponse.getUserName())
                 .type(Type.ATK)
                 .build();
     }
 
-    public static Subject rtk(String userId, String name) {
+    public static Subject rtk(UserResponse userResponse) {
         return Subject.builder()
-                .userId(userId)
-                .name(name)
+                .userId(userResponse.getUserId())
+                .name(userResponse.getUserName())
                 .type(Type.RTK)
                 .build();
     }

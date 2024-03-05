@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dbproject.ownpli.controller.dto.token.TokenResponse;
 import dbproject.ownpli.controller.dto.user.UserResponse;
+import dbproject.ownpli.exception.OwnPliForbiddenException;
+import dbproject.ownpli.redis.RedisDao;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -25,7 +28,11 @@ public class JwtProvider {
     @Value("${spring.jwt.token-validity-in-seconds}")
     private Long atkLive;
 
+    @Value("${spring.jwt.token-regenerate-seconds}")
+    private Long rtkLive;
+
     private final ObjectMapper objectMapper;
+    private final RedisDao redisDao;
 
     @PostConstruct
     protected void init() {
@@ -33,12 +40,13 @@ public class JwtProvider {
     }
 
     public TokenResponse createTokensByLogin(UserResponse userResponse) throws JsonProcessingException {
-        Subject atkSubject = Subject.atk(
-                userResponse.getUserId(),
-                userResponse.getUserName()
-        );
+        Subject atkSubject = Subject.atk(userResponse);
+        Subject rtkSubject = Subject.rtk(userResponse);
+
         String atk = createToken(atkSubject, atkLive);
-        return new TokenResponse(atk, null);
+        String rtk = createToken(rtkSubject, rtkLive);
+
+        return new TokenResponse(atk, rtk);
     }
 
     private String createToken(Subject subject, Long tokenLive) throws JsonProcessingException {
@@ -60,6 +68,14 @@ public class JwtProvider {
                 .getBody()
                 .getSubject();
         return objectMapper.readValue(subjectStr, Subject.class);
+    }
+
+    public TokenResponse reissueAtk(UserResponse userResponse) throws JsonProcessingException {
+        String rtkInRedis = redisDao.getValues(userResponse.getUserId());
+        if (Objects.isNull(rtkInRedis)) throw new OwnPliForbiddenException("인증 정보가 만료되었습니다.");
+        Subject atkSubject = Subject.atk(userResponse);
+        String atk = createToken(atkSubject, atkLive);
+        return new TokenResponse(atk, null);
     }
 
 }

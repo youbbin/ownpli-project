@@ -1,5 +1,6 @@
 package dbproject.ownpli.jwt;
 
+import dbproject.ownpli.domain.value.Type;
 import dbproject.ownpli.service.UserDetailsService;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!Objects.isNull(authorization)) {
             String atk = authorization.substring(7);
             try {
-                Subject subject = jwtProvider.getSubject(atk);
+                Subject subject = jwtProvider.getSubject(atk);;
+                String requestURI = request.getRequestURI();
+                if (subject.getType().equals(Type.RTK) && !requestURI.equals("/api/user/reissue")) {
+                    throw new JwtException("토큰을 확인하세요.");
+                }
                 UserDetails userDetails = userDetailsService.loadUserByUsername(subject.getUserId());
                 Authentication token = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(token);

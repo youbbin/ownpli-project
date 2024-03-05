@@ -3,10 +3,12 @@ package dbproject.ownpli.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dbproject.ownpli.controller.dto.token.TokenResponse;
 import dbproject.ownpli.controller.dto.user.*;
+import dbproject.ownpli.domain.UserDetails;
 import dbproject.ownpli.jwt.JwtProvider;
 import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,6 +38,12 @@ public class UserController {
     @PutMapping("/mypage/update")
     public ResponseEntity<UserInfoResponse> changeName(@RequestBody UserNameUpdateRequest request) {
         return ResponseEntity.ok(userService.updateNicknameByUserId(request));
+    }
+
+    @GetMapping("/user/reissue")
+    public TokenResponse reissue(@AuthenticationPrincipal UserDetails userDetails) throws JsonProcessingException {
+        UserResponse userResponse = UserResponse.of(userDetails.getUser());
+        return jwtProvider.reissueAtk(userResponse);
     }
 
 }
