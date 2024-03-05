@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dbproject.ownpli.controller.dto.token.TokenResponse;
 import dbproject.ownpli.controller.dto.user.UserResponse;
+import dbproject.ownpli.exception.OwnPliException;
 import dbproject.ownpli.exception.OwnPliForbiddenException;
 import dbproject.ownpli.redis.RedisDao;
 import io.jsonwebtoken.Claims;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
@@ -85,6 +87,27 @@ public class JwtProvider {
         redisDao.deleteValues(userResponse.getUserId());
         redisDao.setValues(userResponse.getUserId(), rtk, Duration.ofMillis(rtkLive));
         return new TokenResponse(atk, rtk);
+    }
+
+    public void setExpirationZeroAndDeleteRtk(String accessToken, String userId) {
+        redisDao.setBlackList(accessToken.replace("Bearer ", ""), "logout", Duration.ofMillis(getExpiration(accessToken)));
+        redisDao.deleteValues(userId);
+    }
+
+    public void isLogoutUser(HttpServletRequest request) {
+        if (redisDao.hasKeyBlackList(request.getHeader("Authorization").replace("Bearer ", ""))) {
+            throw new OwnPliException("이미 로그아웃된 유저입니다.");
+        }
+    }
+
+    private Long getExpiration(String accessToken) {
+        return Jwts.parserBuilder()
+                .setSigningKey(KEY)
+                .build()
+                .parseClaimsJws(accessToken.replace("Bearer ", ""))
+                .getBody()
+                .getExpiration()
+                .getTime();
     }
 
 }

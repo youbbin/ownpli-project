@@ -1,5 +1,6 @@
 package dbproject.ownpli.redis;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
@@ -7,13 +8,11 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 
 @Component
+@RequiredArgsConstructor
 public class RedisDao {
 
     private final RedisTemplate<String, String> redisTemplate;
-
-    public RedisDao(RedisTemplate<String, String> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
+    private final RedisTemplate<String, String> redisBlackListTemplate;
 
     public void setValues(String key, String data) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
@@ -32,6 +31,24 @@ public class RedisDao {
 
     public void deleteValues(String key) {
         redisTemplate.delete(key);
+    }
+
+    public void setBlackList(String key, String data) {
+        ValueOperations<String, String> values = redisBlackListTemplate.opsForValue();
+        values.set(key, data);
+    }
+
+    public void setBlackList(String key, String data, Duration duration) {
+        ValueOperations<String, String> values = redisBlackListTemplate.opsForValue();
+        values.set(key, data, duration);
+    }
+
+    public void deleteBlackList(String key) {
+        redisBlackListTemplate.delete(key);
+    }
+
+    public boolean hasKeyBlackList(String key) {
+        return Boolean.TRUE.equals(redisBlackListTemplate.hasKey(key));
     }
 
 }

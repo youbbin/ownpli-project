@@ -6,11 +6,13 @@ import dbproject.ownpli.domain.Music;
 import dbproject.ownpli.domain.MusicLike;
 import dbproject.ownpli.domain.PlaylistMusic;
 import dbproject.ownpli.controller.dto.home.HomeMusicListResponse;
+import dbproject.ownpli.jwt.JwtProvider;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,12 +21,14 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class HomeService {
+
     private final PlaylistMusicRepository playlistMusicRepository;
     private final MusicRepository musicRepository;
     private final MusicLikeRepository musicLikeRepository;
     private final MoodRepository moodRepository;
     private final MusicMoodRepository musicMoodRepository;
     private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
 
     public List<HomeMusicListResponse> findNewSongs() {
 
@@ -52,10 +56,12 @@ public class HomeService {
     }
 
 
-    public List<HomeMusicListResponse> getAgeList(String userId) {
+    public List<HomeMusicListResponse> getAgeList(HttpServletRequest request, String userId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
+
+        jwtProvider.isLogoutUser(request);
 
         Map<Music, Long> musicEntityLongMap = playlistMusicRepository.findAgeCompare(user).stream()
                 .collect(Collectors.groupingBy(PlaylistMusic::getMusic, Collectors.counting()));

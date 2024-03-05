@@ -1,13 +1,19 @@
 package dbproject.ownpli.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import dbproject.ownpli.controller.dto.token.TokenResponse;
 import dbproject.ownpli.controller.dto.user.*;
 import dbproject.ownpli.domain.User;
+import dbproject.ownpli.domain.UserDetails;
+import dbproject.ownpli.jwt.JwtProvider;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Service
@@ -16,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
@@ -33,7 +40,7 @@ public class UserService {
     }
 
 
-    public UserResponse login(UserSignInRequest request) {
+    public TokenResponse login(UserSignInRequest request) throws JsonProcessingException {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
@@ -43,7 +50,8 @@ public class UserService {
         );
         if (!matches) throw new NullPointerException("아이디 혹은 비밀번호를 확인하세요.");
 
-        return UserResponse.of(user);
+
+        return jwtProvider.createTokensByLogin(UserResponse.of(user));
     }
 
     public UserInfoResponse findByUserId(String userId) {
@@ -53,12 +61,24 @@ public class UserService {
         return UserInfoResponse.from(user);
     }
 
+    public TokenResponse reissue(UserDetails userDetails) throws JsonProcessingException {
+        UserResponse userResponse = UserResponse.of(userDetails.getUser());
+        return jwtProvider.reissueAtk(userResponse);
+    }
+
+    public void logout(HttpServletRequest request, String userId) {
+        String auth = request.getHeader("Authorization");
+        jwtProvider.setExpirationZeroAndDeleteRtk(auth, userId);
+    }
+
     @Transactional
-    public UserInfoResponse updateNicknameByUserId(UserNameUpdateRequest request) {
-        User user = userRepository.findById(request.getUserId())
+    public UserInfoResponse updateNicknameByUserId(HttpServletRequest request, UserNameUpdateRequest userNameUpdateRequest) {
+        User user = userRepository.findById(userNameUpdateRequest.getUserId())
                 .orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        user.setName(request.getName());
+        jwtProvider.isLogoutUser(request);
+
+        user.setName(userNameUpdateRequest.getName());
         userRepository.save(user);
         return UserInfoResponse.from(user);
     }

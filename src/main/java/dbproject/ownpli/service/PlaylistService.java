@@ -6,6 +6,8 @@ import dbproject.ownpli.domain.Music;
 import dbproject.ownpli.domain.Playlist;
 import dbproject.ownpli.domain.PlaylistMusic;
 import dbproject.ownpli.controller.dto.music.MusicResponse;
+import dbproject.ownpli.exception.OwnPliException;
+import dbproject.ownpli.jwt.JwtProvider;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -84,12 +87,11 @@ public class PlaylistService {
     }
 
     @Transactional
-    public String savePlaylist(PlaylistCreateRequest request) {
-
-        User user = userRepository.findById(request.getUserId())
+    public String savePlaylist(PlaylistCreateRequest playlistCreateRequest) {
+        User user = userRepository.findById(playlistCreateRequest.getUserId())
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        if (playlistRepository.existsByPlaylistTitleAndUser(request.getTitle(), user)) {
+        if (playlistRepository.existsByPlaylistTitleAndUser(playlistCreateRequest.getTitle(), user)) {
             return null;
         }
 
@@ -105,7 +107,7 @@ public class PlaylistService {
             id = "p" + ++idLong;
         }
 
-        playlistRepository.save(Playlist.of(id, request.getTitle(), user));
+        playlistRepository.save(Playlist.of(id, playlistCreateRequest.getTitle(), user));
         log.info("플레이리스트 생성");
         return id;
     }
