@@ -25,6 +25,7 @@ public class UserService {
             throw new NullPointerException("이미 존재하는 아이디입니다.");
         }
 
+        log.info("length={}", passwordEncoder.encode(request.getPassword()).length());
         request.setPassword(passwordEncoder.encode(request.getPassword()));
 
         UserEntity user = userRepository.save(UserEntity.of(request));
@@ -38,7 +39,8 @@ public class UserService {
 
         boolean matches = passwordEncoder.matches(
                 request.getPassword(),
-                userEntity.getPassword());
+                userEntity.getPassword()
+        );
         if (!matches) throw new NullPointerException("아이디 혹은 비밀번호를 확인하세요.");
 
         return UserResponse.of(userEntity);
