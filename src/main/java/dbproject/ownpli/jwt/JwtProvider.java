@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
@@ -45,6 +46,8 @@ public class JwtProvider {
 
         String atk = createToken(atkSubject, atkLive);
         String rtk = createToken(rtkSubject, rtkLive);
+
+        redisDao.setValues(userResponse.getUserId(), rtk, Duration.ofMillis(rtkLive));
 
         return new TokenResponse(atk, rtk);
     }
