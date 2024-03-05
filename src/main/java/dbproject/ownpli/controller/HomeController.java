@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/home")
+@RequestMapping("/api/home")
 public class HomeController {
 
     private final HomeService homeService;
