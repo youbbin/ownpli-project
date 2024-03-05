@@ -1,10 +1,10 @@
 package dbproject.ownpli.service;
 
-import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.MoodEntity;
-import dbproject.ownpli.domain.MusicEntity;
-import dbproject.ownpli.domain.MusicLikeEntity;
-import dbproject.ownpli.domain.PlaylistMusicEntity;
+import dbproject.ownpli.domain.User;
+import dbproject.ownpli.domain.Mood;
+import dbproject.ownpli.domain.Music;
+import dbproject.ownpli.domain.MusicLike;
+import dbproject.ownpli.domain.PlaylistMusic;
 import dbproject.ownpli.controller.dto.home.HomeMusicListResponse;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class HomeService {
     public List<HomeMusicListResponse> findNewSongs() {
 
         return musicRepository.findAll().stream()
-                .sorted(Comparator.comparing(MusicEntity::getReleaseDate, Comparator.reverseOrder()))
+                .sorted(Comparator.comparing(Music::getReleaseDate, Comparator.reverseOrder()))
                 .limit(10)
                 .map(HomeMusicListResponse::ofMusic)
                 .collect(Collectors.toList());
@@ -37,16 +37,16 @@ public class HomeService {
 
     public List<HomeMusicListResponse> findTop10Musics() {
 
-        Map<MusicEntity, Long> musicEntityLongMap = playlistMusicRepository.findAll().stream()
-                .collect(Collectors.groupingBy(PlaylistMusicEntity::getMusicEntity, Collectors.counting()));
+        Map<Music, Long> musicEntityLongMap = playlistMusicRepository.findAll().stream()
+                .collect(Collectors.groupingBy(PlaylistMusic::getMusic, Collectors.counting()));
 
         return buildResponse(musicEntityLongMap);
     }
 
     public List<HomeMusicListResponse> findTop10LikeList() {
 
-        Map<MusicEntity, Long> musicEntityLongMap = musicLikeRepository.findAll().stream()
-                .collect(Collectors.groupingBy(MusicLikeEntity::getMusicEntity, Collectors.counting()));
+        Map<Music, Long> musicEntityLongMap = musicLikeRepository.findAll().stream()
+                .collect(Collectors.groupingBy(MusicLike::getMusic, Collectors.counting()));
 
         return buildResponse(musicEntityLongMap);
     }
@@ -54,16 +54,16 @@ public class HomeService {
 
     public List<HomeMusicListResponse> getAgeList(String userId) {
 
-        UserEntity userEntity = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        Map<MusicEntity, Long> musicEntityLongMap = playlistMusicRepository.findAgeCompare(userEntity).stream()
-                .collect(Collectors.groupingBy(PlaylistMusicEntity::getMusicEntity, Collectors.counting()));
+        Map<Music, Long> musicEntityLongMap = playlistMusicRepository.findAgeCompare(user).stream()
+                .collect(Collectors.groupingBy(PlaylistMusic::getMusic, Collectors.counting()));
 
         return buildResponse(musicEntityLongMap);
     }
 
-    private List<HomeMusicListResponse> buildResponse(Map<MusicEntity, Long> map) {
+    private List<HomeMusicListResponse> buildResponse(Map<Music, Long> map) {
         return map
                 .entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -74,14 +74,14 @@ public class HomeService {
     }
 
     public List<HomeMusicListResponse> mood5List() {
-        MoodEntity moodEntity;
+        Mood mood;
         if (LocalDate.now().getMonthValue() == 12) {
-            moodEntity = moodRepository.findMoodEntityByMood("캐롤");
+            mood = moodRepository.findMoodEntityByMood("캐롤");
         } else
-            moodEntity = moodRepository.findById((long) ((Math.random() * 10000) % 22))
+            mood = moodRepository.findById((long) ((Math.random() * 10000) % 22))
                     .orElseThrow(() -> new NullPointerException("id 없음"));
 
-        return musicMoodRepository.findByMoodEntity(moodEntity).stream()
+        return musicMoodRepository.findByMood(mood).stream()
                 .limit(5)
                 .map(HomeMusicListResponse::ofMusicMood)
                 .collect(Collectors.toList());

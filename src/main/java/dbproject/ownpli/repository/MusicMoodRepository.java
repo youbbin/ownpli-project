@@ -1,15 +1,15 @@
 package dbproject.ownpli.repository;
 
-import dbproject.ownpli.domain.MoodEntity;
-import dbproject.ownpli.domain.MusicMoodEntity;
+import dbproject.ownpli.domain.Mood;
+import dbproject.ownpli.domain.MusicMood;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface MusicMoodRepository extends JpaRepository<MusicMoodEntity, Long> {
+public interface MusicMoodRepository extends JpaRepository<MusicMood, Long> {
 
-    List<MusicMoodEntity> findByMoodEntity(MoodEntity moodEntity);
+    List<MusicMood> findByMood(Mood mood);
 
 }

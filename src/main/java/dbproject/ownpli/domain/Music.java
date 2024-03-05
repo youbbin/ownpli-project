@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "music")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MusicEntity {
+public class Music {
 
     @Id
     @Column(name = "music_id", nullable = false, length = 50)
@@ -30,7 +30,7 @@ public class MusicEntity {
 
     @OneToOne
     @JoinColumn(name = "genre_num", referencedColumnName = "genre_num")
-    private GenreEntity genreEntity;
+    private Genre genre;
 
     //이미지파일경로
     @Column(nullable = false, length = 50)
@@ -51,16 +51,16 @@ public class MusicEntity {
     @Column(name = "mp3_file", nullable = false, length = 50)
     private String mp3File;
 
-    @OneToMany(mappedBy = "musicEntity")
-    List<MusicMoodEntity> musicMoodEntities;
+    @OneToMany(mappedBy = "music")
+    List<MusicMood> musicMoodEntities;
 
     @Builder
-    public MusicEntity(String musicId, String title, String singer, String album, GenreEntity genreEntity, String imageFile, LocalDate releaseDate, String country, String lyricsFile, String mp3File) {
+    public Music(String musicId, String title, String singer, String album, Genre genre, String imageFile, LocalDate releaseDate, String country, String lyricsFile, String mp3File) {
         this.musicId = musicId;
         this.title = title;
         this.singer = singer;
         this.album = album;
-        this.genreEntity = genreEntity;
+        this.genre = genre;
         this.imageFile = imageFile;
         this.releaseDate = releaseDate;
         this.country = country;

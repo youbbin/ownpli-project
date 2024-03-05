@@ -1,10 +1,10 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.controller.dto.playlist.*;
-import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.MusicEntity;
-import dbproject.ownpli.domain.PlaylistEntity;
-import dbproject.ownpli.domain.PlaylistMusicEntity;
+import dbproject.ownpli.domain.User;
+import dbproject.ownpli.domain.Music;
+import dbproject.ownpli.domain.Playlist;
+import dbproject.ownpli.domain.PlaylistMusic;
 import dbproject.ownpli.controller.dto.music.MusicResponse;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -32,53 +32,53 @@ public class PlaylistService {
 
     @Transactional
     public PlaylistDTO updatePlaylistTitle(PlaylistUpdateRequest request) {
-        UserEntity userEntity = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        if (playlistRepository.existsByPlaylistTitleAndUserEntity(request.getOldTitle(), userEntity)) {
+        if (playlistRepository.existsByPlaylistTitleAndUser(request.getOldTitle(), user)) {
             throw new NullPointerException("존재하지 않는 제목입니다.");
         }
 
-        PlaylistEntity playlistEntity = playlistRepository.findByPlaylistTitleAndUserEntity(request.getOldTitle(), userEntity)
+        Playlist playlist = playlistRepository.findByPlaylistTitleAndUser(request.getOldTitle(), user)
                 .orElseThrow(() -> new NullPointerException("존재하지 않는 제목입니다."));
-        playlistEntity.setPlaylistTitle(request.getNewTitle());
-        playlistRepository.save(playlistEntity);
+        playlist.setPlaylistTitle(request.getNewTitle());
+        playlistRepository.save(playlist);
 
-        return PlaylistDTO.from(playlistEntity);
+        return PlaylistDTO.from(playlist);
     }
 
     public List<PlaylistDTO> findPlaylistByUserId(String userId) {
-        UserEntity userEntity = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        return playlistRepository.findByUserEntity(userEntity).stream()
+        return playlistRepository.findByUser(user).stream()
                 .map(PlaylistDTO::from)
                 .collect(Collectors.toList());
     }
 
     @Cacheable(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", condition = "#playlistId == null", cacheManager = "cacheManager")
     public PlaylistMusicDTO findMusicsByPlaylistId(String playlistId) {
-        PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
+        Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        return PlaylistMusicDTO.from(PlaylistDTO.from(playlistEntity), collectMusicResponses(playlistEntity));
+        return PlaylistMusicDTO.from(PlaylistDTO.from(playlist), collectMusicResponses(playlist));
     }
 
     @Transactional
     @CacheEvict(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", cacheManager = "cacheManager")
     public void deletePlaylistMusics(String playlistId, PlaylistMusicRequest request) {
-        PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
+        Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        List<MusicEntity> musicEntities = musicRepository.findAllById(request.getMusicIds());
-        playlistMusicRepository.deleteAllByPlaylistEntityAndMusicEntityIn(playlistEntity, musicEntities);
+        List<Music> musicEntities = musicRepository.findAllById(request.getMusicIds());
+        playlistMusicRepository.deleteAllByPlaylistAndMusicIn(playlist, musicEntities);
     }
 
-    private List<MusicResponse> collectMusicResponses(PlaylistEntity playlistEntity) {
-        return playlistEntity.getPlaylistMusicEntities().stream()
+    private List<MusicResponse> collectMusicResponses(Playlist playlist) {
+        return playlist.getPlaylistMusicEntities().stream()
                 .map(playlistMusicEntity -> MusicResponse.ofPlaylistMusic(
                         playlistMusicEntity,
-                        musicLikeRepository.countByMusicEntity(playlistMusicEntity.getMusicEntity())
+                        musicLikeRepository.countByMusic(playlistMusicEntity.getMusic())
                 ))
                 .collect(Collectors.toList());
     }
@@ -86,14 +86,14 @@ public class PlaylistService {
     @Transactional
     public String savePlaylist(PlaylistCreateRequest request) {
 
-        UserEntity user = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        if (playlistRepository.existsByPlaylistTitleAndUserEntity(request.getTitle(), user)) {
+        if (playlistRepository.existsByPlaylistTitleAndUser(request.getTitle(), user)) {
             return null;
         }
 
-        Optional<PlaylistEntity> idOptional = playlistRepository.findFirstByOrderByPlaylistIdDesc();
+        Optional<Playlist> idOptional = playlistRepository.findFirstByOrderByPlaylistIdDesc();
         String id = "";
         if (idOptional.isEmpty())
             id = "p1";
@@ -105,7 +105,7 @@ public class PlaylistService {
             id = "p" + ++idLong;
         }
 
-        playlistRepository.save(PlaylistEntity.of(id, request.getTitle(), user));
+        playlistRepository.save(Playlist.of(id, request.getTitle(), user));
         log.info("플레이리스트 생성");
         return id;
     }
@@ -113,11 +113,11 @@ public class PlaylistService {
     @Transactional
     @CacheEvict(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", cacheManager = "cacheManager")
     public void addSongsInPlaylist(String playlistId, List<String> musicIds) {
-        PlaylistEntity playlistEntity = playlistRepository.findById(playlistId)
+        Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("플레이리스트가 존재하지 않습니다."));
 
         musicRepository.findAllById(musicIds)
-                .forEach(music -> playlistMusicRepository.save(PlaylistMusicEntity.of(playlistEntity, music)));
+                .forEach(music -> playlistMusicRepository.save(PlaylistMusic.of(playlist, music)));
 
         log.info("플레이리스트 저장");
     }
@@ -125,7 +125,7 @@ public class PlaylistService {
     @Transactional
     @CacheEvict(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", cacheManager = "cacheManager")
     public void deletePlaylist(List<String> playlistId) {
-        playlistMusicRepository.deleteAllByPlaylistEntityIn(playlistRepository.findAllById(playlistId));
+        playlistMusicRepository.deleteAllByPlaylistIn(playlistRepository.findAllById(playlistId));
         playlistRepository.deleteAllById(playlistId);
     }
 

@@ -1,8 +1,8 @@
 package dbproject.ownpli.controller.dto.music;
 
-import dbproject.ownpli.domain.MusicEntity;
-import dbproject.ownpli.domain.MusicMoodEntity;
-import dbproject.ownpli.domain.PlaylistMusicEntity;
+import dbproject.ownpli.domain.Music;
+import dbproject.ownpli.domain.MusicMood;
+import dbproject.ownpli.domain.PlaylistMusic;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,46 +20,46 @@ public class MusicResponse {
     private String year;
     private String country;
 
-    public static MusicResponse ofMusic(MusicEntity musicEntity, Long likes) {
+    public static MusicResponse ofMusic(Music music, Long likes) {
 
         return MusicResponse.builder()
-                .musicId(musicEntity.getMusicId())
-                .title(musicEntity.getTitle())
-                .singer(musicEntity.getSinger())
-                .genre(musicEntity.getGenreEntity().getGenre())
+                .musicId(music.getMusicId())
+                .title(music.getTitle())
+                .singer(music.getSinger())
+                .genre(music.getGenre().getGenre())
                 .likes(likes)
-                .album(musicEntity.getAlbum())
-                .year(String.valueOf(musicEntity.getReleaseDate().getYear()))
-                .country(musicEntity.getCountry())
+                .album(music.getAlbum())
+                .year(String.valueOf(music.getReleaseDate().getYear()))
+                .country(music.getCountry())
                 .build();
     }
 
-    public static MusicResponse ofPlaylistMusic(PlaylistMusicEntity playlistMusicEntity, Long likes) {
-        MusicEntity musicEntity = playlistMusicEntity.getMusicEntity();
+    public static MusicResponse ofPlaylistMusic(PlaylistMusic playlistMusic, Long likes) {
+        Music music = playlistMusic.getMusic();
         return MusicResponse.builder()
-                .musicId(musicEntity.getMusicId())
-                .title(musicEntity.getTitle())
-                .singer(musicEntity.getSinger())
-                .genre(musicEntity.getGenreEntity().getGenre())
+                .musicId(music.getMusicId())
+                .title(music.getTitle())
+                .singer(music.getSinger())
+                .genre(music.getGenre().getGenre())
                 .likes(likes)
-                .album(musicEntity.getAlbum())
-                .year(String.valueOf(musicEntity.getReleaseDate().getYear()))
-                .country(musicEntity.getCountry())
+                .album(music.getAlbum())
+                .year(String.valueOf(music.getReleaseDate().getYear()))
+                .country(music.getCountry())
                 .build();
     }
 
-    public static MusicResponse ofMusicMood(MusicMoodEntity musicMoodEntity, Long likes) {
-        MusicEntity musicEntity = musicMoodEntity.getMusicEntity();
+    public static MusicResponse ofMusicMood(MusicMood musicMood, Long likes) {
+        Music music = musicMood.getMusic();
 
         return MusicResponse.builder()
-                .musicId(musicEntity.getMusicId())
-                .title(musicEntity.getTitle())
-                .singer(musicEntity.getSinger())
-                .genre(musicEntity.getGenreEntity().getGenre())
+                .musicId(music.getMusicId())
+                .title(music.getTitle())
+                .singer(music.getSinger())
+                .genre(music.getGenre().getGenre())
                 .likes(likes)
-                .album(musicEntity.getAlbum())
-                .year(String.valueOf(musicEntity.getReleaseDate().getYear()))
-                .country(musicEntity.getCountry())
+                .album(music.getAlbum())
+                .year(String.valueOf(music.getReleaseDate().getYear()))
+                .country(music.getCountry())
                 .build();
     }
 }

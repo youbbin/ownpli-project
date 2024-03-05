@@ -1,8 +1,8 @@
 package dbproject.ownpli.service;
 
-import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.MusicEntity;
-import dbproject.ownpli.domain.MusicLikeEntity;
+import dbproject.ownpli.domain.User;
+import dbproject.ownpli.domain.Music;
+import dbproject.ownpli.domain.MusicLike;
 import dbproject.ownpli.controller.dto.music.MusicListRequest;
 import dbproject.ownpli.controller.dto.music.MusicResponse;
 import dbproject.ownpli.controller.dto.music.MusicSearchListResponse;
@@ -33,30 +33,30 @@ public class MusicService {
 
     public SingerListResponse findSingerList() {
         List<String> collect = musicRepository.findAll().stream()
-                .map(MusicEntity::getSinger)
+                .map(Music::getSinger)
                 .distinct()
                 .collect(Collectors.toList());
 
         return SingerListResponse.of(collect);
     }
 
-    private boolean validateDuplicateLikes(UserEntity user, MusicEntity music) {
-        return musicLikeRepository.existsByMusicEntityAndUserEntity(music, user);
+    private boolean validateDuplicateLikes(User user, Music music) {
+        return musicLikeRepository.existsByMusicAndUser(music, user);
     }
 
     @Transactional
     public void musicLikeSetting(String userId, String musicId) {
 
-        MusicEntity musicEntity = musicRepository.findById(musicId)
+        Music music = musicRepository.findById(musicId)
                 .orElseThrow(() -> new NullPointerException("id 없음"));
-        UserEntity userEntity = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException("id 없음"));
 
-        if (validateDuplicateLikes(userEntity, musicEntity)) {
-            musicLikeRepository.deleteByMusicEntityAndUserEntity(musicEntity, userEntity);
+        if (validateDuplicateLikes(user, music)) {
+            musicLikeRepository.deleteByMusicAndUser(music, user);
         }
         else {
-            musicLikeRepository.save(MusicLikeEntity.of(userEntity, musicEntity));
+            musicLikeRepository.save(MusicLike.of(user, music));
         }
 
     }
@@ -65,19 +65,19 @@ public class MusicService {
         return musicRepository.searchTitleAndSinger(search).stream()
                 .map(musicEntity -> MusicResponse.ofMusic(
                         musicEntity,
-                        musicLikeRepository.countByMusicEntity(musicEntity)
+                        musicLikeRepository.countByMusic(musicEntity)
                 ))
                 .collect(Collectors.toList());
     }
 
     public MusicResponse findMusicInfo(String musicId) {
         log.info("musicId = " + musicId);
-        MusicEntity musicEntity = musicRepository.findById(musicId)
+        Music music = musicRepository.findById(musicId)
                 .orElseThrow(() -> new NullPointerException("없음"));
 
-        Long likes = musicLikeRepository.countByMusicEntity(musicEntity);
+        Long likes = musicLikeRepository.countByMusic(music);
 
-        return MusicResponse.ofMusic(musicEntity, likes);
+        return MusicResponse.ofMusic(music, likes);
     }
 
     public Page<MusicSearchListResponse> searchByCondition(MusicListRequest request, Pageable pageable) {

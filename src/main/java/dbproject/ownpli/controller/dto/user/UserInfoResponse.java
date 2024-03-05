@@ -1,6 +1,6 @@
 package dbproject.ownpli.controller.dto.user;
 
-import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.domain.User;
 import lombok.*;
 
 @Getter
@@ -12,12 +12,12 @@ public class UserInfoResponse {
     private int age;
     private String sex;
 
-    public static UserInfoResponse from(UserEntity userEntity) {
+    public static UserInfoResponse from(User user) {
         return UserInfoResponse.builder()
-                .userId(userEntity.getUserId())
-                .name(userEntity.getName())
-                .age(userEntity.getAge())
-                .sex(userEntity.getSex().getSexName())
+                .userId(user.getUserId())
+                .name(user.getName())
+                .age(user.getAge())
+                .sex(user.getSex().getSexName())
                 .build();
     }
 }

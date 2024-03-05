@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Table(name = "mood")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MoodEntity {
+public class Mood {
 
     @Id
     @Column(name = "mood_num", nullable = false)

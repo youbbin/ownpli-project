@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "music_like")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MusicLikeEntity {
+public class MusicLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,22 +16,22 @@ public class MusicLikeEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private UserEntity userEntity;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "music_id", referencedColumnName = "music_id")
-    private MusicEntity musicEntity;
+    private Music music;
 
     @Builder
-    public MusicLikeEntity(UserEntity userEntity, MusicEntity musicEntity) {
-        this.userEntity = userEntity;
-        this.musicEntity = musicEntity;
+    public MusicLike(User user, Music music) {
+        this.user = user;
+        this.music = music;
     }
 
-    public static MusicLikeEntity of(UserEntity user, MusicEntity music) {
-        return MusicLikeEntity.builder()
-                .userEntity(user)
-                .musicEntity(music)
+    public static MusicLike of(User user, Music music) {
+        return MusicLike.builder()
+                .user(user)
+                .music(music)
                 .build();
     }
 }

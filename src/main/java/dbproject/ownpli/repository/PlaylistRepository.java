@@ -1,7 +1,7 @@
 package dbproject.ownpli.repository;
 
-import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.PlaylistEntity;
+import dbproject.ownpli.domain.User;
+import dbproject.ownpli.domain.Playlist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PlaylistRepository extends JpaRepository<PlaylistEntity, String> {
+public interface PlaylistRepository extends JpaRepository<Playlist, String> {
 
-    List<PlaylistEntity> findByUserEntity(UserEntity userEntity);
+    List<Playlist> findByUser(User user);
 
-    Optional<PlaylistEntity> findFirstByOrderByPlaylistIdDesc();
+    Optional<Playlist> findFirstByOrderByPlaylistIdDesc();
 
-    Optional<PlaylistEntity> findByPlaylistTitleAndUserEntity(String title, UserEntity userEntity);
+    Optional<Playlist> findByPlaylistTitleAndUser(String title, User user);
 
-    Boolean existsByPlaylistTitleAndUserEntity(String title, UserEntity userEntity);
+    Boolean existsByPlaylistTitleAndUser(String title, User user);
 
 }

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Table(name = "playlist_music")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaylistMusicEntity {
+public class PlaylistMusic {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,26 +20,26 @@ public class PlaylistMusicEntity {
 
     @ManyToOne
     @JoinColumn(name = "playlist_id", referencedColumnName = "playlist_id")
-    private PlaylistEntity playlistEntity;
+    private Playlist playlist;
 
     @ManyToOne
     @JoinColumn(name = "music_id", referencedColumnName = "music_id")
-    private MusicEntity musicEntity;
+    private Music music;
 
     @CreatedDate
     @Column(nullable = false)
     private LocalDate addDate;
 
     @Builder
-    public PlaylistMusicEntity(PlaylistEntity playlistEntity, MusicEntity musicEntity) {
-        this.playlistEntity = playlistEntity;
-        this.musicEntity = musicEntity;
+    public PlaylistMusic(Playlist playlist, Music music) {
+        this.playlist = playlist;
+        this.music = music;
     }
 
-    public static PlaylistMusicEntity of(PlaylistEntity playlistEntity, MusicEntity musicEntity) {
-        return PlaylistMusicEntity.builder()
-                .playlistEntity(playlistEntity)
-                .musicEntity(musicEntity)
+    public static PlaylistMusic of(Playlist playlist, Music music) {
+        return PlaylistMusic.builder()
+                .playlist(playlist)
+                .music(music)
                 .build();
     }
 }

@@ -13,8 +13,8 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicUpdate //update 할때 실제 값이 변경됨 컬럼으로만 update 쿼리를 만듦
-public class UserEntity {
+@DynamicUpdate
+public class User {
 
     @Id
     @Column(name = "user_id", nullable = false, length = 50)
@@ -36,11 +36,11 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "userEntity")
-    private List<MusicLikeEntity> musicLikeEntities;
+    @OneToMany(mappedBy = "user")
+    private List<MusicLike> musicLikeEntities;
 
     @Builder
-    public UserEntity(String userId, String password, String name, Role role, int age, Sex sex) {
+    public User(String userId, String password, String name, Role role, int age, Sex sex) {
         this.userId = userId;
         this.password = password;
         this.name = name;
@@ -49,8 +49,8 @@ public class UserEntity {
         this.role = role;
     }
 
-    public static UserEntity of(UserJoinRequest request) {
-        return UserEntity.builder()
+    public static User of(UserJoinRequest request) {
+        return User.builder()
                 .userId(request.getUserId())
                 .password(request.getPassword())
                 .name(request.getName())

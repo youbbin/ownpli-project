@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 @Table(name = "playlist")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaylistEntity {
+public class Playlist {
 
     /**
      * 플레이리스트 생성할 때 아이디 추가하기.
@@ -25,23 +25,23 @@ public class PlaylistEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private UserEntity userEntity;
+    private User user;
 
-    @OneToMany(mappedBy = "playlistEntity")
-    private List<PlaylistMusicEntity> playlistMusicEntities;
+    @OneToMany(mappedBy = "playlist")
+    private List<PlaylistMusic> playlistMusicEntities;
 
     @Builder
-    public PlaylistEntity(String playlistId, String playlistTitle, UserEntity userEntity) {
+    public Playlist(String playlistId, String playlistTitle, User user) {
         this.playlistId = playlistId;
         this.playlistTitle = playlistTitle;
-        this.userEntity = userEntity;
+        this.user = user;
     }
 
-    public static PlaylistEntity of(String playlistId, String playlistTitle, UserEntity userEntity) {
-        return PlaylistEntity.builder()
+    public static Playlist of(String playlistId, String playlistTitle, User user) {
+        return Playlist.builder()
                 .playlistId(playlistId)
                 .playlistTitle(playlistTitle)
-                .userEntity(userEntity)
+                .user(user)
                 .build();
     }
 }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "music_mood")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MusicMoodEntity {
+public class MusicMood {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +21,10 @@ public class MusicMoodEntity {
 
     @ManyToOne
     @JoinColumn(name = "music_id", referencedColumnName = "music_id")
-    private MusicEntity musicEntity;
+    private Music music;
 
     @ManyToOne
     @JoinColumn(name = "mood_num", referencedColumnName = "mood_num")
-    private MoodEntity moodEntity;
+    private Mood mood;
 
 }

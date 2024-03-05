@@ -1,7 +1,7 @@
 package dbproject.ownpli.service;
 
 import dbproject.ownpli.controller.dto.user.*;
-import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.domain.User;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,39 +28,39 @@ public class UserService {
         log.info("length={}", passwordEncoder.encode(request.getPassword()).length());
         request.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        UserEntity user = userRepository.save(UserEntity.of(request));
+        User user = userRepository.save(User.of(request));
         return UserInfoResponse.from(user);
     }
 
 
     public UserResponse login(UserSignInRequest request) {
-        UserEntity userEntity = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
         boolean matches = passwordEncoder.matches(
                 request.getPassword(),
-                userEntity.getPassword()
+                user.getPassword()
         );
         if (!matches) throw new NullPointerException("아이디 혹은 비밀번호를 확인하세요.");
 
-        return UserResponse.of(userEntity);
+        return UserResponse.of(user);
     }
 
     public UserInfoResponse findByUserId(String userId) {
-        UserEntity userEntity = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        return UserInfoResponse.from(userEntity);
+        return UserInfoResponse.from(user);
     }
 
     @Transactional
     public UserInfoResponse updateNicknameByUserId(UserNameUpdateRequest request) {
-        UserEntity userEntity = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        userEntity.setName(request.getName());
-        userRepository.save(userEntity);
-        return UserInfoResponse.from(userEntity);
+        user.setName(request.getName());
+        userRepository.save(user);
+        return UserInfoResponse.from(user);
     }
 
 }
