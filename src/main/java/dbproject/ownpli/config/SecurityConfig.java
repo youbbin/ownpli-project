@@ -2,6 +2,9 @@ package dbproject.ownpli.config;
 
 import dbproject.ownpli.domain.value.Role;
 import dbproject.ownpli.jwt.CustomAuthenticationEntryPoint;
+import dbproject.ownpli.jwt.JwtAuthenticationFilter;
+import dbproject.ownpli.jwt.JwtProvider;
+import dbproject.ownpli.service.UserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CorsFilter;
 
@@ -18,6 +22,9 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private final CorsFilter corsFilter;
+    private final JwtProvider jwtProvider;
+    private final UserDetailsService userDetailsService;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public BCryptPasswordEncoder encodePwd() {
@@ -33,20 +40,21 @@ public class SecurityConfig {
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .addFilter(corsFilter);
+                .addFilter(corsFilter)
 
-        http
                 .authorizeRequests((authz) -> authz
                         .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/home/age")).hasRole(Role.USER.name())
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling((exceptionConfig) ->
-                        exceptionConfig.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                );
+                        exceptionConfig.authenticationEntryPoint(customAuthenticationEntryPoint)
+                )
 
-//        http
-//                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtProvider, userDetailsService),
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }
