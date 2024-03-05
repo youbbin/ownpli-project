@@ -43,8 +43,8 @@ public class SecurityConfig {
                 .addFilter(corsFilter)
 
                 .authorizeRequests((authz) -> authz
-                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/home/age")).hasRole(Role.USER.name())
+                        .requestMatchers(new AntPathRequestMatcher("/api/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/home/age", "/api/mypage/**")).hasRole(Role.USER.name())
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling((exceptionConfig) ->
