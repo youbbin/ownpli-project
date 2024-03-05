@@ -32,7 +32,7 @@ public class UserService {
     }
 
 
-    public UserSignInResponse login(UserSignInRequest request) {
+    public UserResponse login(UserSignInRequest request) {
         UserEntity userEntity = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
@@ -41,7 +41,7 @@ public class UserService {
                 userEntity.getPassword());
         if (!matches) throw new NullPointerException("아이디 혹은 비밀번호를 확인하세요.");
 
-        return UserSignInResponse.of(userEntity);
+        return UserResponse.of(userEntity);
     }
 
     public UserInfoResponse findByUserId(String userId) {

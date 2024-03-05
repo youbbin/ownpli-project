@@ -1,10 +1,8 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.controller.dto.user.*;
-import dbproject.ownpli.jwt.properties.JwtProperties;
 import dbproject.ownpli.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +18,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserSignInResponse> login(@RequestBody UserSignInRequest request) {
+    public ResponseEntity<UserResponse> login(@RequestBody UserSignInRequest request) {
         return ResponseEntity.ok(userService.login(request));
     }
 
