@@ -5,11 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 
 @Getter
-@Builder
 @Entity
 @Table(name = "mood")
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Mood {
 
     @Id

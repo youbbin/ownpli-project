@@ -4,7 +4,6 @@ import dbproject.ownpli.controller.dto.user.UserJoinRequest;
 import dbproject.ownpli.domain.value.Role;
 import dbproject.ownpli.domain.value.Sex;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicUpdate
 public class User {
 
     @Id

@@ -8,8 +8,6 @@ import javax.persistence.*;
  * 조인으로 연동하기
  */
 @Getter
-@Builder
-@AllArgsConstructor
 @Entity
 @Table(name = "music_mood")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
