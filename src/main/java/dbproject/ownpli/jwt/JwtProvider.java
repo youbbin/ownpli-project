@@ -76,9 +76,15 @@ public class JwtProvider {
     public TokenResponse reissueAtk(UserResponse userResponse) throws JsonProcessingException {
         String rtkInRedis = redisDao.getValues(userResponse.getUserId());
         if (Objects.isNull(rtkInRedis)) throw new OwnPliForbiddenException("인증 정보가 만료되었습니다.");
+
         Subject atkSubject = Subject.atk(userResponse);
+        Subject rtkSubject = Subject.rtk(userResponse);
         String atk = createToken(atkSubject, atkLive);
-        return new TokenResponse(atk, null);
+        String rtk = createToken(rtkSubject, rtkLive);
+
+        redisDao.deleteValues(userResponse.getUserId());
+        redisDao.setValues(userResponse.getUserId(), rtk, Duration.ofMillis(rtkLive));
+        return new TokenResponse(atk, rtk);
     }
 
 }
