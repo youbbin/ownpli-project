@@ -5,12 +5,9 @@ import lombok.*;
 import javax.persistence.*;
 
 @Getter
-@Builder
 @Entity
 @Table(name = "genre")
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GenreEntity {
+public class Genre {
 
     @Id
     @Column(name = "genre_num", nullable = false)

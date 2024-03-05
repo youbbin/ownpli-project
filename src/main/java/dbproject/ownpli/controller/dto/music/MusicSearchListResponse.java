@@ -1,6 +1,6 @@
 package dbproject.ownpli.controller.dto.music;
 
-import dbproject.ownpli.domain.MusicEntity;
+import dbproject.ownpli.domain.Music;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,12 +15,12 @@ public class MusicSearchListResponse {
     private int year;
     private String country;
 
-    public static MusicSearchListResponse of(MusicEntity music) {
+    public static MusicSearchListResponse of(Music music) {
         return MusicSearchListResponse.builder()
                 .musicId(music.getMusicId())
                 .title(music.getTitle())
                 .singer(music.getSinger())
-                .genre(music.getGenreEntity().getGenre())
+                .genre(music.getGenre().getGenre())
                 .country(music.getCountry())
                 .year(music.getReleaseDate().getYear())
                 .build();

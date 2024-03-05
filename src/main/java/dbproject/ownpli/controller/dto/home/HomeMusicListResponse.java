@@ -1,8 +1,8 @@
 package dbproject.ownpli.controller.dto.home;
 
-import dbproject.ownpli.domain.MusicEntity;
-import dbproject.ownpli.domain.MusicLikeEntity;
-import dbproject.ownpli.domain.MusicMoodEntity;
+import dbproject.ownpli.domain.Music;
+import dbproject.ownpli.domain.MusicLike;
+import dbproject.ownpli.domain.MusicMood;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,29 +14,29 @@ public class HomeMusicListResponse {
     private String title;
     private String imageFile;
 
-    public static HomeMusicListResponse ofMusic(MusicEntity musicEntity) {
+    public static HomeMusicListResponse ofMusic(Music music) {
         return HomeMusicListResponse.builder()
-                .musicId(musicEntity.getMusicId())
-                .title(musicEntity.getTitle())
-                .imageFile(musicEntity.getImageFile())
+                .musicId(music.getMusicId())
+                .title(music.getTitle())
+                .imageFile(music.getImageFile())
                 .build();
     }
 
-    public static HomeMusicListResponse ofMusicMood(MusicMoodEntity musicMoodEntity) {
-        MusicEntity musicEntity = musicMoodEntity.getMusicEntity();
+    public static HomeMusicListResponse ofMusicMood(MusicMood musicMood) {
+        Music music = musicMood.getMusic();
         return HomeMusicListResponse.builder()
-                .musicId(musicEntity.getMusicId())
-                .title(musicEntity.getTitle())
-                .imageFile(musicEntity.getImageFile())
+                .musicId(music.getMusicId())
+                .title(music.getTitle())
+                .imageFile(music.getImageFile())
                 .build();
     }
 
-    public static HomeMusicListResponse ofMusicLike(MusicLikeEntity musicLikeEntity) {
-        MusicEntity musicEntity = musicLikeEntity.getMusicEntity();
+    public static HomeMusicListResponse ofMusicLike(MusicLike musicLike) {
+        Music music = musicLike.getMusic();
         return HomeMusicListResponse.builder()
-                .musicId(musicEntity.getMusicId())
-                .title(musicEntity.getTitle())
-                .imageFile(musicEntity.getImageFile())
+                .musicId(music.getMusicId())
+                .title(music.getTitle())
+                .imageFile(music.getImageFile())
                 .build();
     }
 }

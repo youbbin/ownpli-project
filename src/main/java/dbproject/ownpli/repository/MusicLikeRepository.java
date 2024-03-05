@@ -1,18 +1,18 @@
 package dbproject.ownpli.repository;
 
-import dbproject.ownpli.domain.UserEntity;
-import dbproject.ownpli.domain.MusicEntity;
-import dbproject.ownpli.domain.MusicLikeEntity;
+import dbproject.ownpli.domain.User;
+import dbproject.ownpli.domain.Music;
+import dbproject.ownpli.domain.MusicLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MusicLikeRepository extends JpaRepository<MusicLikeEntity, Long> {
+public interface MusicLikeRepository extends JpaRepository<MusicLike, Long> {
 
-    Long countByMusicEntity(MusicEntity musicEntity);
+    Long countByMusic(Music music);
 
-    Boolean existsByMusicEntityAndUserEntity(MusicEntity musicEntity, UserEntity userEntity);
+    Boolean existsByMusicAndUser(Music music, User user);
 
-    void deleteByMusicEntityAndUserEntity(MusicEntity musicEntity, UserEntity userEntity);
+    void deleteByMusicAndUser(Music music, User user);
 
 }

@@ -1,12 +1,19 @@
 package dbproject.ownpli.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import dbproject.ownpli.controller.dto.token.TokenResponse;
 import dbproject.ownpli.controller.dto.user.*;
-import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.domain.User;
+import dbproject.ownpli.domain.UserDetails;
+import dbproject.ownpli.jwt.JwtProvider;
 import dbproject.ownpli.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Service
@@ -15,45 +22,65 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public void join(UserJoinRequest request) {
+    public UserInfoResponse join(UserJoinRequest request) {
 
         if (userRepository.existsById(request.getUserId())) {
             throw new NullPointerException("이미 존재하는 아이디입니다.");
         }
 
-        userRepository.save(UserEntity.of(request));
-        log.info("회원가입 완료");
+        log.info("length={}", passwordEncoder.encode(request.getPassword()).length());
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        User user = userRepository.save(User.of(request));
+        return UserInfoResponse.from(user);
     }
 
 
-    public UserSignInResponse login(UserSignInRequest request) {
-        UserEntity userEntity = userRepository.findById(request.getUserId())
+    public TokenResponse login(UserSignInRequest request) throws JsonProcessingException {
+        User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        if (!userEntity.getPassword().equals(request.getPassword())) {
-            throw new NullPointerException("잘못된 비밀번호 입니다.");
-        }
+        boolean matches = passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword()
+        );
+        if (!matches) throw new NullPointerException("아이디 혹은 비밀번호를 확인하세요.");
 
-        return UserSignInResponse.of(userEntity);
+
+        return jwtProvider.createTokensByLogin(UserResponse.of(user));
     }
 
     public UserInfoResponse findByUserId(String userId) {
-        UserEntity userEntity = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        return UserInfoResponse.from(userEntity);
+        return UserInfoResponse.from(user);
+    }
+
+    public TokenResponse reissue(UserDetails userDetails) throws JsonProcessingException {
+        UserResponse userResponse = UserResponse.of(userDetails.getUser());
+        return jwtProvider.reissueAtk(userResponse);
+    }
+
+    public void logout(HttpServletRequest request, String userId) {
+        String auth = request.getHeader("Authorization");
+        jwtProvider.setExpirationZeroAndDeleteRtk(auth, userId);
     }
 
     @Transactional
-    public UserInfoResponse updateNicknameByUserId(UserNameUpdateRequest request) {
-        UserEntity userEntity = userRepository.findById(request.getUserId())
+    public UserInfoResponse updateNicknameByUserId(HttpServletRequest request, UserNameUpdateRequest userNameUpdateRequest) {
+        User user = userRepository.findById(userNameUpdateRequest.getUserId())
                 .orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        userEntity.setName(request.getName());
-        userRepository.save(userEntity);
-        return UserInfoResponse.from(userEntity);
+        jwtProvider.isLogoutUser(request);
+
+        user.setName(userNameUpdateRequest.getName());
+        userRepository.save(user);
+        return UserInfoResponse.from(user);
     }
 
 }

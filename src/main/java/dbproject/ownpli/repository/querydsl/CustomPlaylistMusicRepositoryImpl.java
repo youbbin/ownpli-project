@@ -2,15 +2,15 @@ package dbproject.ownpli.repository.querydsl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import dbproject.ownpli.domain.PlaylistMusicEntity;
-import dbproject.ownpli.domain.UserEntity;
+import dbproject.ownpli.domain.PlaylistMusic;
+import dbproject.ownpli.domain.User;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static dbproject.ownpli.domain.QPlaylistEntity.playlistEntity;
-import static dbproject.ownpli.domain.QPlaylistMusicEntity.playlistMusicEntity;
-import static dbproject.ownpli.domain.QUserEntity.userEntity;
+import static dbproject.ownpli.domain.QPlaylist.playlist;
+import static dbproject.ownpli.domain.QPlaylistMusic.playlistMusic;
+import static dbproject.ownpli.domain.QUser.user;
 
 @RequiredArgsConstructor
 public class CustomPlaylistMusicRepositoryImpl implements CustomPlaylistMusicRepository {
@@ -18,20 +18,20 @@ public class CustomPlaylistMusicRepositoryImpl implements CustomPlaylistMusicRep
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<PlaylistMusicEntity> findAgeCompare(UserEntity user) {
+    public List<PlaylistMusic> findAgeCompare(User userEntity) {
         return jpaQueryFactory
-                .select(playlistMusicEntity)
-                .from(playlistEntity, userEntity, playlistMusicEntity)
+                .select(playlistMusic)
+                .from(playlist, user, playlistMusic)
                 .where(
-                        playlistEntity.userEntity.eq(userEntity),
-                        playlistMusicEntity.playlistEntity.eq(playlistEntity),
-                        betweenAge(user.getAge())
+                        playlist.user.eq(userEntity),
+                        playlistMusic.playlist.eq(playlist),
+                        betweenAge(userEntity.getAge())
                 ).fetch();
     }
 
     private BooleanExpression betweenAge(int age) {
         int age1 = age / 10 * 10;
         int age2 = age1 + 9;
-        return userEntity.age.between(age1, age2);
+        return user.age.between(age1, age2);
     }
 }

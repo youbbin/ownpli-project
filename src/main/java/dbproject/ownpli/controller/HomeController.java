@@ -7,12 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/home")
+@RequestMapping("/api/home")
 public class HomeController {
 
     private final HomeService homeService;
@@ -41,8 +42,11 @@ public class HomeController {
     }
 
     @GetMapping("/age")
-    public ResponseEntity<List<HomeMusicListResponse>> getAgeList(@RequestParam String userId) {
-        return ResponseEntity.ok(homeService.getAgeList(userId));
+    public ResponseEntity<List<HomeMusicListResponse>> getAgeList(
+            HttpServletRequest request,
+            @RequestParam String userId
+    ) {
+        return ResponseEntity.ok(homeService.getAgeList(request, userId));
     }
 
 }
