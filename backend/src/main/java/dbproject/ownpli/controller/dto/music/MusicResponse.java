@@ -29,6 +29,7 @@ public class MusicResponse {
                 .genre(music.getGenre().getGenre())
                 .likes(likes)
                 .album(music.getAlbum())
+                .imageFile(music.getImageFile())
                 .year(String.valueOf(music.getReleaseDate().getYear()))
                 .country(music.getCountry())
                 .build();
@@ -43,6 +44,7 @@ public class MusicResponse {
                 .genre(music.getGenre().getGenre())
                 .likes(likes)
                 .album(music.getAlbum())
+                .imageFile(music.getImageFile())
                 .year(String.valueOf(music.getReleaseDate().getYear()))
                 .country(music.getCountry())
                 .build();
@@ -58,6 +60,7 @@ public class MusicResponse {
                 .genre(music.getGenre().getGenre())
                 .likes(likes)
                 .album(music.getAlbum())
+                .imageFile(music.getImageFile())
                 .year(String.valueOf(music.getReleaseDate().getYear()))
                 .country(music.getCountry())
                 .build();
