@@ -37,7 +37,7 @@
 ## 🛠 Stack
 
 <p align="middle" >
-  <img src="https://user-images.githubusercontent.com/84761609/207588385-ed4e8983-bdea-4408-ae9a-354ba497c7d4.png" width="800em;" alt=""/>
+  <img src="https://github.com/youbbin/ownpli-project/assets/84761609/dee29578-df94-4736-b343-be6528aaba27" width="800em;" alt=""/>
 </p>
 
 <br>

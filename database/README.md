@@ -33,7 +33,7 @@ mysql data import할 때 참고하세용 -> https://goodteacher.tistory.com/131 
 ## Schema
 
 <p align="middle" >
-  <img src="https://user-images.githubusercontent.com/84761609/207590486-16c46def-77e3-43c3-bf7b-c3f32263d4e7.png" width="800em;" alt=""/>
+  <img src="https://github.com/youbbin/ownpli-project/assets/84761609/3ee3ca00-d215-4a0f-8b41-f7730b97d71b" width="800em;" alt=""/>
 </p>
 
 <br>
