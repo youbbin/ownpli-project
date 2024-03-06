@@ -76,7 +76,7 @@ public class UserService {
         User user = userRepository.findById(userNameUpdateRequest.getUserId())
                 .orElseThrow(() -> new NullPointerException("존재하지 않는 아이디입니다."));
 
-        jwtProvider.isLogoutUser(request);
+        jwtProvider.isLogoutUserThenThrowException(request);
 
         user.setName(userNameUpdateRequest.getName());
         userRepository.save(user);

@@ -6,23 +6,22 @@ import dbproject.ownpli.domain.Music;
 import dbproject.ownpli.domain.Playlist;
 import dbproject.ownpli.domain.PlaylistMusic;
 import dbproject.ownpli.controller.dto.music.MusicResponse;
-import dbproject.ownpli.exception.OwnPliException;
-import dbproject.ownpli.jwt.JwtProvider;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@CacheConfig(cacheNames = "PLAYLIST_MUSICS", cacheManager = "cacheManager")
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PlaylistService {
@@ -59,7 +58,7 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", condition = "#playlistId == null", cacheManager = "cacheManager")
+    @Cacheable(key = "#playlistId", condition = "#playlistId == null")
     public PlaylistMusicDTO findMusicsByPlaylistId(String playlistId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
@@ -68,7 +67,7 @@ public class PlaylistService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", cacheManager = "cacheManager")
+    @CacheEvict(key = "#playlistId")
     public void deletePlaylistMusics(String playlistId, PlaylistMusicRequest request) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
@@ -103,7 +102,7 @@ public class PlaylistService {
             id = idOptional.get().getPlaylistId();
             log.info("id={}", id);
 
-            Long idLong = Long.parseLong(id.replace("p",""));
+            Long idLong = Long.parseLong(id.replace("p", ""));
             id = "p" + ++idLong;
         }
 
@@ -113,7 +112,7 @@ public class PlaylistService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", cacheManager = "cacheManager")
+    @CacheEvict(key = "#playlistId")
     public void addSongsInPlaylist(String playlistId, List<String> musicIds) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new NullPointerException("플레이리스트가 존재하지 않습니다."));
@@ -125,7 +124,7 @@ public class PlaylistService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "PLAYLIST_MUSICS", key = "#playlistId", cacheManager = "cacheManager")
+    @CacheEvict(key = "#playlistId")
     public void deletePlaylist(List<String> playlistId) {
         playlistMusicRepository.deleteAllByPlaylistIn(playlistRepository.findAllById(playlistId));
         playlistRepository.deleteAllById(playlistId);

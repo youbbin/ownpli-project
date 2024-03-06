@@ -26,13 +26,13 @@ public class PlaylistController {
 
     @PutMapping("/update")
     public ResponseEntity<PlaylistDTO> updateTitle(HttpServletRequest servletRequest, @RequestBody PlaylistUpdateRequest request) {
-        jwtProvider.isLogoutUser(servletRequest);
+        jwtProvider.isLogoutUserThenThrowException(servletRequest);
         return ResponseEntity.ok(playlistService.updatePlaylistTitle(request));
     }
 
     @GetMapping
     public ResponseEntity<PlaylistMusicDTO> findMusicList(HttpServletRequest request, @RequestParam(name = "id") String playlistId) {
-        jwtProvider.isLogoutUser(request);
+        jwtProvider.isLogoutUserThenThrowException(request);
         return ResponseEntity.ok(playlistService.findMusicsByPlaylistId(playlistId));
     }
 
@@ -42,14 +42,14 @@ public class PlaylistController {
             @PathVariable String playlistId,
             @RequestBody PlaylistMusicRequest request
     ) {
-        jwtProvider.isLogoutUser(servletRequest);
+        jwtProvider.isLogoutUserThenThrowException(servletRequest);
         playlistService.deletePlaylistMusics(playlistId, request);
         return ResponseEntity.ok(playlistService.findMusicsByPlaylistId(playlistId));
     }
 
     @PostMapping("/create")
     public ResponseEntity<String> createPlaylist(HttpServletRequest request, @RequestBody PlaylistCreateRequest playlistCreateRequest) {
-        jwtProvider.isLogoutUser(request);
+        jwtProvider.isLogoutUserThenThrowException(request);
         String playlistId = playlistService.savePlaylist(playlistCreateRequest);
 
         if(playlistId == null) {
@@ -66,7 +66,7 @@ public class PlaylistController {
             @PathVariable String playlistId,
             @RequestBody PlaylistMusicRequest request
     ) {
-        jwtProvider.isLogoutUser(servletRequest);
+        jwtProvider.isLogoutUserThenThrowException(servletRequest);
         playlistService.addSongsInPlaylist(playlistId, request.getMusicIds());
         return ResponseEntity.ok(playlistService.findMusicsByPlaylistId(playlistId));
     }
@@ -76,7 +76,7 @@ public class PlaylistController {
             HttpServletRequest servletRequest,
             @RequestBody PlaylistDropRequest request
     ) {
-        jwtProvider.isLogoutUser(servletRequest);
+        jwtProvider.isLogoutUserThenThrowException(servletRequest);
         playlistService.deletePlaylist(request.getPlaylistIds());
         return ResponseEntity.ok("삭제 완료");
     }
