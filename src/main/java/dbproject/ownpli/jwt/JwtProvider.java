@@ -13,6 +13,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Component
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class JwtProvider {
 
@@ -42,6 +44,7 @@ public class JwtProvider {
         KEY = Base64.getEncoder().encodeToString(KEY.getBytes());
     }
 
+    @Transactional
     public TokenResponse createTokensByLogin(UserResponse userResponse) throws JsonProcessingException {
         Subject atkSubject = Subject.atk(userResponse);
         Subject rtkSubject = Subject.rtk(userResponse);
@@ -75,6 +78,7 @@ public class JwtProvider {
         return objectMapper.readValue(subjectStr, Subject.class);
     }
 
+    @Transactional
     public TokenResponse reissueAtk(UserResponse userResponse) throws JsonProcessingException {
         String rtkInRedis = redisDao.getValues(userResponse.getUserId());
         if (Objects.isNull(rtkInRedis)) throw new OwnPliForbiddenException("인증 정보가 만료되었습니다.");
@@ -89,12 +93,13 @@ public class JwtProvider {
         return new TokenResponse(atk, rtk);
     }
 
+    @Transactional
     public void setExpirationZeroAndDeleteRtk(String accessToken, String userId) {
         redisDao.setBlackList(accessToken.replace("Bearer ", ""), "logout", Duration.ofMillis(getExpiration(accessToken)));
         redisDao.deleteValues(userId);
     }
 
-    public void isLogoutUser(HttpServletRequest request) {
+    public void isLogoutUserThenThrowException(HttpServletRequest request) {
         if (redisDao.hasKeyBlackList(request.getHeader("Authorization").replace("Bearer ", ""))) {
             throw new OwnPliException("이미 로그아웃된 유저입니다.");
         }

@@ -1,6 +1,7 @@
 package dbproject.ownpli.controller;
 
 import dbproject.ownpli.controller.dto.home.HomeMusicListResponse;
+import dbproject.ownpli.jwt.JwtProvider;
 import dbproject.ownpli.service.HomeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import java.util.List;
 public class HomeController {
 
     private final HomeService homeService;
+    private final JwtProvider jwtProvider;
 
 //    로그인 전: 신곡, top10, 좋아요 순
 //    로그인 후: 신곡, top10, 좋아요 순, 연령별 추천(플레이리스트 담은 순), 분위기1 별 노래5?(랜덤으로)
@@ -46,7 +48,8 @@ public class HomeController {
             HttpServletRequest request,
             @RequestParam String userId
     ) {
-        return ResponseEntity.ok(homeService.getAgeList(request, userId));
+        jwtProvider.isLogoutUserThenThrowException(request);
+        return ResponseEntity.ok(homeService.getAgeList(userId));
     }
 
 }

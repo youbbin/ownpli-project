@@ -6,13 +6,11 @@ import dbproject.ownpli.domain.Music;
 import dbproject.ownpli.domain.MusicLike;
 import dbproject.ownpli.domain.PlaylistMusic;
 import dbproject.ownpli.controller.dto.home.HomeMusicListResponse;
-import dbproject.ownpli.jwt.JwtProvider;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,7 +26,6 @@ public class HomeService {
     private final MoodRepository moodRepository;
     private final MusicMoodRepository musicMoodRepository;
     private final UserRepository userRepository;
-    private final JwtProvider jwtProvider;
 
     public List<HomeMusicListResponse> findNewSongs() {
 
@@ -40,7 +37,6 @@ public class HomeService {
     }
 
     public List<HomeMusicListResponse> findTop10Musics() {
-
         Map<Music, Long> musicEntityLongMap = playlistMusicRepository.findAll().stream()
                 .collect(Collectors.groupingBy(PlaylistMusic::getMusic, Collectors.counting()));
 
@@ -48,20 +44,15 @@ public class HomeService {
     }
 
     public List<HomeMusicListResponse> findTop10LikeList() {
-
         Map<Music, Long> musicEntityLongMap = musicLikeRepository.findAll().stream()
                 .collect(Collectors.groupingBy(MusicLike::getMusic, Collectors.counting()));
 
         return buildResponse(musicEntityLongMap);
     }
 
-
-    public List<HomeMusicListResponse> getAgeList(HttpServletRequest request, String userId) {
-
+    public List<HomeMusicListResponse> getAgeList(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
-
-        jwtProvider.isLogoutUser(request);
 
         Map<Music, Long> musicEntityLongMap = playlistMusicRepository.findAgeCompare(user).stream()
                 .collect(Collectors.groupingBy(PlaylistMusic::getMusic, Collectors.counting()));
