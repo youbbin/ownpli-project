@@ -1,97 +1,87 @@
 package dbproject.ownpli.service;
 
-import dbproject.ownpli.dto.MusicDTO;
+import dbproject.ownpli.domain.User;
+import dbproject.ownpli.domain.Mood;
+import dbproject.ownpli.domain.Music;
+import dbproject.ownpli.domain.MusicLike;
+import dbproject.ownpli.domain.PlaylistMusic;
+import dbproject.ownpli.controller.dto.home.HomeMusicListResponse;
 import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class HomeService {
+
     private final PlaylistMusicRepository playlistMusicRepository;
     private final MusicRepository musicRepository;
-    private final MusicService musicService;
     private final MusicLikeRepository musicLikeRepository;
     private final MoodRepository moodRepository;
     private final MusicMoodRepository musicMoodRepository;
-    private final UserService userService;
-    private final QueryRepository queryRepository;
+    private final UserRepository userRepository;
 
-    public List<MusicDTO> findNewSongs() {
-        List<String> musicIdsOrderByYear = musicRepository.findMusicIdsOrderByYear();
-        return musicService.findMusicInfosByPlaylist(musicIdsOrderByYear).subList(0, 10);
+    public List<HomeMusicListResponse> findNewSongs() {
+
+        return musicRepository.findAll().stream()
+                .sorted(Comparator.comparing(Music::getReleaseDate, Comparator.reverseOrder()))
+                .limit(10)
+                .map(HomeMusicListResponse::ofMusic)
+                .collect(Collectors.toList());
     }
 
-    /**
-     * playlist 많이 담은 순으로 음악 보내기
-     * @return
-     */
-    public List<MusicDTO> findTop10Musics() {
-        Optional<List<String>> distinctMusicIdOptional = playlistMusicRepository.findDistinctMusicId();
+    public List<HomeMusicListResponse> findTop10Musics() {
+        Map<Music, Long> musicEntityLongMap = playlistMusicRepository.findAll().stream()
+                .collect(Collectors.groupingBy(PlaylistMusic::getMusic, Collectors.counting()));
 
-//        if(distinctMusicIdOptional.isEmpty() || distinctMusicIdOptional.get().size() < 10) {
-//            List<MusicDTO> musicDTOList = new ArrayList<>();
-//            for (int i = 0; i < 10; i++) {
-//                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
-//            }
-//            return musicDTOList;
-//        }
-
-        return musicService.findMusicInfosByPlaylist(distinctMusicIdOptional.get()).subList(0, 10);
+        return buildResponse(musicEntityLongMap);
     }
 
-    /**
-     * 좋아요 많이 받은 순으로 출력
-     * @return
-     */
-    public List<MusicDTO> findTop10LikeList() {
-        Optional<List<String>> musicIds = musicLikeRepository.findMusicIds();
+    public List<HomeMusicListResponse> findTop10LikeList() {
+        Map<Music, Long> musicEntityLongMap = musicLikeRepository.findAll().stream()
+                .collect(Collectors.groupingBy(MusicLike::getMusic, Collectors.counting()));
 
-        if(musicIds == null || musicIds.get().size() < 10) {
-            List<MusicDTO> musicDTOList = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
-                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
-            }
-            return musicDTOList;
-        }
-
-        return musicService.findMusicInfosByPlaylist(musicIds.get()).subList(0, 10);
+        return buildResponse(musicEntityLongMap);
     }
 
+    public List<HomeMusicListResponse> getAgeList(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-    public List<MusicDTO> ageList(String userId) {
-        List<String> ageCompare = queryRepository.findAgeCompare(userService.findByUserId(userId));
-        List<String> byPlaylistId = playlistMusicRepository.findByPlaylistId(ageCompare);
-        List<MusicDTO> musicInfosByPlaylist = musicService.findMusicInfosByPlaylist(byPlaylistId);
+        Map<Music, Long> musicEntityLongMap = playlistMusicRepository.findAgeCompare(user).stream()
+                .collect(Collectors.groupingBy(PlaylistMusic::getMusic, Collectors.counting()));
 
-        if(musicInfosByPlaylist.size() < 10 || musicInfosByPlaylist.isEmpty()) {
-            List<MusicDTO> musicDTOList = new ArrayList<>();
-
-            for (int i = 0; i < 10; i++) {
-                musicDTOList.add(musicService.findMusicInfo(musicRepository.findAll().get(i).getMusicId()));
-            }
-            return musicDTOList;
-        }
-
-        return musicInfosByPlaylist;
+        return buildResponse(musicEntityLongMap);
     }
 
-    public List<MusicDTO> mood5List() {
-        Long moodId;
-        if(LocalDate.now().getMonthValue() == 12) {
-            moodId = moodRepository.findMoodEntityByMood("캐롤").getMoodNum();
-        }
-        else
-            moodId = moodRepository.findById((long) ((Math.random() * 10000) % 22)).get().getMoodNum();
+    private List<HomeMusicListResponse> buildResponse(Map<Music, Long> map) {
+        return map
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .distinct()
+                .limit(10)
+                .map(entry -> HomeMusicListResponse.ofMusic(entry.getKey()))
+                .collect(Collectors.toList());
+    }
 
-        List<String> oneByMoodNum = musicMoodRepository.findOneByMoodNum(moodId);
+    public List<HomeMusicListResponse> mood5List() {
+        Mood mood;
+        if (LocalDate.now().getMonthValue() == 12) {
+            mood = moodRepository.findMoodEntityByMood("캐롤");
+        } else
+            mood = moodRepository.findById((long) ((Math.random() * 10000) % 22))
+                    .orElseThrow(() -> new NullPointerException("id 없음"));
 
-        return musicService.musicEntitiesToMusicDTO(musicRepository.findByMusicId(oneByMoodNum));
+        return musicMoodRepository.findByMood(mood).stream()
+                .limit(5)
+                .map(HomeMusicListResponse::ofMusicMood)
+                .collect(Collectors.toList());
     }
 
 }

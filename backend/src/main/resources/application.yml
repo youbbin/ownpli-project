@@ -1,0 +1,37 @@
+spring:
+
+  redis:
+    host: localhost
+    port: 6379
+
+  cache:
+    type: redis
+
+  jwt:
+    header: Authorization
+    secret: dGhpcyBpcyBqd3Qgc2VjcmV0IGtleSBnb29vb2cgZ2Vuc2hpbiBzY2FyYW1vdWNoZSBpIGxvdmUgeW91
+    token-validity-in-seconds: 86400
+    token-regenerate-seconds: 300000
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ownpli?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: test_user
+    password: adminaccount1234
+
+
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    generate-ddl: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug

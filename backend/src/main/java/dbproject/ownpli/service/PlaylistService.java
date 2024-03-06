@@ -1,178 +1,125 @@
 package dbproject.ownpli.service;
 
-import dbproject.ownpli.domain.playlist.PlaylistEntity;
-import dbproject.ownpli.domain.playlist.PlaylistMusicEntity;
-import dbproject.ownpli.dto.PlaylistDTO;
-import dbproject.ownpli.repository.MusicRepository;
-import dbproject.ownpli.repository.PlaylistMusicRepository;
-import dbproject.ownpli.repository.PlaylistRepository;
-import dbproject.ownpli.repository.UserRepository;
+import dbproject.ownpli.controller.dto.playlist.*;
+import dbproject.ownpli.domain.User;
+import dbproject.ownpli.domain.Music;
+import dbproject.ownpli.domain.Playlist;
+import dbproject.ownpli.domain.PlaylistMusic;
+import dbproject.ownpli.controller.dto.music.MusicResponse;
+import dbproject.ownpli.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistMusicRepository playlistMusicRepository;
     private final MusicRepository musicRepository;
+    private final MusicLikeRepository musicLikeRepository;
     private final UserRepository userRepository;
 
-    public PlaylistDTO updatePlaylistTitle(String oldTitle, String newTitle, String userId) {
-        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(newTitle, userId);
-        if(!byPlaylistTitleAndUserId.isEmpty())
-            return null;
+    @Transactional
+    public PlaylistDTO updatePlaylistTitle(PlaylistUpdateRequest request) {
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        int i = playlistRepository.updatePlaylistTitle(oldTitle, newTitle, userId);
-
-        String playlistIdByPlaylistTitleAndUserId = findPlaylistIdByPlaylistTitleAndUserId(newTitle, userId);
-        return getPlaylistDTOByPlaylistId(playlistIdByPlaylistTitleAndUserId);
-    }
-
-    /**
-     * 유저이메일로 플레이리스트 목록 찾기
-     * @param userId
-     * @return
-     */
-    public List<PlaylistDTO> findPlaylistByUserId(String userId) {
-        List<PlaylistEntity> byUserId = playlistRepository.findByUserId(userId);
-        if(byUserId.size() == 0) return  null;
-
-        List<PlaylistDTO> playlistDTOList = new ArrayList<>();
-
-        for(int i = 0; i < byUserId.size(); i++) {
-            playlistDTOList.add(PlaylistDTO.from(byUserId.get(i)));
+        if (playlistRepository.existsByPlaylistTitleAndUser(request.getOldTitle(), user)) {
+            throw new NullPointerException("존재하지 않는 제목입니다.");
         }
-        return playlistDTOList;
 
+        Playlist playlist = playlistRepository.findByPlaylistTitleAndUser(request.getOldTitle(), user)
+                .orElseThrow(() -> new NullPointerException("존재하지 않는 제목입니다."));
+        playlist.setPlaylistTitle(request.getNewTitle());
+        playlistRepository.save(playlist);
+
+        return PlaylistDTO.from(playlist);
     }
 
-    public PlaylistDTO getPlaylistDTOByPlaylistId(String playlistId) {
-        return PlaylistDTO.from(
-            playlistRepository.findById(playlistId).get());
+    public List<PlaylistDTO> findPlaylistByUserId(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
+
+        return playlistRepository.findByUser(user).stream()
+                .map(PlaylistDTO::from)
+                .collect(Collectors.toList());
     }
 
-    /**
-     * playlistID로 음악 아이디들 찾기
-     * @param playlistId
-     * @return
-     */
-    public List<String> findMusicsByPlaylistId(String playlistId) {
-        List<String> musicIds = playlistMusicRepository.findMusicIdsByPlaylistId(playlistId);
+    public PlaylistMusicDTO findMusicsByPlaylistId(String playlistId) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-        return musicIds;
+        return PlaylistMusicDTO.from(PlaylistDTO.from(playlist), collectMusicResponses(playlist));
     }
 
-    public boolean playlistMusicDelete(String playlistId, List<String> musicIds) {
-        List<Long> playlistMusicIdsByTitleAndMusicId = playlistMusicRepository.findPlaylistMusicIdsByTitleAndMusicId(playlistId, musicIds);
-        playlistMusicRepository.deleteAllById(playlistMusicIdsByTitleAndMusicId);
-        return true;
+    @Transactional
+    public void deletePlaylistMusics(String playlistId, PlaylistMusicRequest request) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
+
+        List<Music> musicEntities = musicRepository.findAllById(request.getMusicIds());
+        playlistMusicRepository.deleteAllByPlaylistAndMusicIn(playlist, musicEntities);
     }
 
-    public String findPlaylistIdByPlaylistTitleAndUserId(String title, String userId) {
-        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(title, userId);
-        if(byPlaylistTitleAndUserId.isEmpty()) return null;
-        else return byPlaylistTitleAndUserId.get().getPlaylistId();
+    private List<MusicResponse> collectMusicResponses(Playlist playlist) {
+        return playlist.getPlaylistMusicEntities().stream()
+                .map(playlistMusicEntity -> MusicResponse.ofPlaylistMusic(
+                        playlistMusicEntity,
+                        musicLikeRepository.countByMusic(playlistMusicEntity.getMusic())
+                ))
+                .collect(Collectors.toList());
     }
 
-    public List<String> findPlaylistIdsByPlaylistTitleAndUserId(String title, String userId) {
-        List<String> list = List.of(title.split("@"));
-        Optional<List<String>> byPlaylistTitleAndUserId = playlistRepository.findPlaylistIdsByPlaylistTitleAndUserId(list, userId);
-        if(byPlaylistTitleAndUserId.isEmpty()) return null;
-        else return byPlaylistTitleAndUserId.get();
-    }
+    @Transactional
+    public String savePlaylist(PlaylistCreateRequest playlistCreateRequest) {
+        User user = userRepository.findById(playlistCreateRequest.getUserId())
+                .orElseThrow(() -> new NullPointerException("아이디가 존재하지 않습니다."));
 
-    /**
-     * 새 플레이리스트 저장
-     * @param userId
-     * @param title
-     */
-    public String savePlaylist(String userId, String title) {
-
-        Optional<PlaylistEntity> byPlaylistTitleAndUserId = playlistRepository.findByPlaylistTitleAndUserId(title, userId);
-        if(byPlaylistTitleAndUserId.isPresent())
+        if (playlistRepository.existsByPlaylistTitleAndUser(playlistCreateRequest.getTitle(), user)) {
             return null;
+        }
 
-        Optional<PlaylistEntity> idOptional = playlistRepository.findFirstByOrderByPlaylistIdDesc();
+        Optional<Playlist> idOptional = playlistRepository.findFirstByOrderByPlaylistIdDesc();
         String id = "";
-        if(idOptional.isEmpty())
+        if (idOptional.isEmpty())
             id = "p1";
         else {
             id = idOptional.get().getPlaylistId();
             log.info("id={}", id);
 
-            StringTokenizer st = new StringTokenizer(id, "p");
-            Long idLong = Long.parseLong(st.nextToken());
-
-            idLong++;
-
-            id = "p" + idLong;
+            Long idLong = Long.parseLong(id.replace("p", ""));
+            id = "p" + ++idLong;
         }
 
-        playlistRepository.save(
-            PlaylistEntity.builder()
-                .playlistId(id)
-                .playlistTitle(title)
-                .userId(userRepository.findById(userId).get().getUserId())
-                .build()
-        );
-
+        playlistRepository.save(Playlist.of(id, playlistCreateRequest.getTitle(), user));
         log.info("플레이리스트 생성");
         return id;
     }
 
-    /**
-     * 플레이리스트에 음악 추가
-     * @Param userId
-     * @param playlistId
-     * @param musicIds
-     * @return
-     */
-    public String addPlaylist(String userId, String playlistId, List<String> musicIds) {
-        boolean flag = false;
-        List<PlaylistEntity> byUserId = playlistRepository.findByUserId(userId);
-        for(int i = 0; i < byUserId.size(); i++) {
-            if(byUserId.get(i).getPlaylistId().equals(playlistId)) flag = true;
-        }
+    @Transactional
+    public void addSongsInPlaylist(String playlistId, List<String> musicIds) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new NullPointerException("플레이리스트가 존재하지 않습니다."));
 
-        if(!flag) return null;
-
-        for(int i = 0; i < musicIds.size(); i++) {
-            playlistMusicRepository.save(
-                PlaylistMusicEntity.builder()
-                    .playlistId(playlistRepository.findById(playlistId).get().getPlaylistId())
-                    .musicId(musicRepository.findById(musicIds.get(i)).get().getMusicId())
-                    .date(Date.valueOf(LocalDate.now()))
-                    .build());
-        }
+        musicRepository.findAllById(musicIds)
+                .forEach(music -> playlistMusicRepository.save(PlaylistMusic.of(playlist, music)));
 
         log.info("플레이리스트 저장");
-        return playlistId;
     }
 
-    /**
-     * 플레이리스트 삭제
-     * @param playlistId
-     */
+    @Transactional
     public void deletePlaylist(List<String> playlistId) {
-        List<PlaylistMusicEntity> allByPlaylistId = playlistMusicRepository.findAllByPlaylistId(playlistId);
-
-        for(int i = 0; i < allByPlaylistId.size(); i++)
-            playlistMusicRepository.delete(allByPlaylistId.get(i));
-
-        playlistRepository.deleteAll(playlistRepository.findAllByPlaylistId(playlistId));
+        playlistMusicRepository.deleteAllByPlaylistIn(playlistRepository.findAllById(playlistId));
+        playlistRepository.deleteAllById(playlistId);
     }
 
 }
